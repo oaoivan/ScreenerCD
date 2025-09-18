@@ -1,0 +1,22 @@
+{
+  "configurations": [
+    {
+      "type": "go",
+      "request": "launch",
+      "name": "Debug Screener Core",
+      "program": "${workspaceFolder}/screner/cmd/screener-core",
+      "cwd": "${workspaceFolder}/screner",
+      "env": {},
+      "args": []
+    },
+    {
+      "type": "go",
+      "request": "launch",
+      "name": "Debug API Gateway",
+      "program": "${workspaceFolder}/screner/cmd/api-gateway",
+      "cwd": "${workspaceFolder}/screner",
+      "env": {},
+      "args": []
+    }
+  ]
+}
