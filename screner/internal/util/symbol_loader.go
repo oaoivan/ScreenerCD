@@ -34,8 +34,8 @@ func LoadSymbolsFromFile(filePath string) ([]string, error) {
 	var bybitSymbols []string
 	for _, ticker := range tickers {
 		// Пропускаем некоторые стейблкоины и fiat валюты
-		if ticker == "USDT" || ticker == "USDC" || ticker == "DAI" || 
-		   ticker == "BUSD" || ticker == "USD" || ticker == "EUR" {
+		if ticker == "USDT" || ticker == "USDC" || ticker == "DAI" ||
+			ticker == "BUSD" || ticker == "USD" || ticker == "EUR" {
 			continue
 		}
 		bybitSymbol := ticker + "USDT"

@@ -36,7 +36,7 @@ func LoadSymbolsFromJSON(filePath string) ([]CoinSymbol, error) {
 		if isStablecoinOrFiat(ticker) {
 			continue
 		}
-		
+
 		coinSymbol := CoinSymbol{
 			Symbol:      ticker,
 			BybitSymbol: ticker + "USDT",
@@ -59,7 +59,7 @@ func isStablecoinOrFiat(symbol string) bool {
 		"USDT", "USDC", "DAI", "BUSD", "USD", "EUR", "GBP", "JPY",
 		"USDE", "USD1", "USTC", // добавляем другие стейблкоины из списка
 	}
-	
+
 	for _, stable := range stablecoins {
 		if strings.EqualFold(symbol, stable) {
 			return true

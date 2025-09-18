@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
 	"fmt"
+	"log"
+
 	"github.com/yourusername/screner/internal/util"
 )
 
@@ -14,7 +15,7 @@ func main() {
 	}
 
 	fmt.Printf("Загружено %d символов из JSON файла:\n", len(symbols))
-	
+
 	// Выводим первые 20 символов для проверки
 	fmt.Println("\nПервые 20 символов:")
 	for i, symbol := range symbols {
@@ -26,7 +27,7 @@ func main() {
 
 	// Для начала возьмем популярные символы для тестирования
 	testSymbols := []string{
-		"BTCUSDT", "ETHUSDT", "LTCUSDT", "ADAUSDT", "DOTUSDT", 
+		"BTCUSDT", "ETHUSDT", "LTCUSDT", "ADAUSDT", "DOTUSDT",
 		"LINKUSDT", "XRPUSDT", "BCHUSDT", "BNBUSDT", "SOLUSDT",
 		"AVAXUSDT", "MATICUSDT", "ATOMUSDT", "NEARUSDT", "ALGOUSDT",
 		"FILUSDT", "ICPUSDT", "FTMUSDT", "SANDUSDT", "MANAUSDT",
@@ -34,10 +35,10 @@ func main() {
 
 	// Фильтруем символы по доступным для тестирования
 	filteredSymbols := util.FilterBybitSymbols(symbols, testSymbols)
-	
+
 	// Получаем список валидных символов
 	validSymbols := util.GetValidBybitSymbols(filteredSymbols)
-	
+
 	fmt.Printf("\nВалидных символов для тестирования: %d\n", len(validSymbols))
 	fmt.Println("Символы для подписки:")
 	for i, symbol := range validSymbols {

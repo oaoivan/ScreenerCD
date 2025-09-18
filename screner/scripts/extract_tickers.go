@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"encoding/json"
 	"fmt"
@@ -42,8 +41,8 @@ func main() {
 	var bybitSymbols []string
 	for _, ticker := range tickers {
 		// Пропускаем некоторые стейблкоины и fiat валюты
-		if ticker == "USDT" || ticker == "USDC" || ticker == "DAI" || 
-		   ticker == "BUSD" || ticker == "USD" || ticker == "EUR" {
+		if ticker == "USDT" || ticker == "USDC" || ticker == "DAI" ||
+			ticker == "BUSD" || ticker == "USD" || ticker == "EUR" {
 			continue
 		}
 		bybitSymbol := ticker + "USDT"
@@ -52,7 +51,7 @@ func main() {
 	}
 
 	fmt.Printf("\nИтого для подписки на Bybit: %d символов\n", len(bybitSymbols))
-	
+
 	// Выводим список для копирования в код
 	fmt.Println("\nСписок для использования в коде:")
 	fmt.Println("var symbols = []string{")

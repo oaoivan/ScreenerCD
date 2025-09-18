@@ -5,8 +5,8 @@ package protobuf
 // until proper .proto -> .pb.go generation is performed.
 
 type MarketData struct {
-    Exchange  string  `json:"exchange"`
-    Symbol    string  `json:"symbol"`
-    Price     float64 `json:"price"`
-    Timestamp int64   `json:"timestamp"`
+	Exchange  string  `json:"exchange"`
+	Symbol    string  `json:"symbol"`
+	Price     float64 `json:"price"`
+	Timestamp int64   `json:"timestamp"`
 }

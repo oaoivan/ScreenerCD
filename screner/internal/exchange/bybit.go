@@ -74,11 +74,11 @@ func (c *BybitClient) ReadLoop(exchangeName, symbol string) {
 
 		var price float64
 		var messageSymbol string
-		
+
 		// Extract symbol from topic (e.g., "tickers.BTCUSDT" -> "BTCUSDT")
 		if topic, ok := raw["topic"].(string); ok {
 			if len(topic) > 8 && topic[:8] == "tickers." {
-				messageSymbol = topic[8:]  // Extract symbol after "tickers."
+				messageSymbol = topic[8:] // Extract symbol after "tickers."
 			}
 		}
 
@@ -103,7 +103,7 @@ func (c *BybitClient) ReadLoop(exchangeName, symbol string) {
 
 		md := &protobuf.MarketData{
 			Exchange:  exchangeName,
-			Symbol:    messageSymbol,  // Use symbol from message topic
+			Symbol:    messageSymbol, // Use symbol from message topic
 			Price:     price,
 			Timestamp: time.Now().Unix(),
 		}
