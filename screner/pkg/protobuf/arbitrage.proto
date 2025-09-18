@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package protobuf;
+
+// MarketData represents the market data from an exchange.
+message MarketData {
+    string exchange = 1; // The name of the exchange
+    string symbol = 2;   // The trading pair symbol (e.g., BTC-USDT)
+    double price = 3;    // The price of the asset
+    int64 timestamp = 4; // The timestamp of the data
+}
+
+// ArbitrageOpportunity represents an arbitrage opportunity between exchanges.
+message ArbitrageOpportunity {
+    string pair = 1;     // The trading pair symbol
+    double profit = 2;   // The profit percentage
+    string from_exchange = 3; // The exchange where the asset is cheaper
+    string to_exchange = 4;   // The exchange where the asset is more expensive
+    int64 timestamp = 5; // The timestamp of the opportunity
+}
