@@ -1,0 +1,12 @@
+exchange: "bybit"
+symbol: "BTC-USDT"
+api_key: ""
+secret: ""
+
+redis: 
+  host: "localhost"
+  port: 6379
+
+logging: 
+  level: "info"
+  file: "logs/screener.log"

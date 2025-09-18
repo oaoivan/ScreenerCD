@@ -24,7 +24,7 @@ code Code
 IGNORE_WHEN_COPYING_START
 IGNORE_WHEN_COPYING_END
 
-    
+дерево каталогов примерное!    
 arbitrage-screener/
 ├── cmd/
 │   ├── screener-core/

@@ -1,0 +1,24 @@
+FROM golang:1.18 AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+COPY ./cmd/screener-core ./cmd/screener-core
+COPY ./internal ./internal
+COPY ./pkg ./pkg
+COPY ./configs ./configs
+COPY ./scripts ./scripts
+COPY ./Temp ./Temp
+
+RUN go mod download
+RUN go build -o screener-core ./cmd/screener-core/main.go
+
+FROM alpine:latest
+
+WORKDIR /root/
+
+COPY --from=builder /app/screener-core .
+COPY --from=builder /app/configs ./configs
+COPY --from=builder /app/Temp ./Temp
+
+CMD ["./screener-core"]

@@ -1,4 +1,3 @@
-package testscripts
 package main
 
 import (
@@ -16,9 +15,6 @@ import (
 )
 
 func main() {
-	// Переходим в правильную директорию
-	os.Chdir("../screner")
-	
 	fmt.Println("=== ТЕСТИРОВАНИЕ ВСЕХ ТИКЕРОВ НА BYBIT ===")
 	
 	// Загружаем конфигурацию
@@ -32,7 +28,7 @@ func main() {
 	fmt.Printf("✅ Redis client initialized: %s\n", cfg.Redis.RedisAddress())
 	
 	// Загружаем все символы из JSON файла
-	symbols, err := util.LoadSymbolsFromFile("../Temp/all_contracts_merged_reformatted.json")
+	symbols, err := util.LoadSymbolsFromFile("Temp/all_contracts_merged_reformatted.json")
 	if err != nil {
 		log.Fatalf("Error loading symbols: %v", err)
 	}
