@@ -1,0 +1,115 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Gate.io WS connect smoke test",
+			"type": "shell",
+			"command": "go run ./test_scripts/gateio/connect_gate_ws.go",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run Gate.io WS connect smoke test (3s)",
+			"type": "shell",
+			"command": "go run ./test_scripts/gateio/connect_gate_ws.go -t 3s",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Build API Gateway after Gate integration",
+			"type": "shell",
+			"command": "go build ./...",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Build only API Gateway",
+			"type": "shell",
+			"command": "go build ./cmd/api-gateway",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run screener-core (Gate only)",
+			"type": "shell",
+			"command": "go run ./cmd/screener-core/main.go",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Build screener-core only",
+			"type": "shell",
+			"command": "go build ./cmd/screener-core",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run screener-core (Gate only)",
+			"type": "shell",
+			"command": "go run ./cmd/screener-core/main.go",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run screener-core (Gate + Bybit)",
+			"type": "shell",
+			"command": "go run ./cmd/screener-core/main.go",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run screener-core (after concurrent supervisors)",
+			"type": "shell",
+			"command": "go run ./cmd/screener-core/main.go",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run screener-core (with worker pool)",
+			"type": "shell",
+			"command": "go run ./cmd/screener-core/main.go",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build"
+		}
+	]
+}

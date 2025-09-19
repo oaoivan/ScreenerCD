@@ -61,7 +61,7 @@ func main() {
 		util.Fatalf("Failed to connect to Bybit: %v", err)
 	}
 
-	// Subscribe to all symbols
+	// Subscribe to all symbols (Bybit)
 	var wg sync.WaitGroup
 	for i, symbol := range symbols {
 		util.Infof("Subscribing to symbol %d/%d: %s", i+1, len(symbols), symbol)
@@ -79,7 +79,47 @@ func main() {
 		bybit.ReadLoop("Bybit", "MULTIPLE_SYMBOLS")
 	}()
 
-	util.Infof("Listening for market data from %d symbols...", len(symbols))
+	// Create and start Gate client (public spot v4)
+	gateURL := "wss://api.gateio.ws/ws/v4/"
+	gate := exchange.NewGateClient(gateURL)
+	if err := gate.Connect(); err != nil {
+		util.Errorf("Failed to connect to Gate: %v", err)
+	} else {
+		// Subscribe to all symbols (convert BYBIT -> GATE format)
+		for i, symbol := range symbols {
+			gateSym := util.BybitToGateSymbol(symbol)
+			util.Infof("Gate subscribing to symbol %d/%d: %s -> %s", i+1, len(symbols), symbol, gateSym)
+			if err := gate.Subscribe(gateSym); err != nil {
+				util.Errorf("Gate subscribe error for %s: %v", gateSym, err)
+			}
+			time.Sleep(15 * time.Millisecond)
+		}
+
+		// Start Gate read loop
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			gate.ReadLoop("Gate")
+		}()
+
+		// Consume Gate market data (log or save to Redis)
+		go func() {
+			for md := range gate.Out() {
+				key := fmt.Sprintf("price:%s:%s", md.Exchange, md.Symbol)
+				if redisClient != nil {
+					if err := redisClient.HSet(key, "price", md.Price, "timestamp", md.Timestamp); err != nil {
+						util.Errorf("Error saving Gate market data to Redis: %v", err)
+					} else {
+						util.Infof("Gate Market Data saved to Redis: %s -> price=%f timestamp=%d", key, md.Price, md.Timestamp)
+					}
+				} else {
+					util.Infof("Gate Market Data (Redis disabled): %s -> price=%f timestamp=%d", key, md.Price, md.Timestamp)
+				}
+			}
+		}()
+	}
+
+	util.Infof("Listening for market data from %d symbols on Bybit and Gate...", len(symbols))
 
 	// Consume market data and save to Redis
 	go func() {
