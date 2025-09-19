@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"context"
 	"flag"
@@ -34,7 +33,7 @@ func main() {
 	headers := http.Header{}
 
 	dialer := websocket.Dialer{
-		HandshakeTimeout: 10 * time.Second,
+		HandshakeTimeout:  10 * time.Second,
 		EnableCompression: true,
 	}
 
@@ -42,7 +41,9 @@ func main() {
 	conn, resp, err := dialer.Dial(u.String(), headers)
 	if err != nil {
 		status := 0
-		if resp != nil { status = resp.StatusCode }
+		if resp != nil {
+			status = resp.StatusCode
+		}
 		util.Fatalf("dial error: %v, status=%d", err, status)
 	}
 	defer conn.Close()

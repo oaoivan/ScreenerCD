@@ -16,8 +16,8 @@ type RedisConfig struct {
 }
 
 type Config struct {
-	Exchange  string      `yaml:"exchange"`   // legacy single exchange
-	Exchanges []string    `yaml:"exchanges"`  // preferred list of exchanges, e.g. ["bybit","gate"]
+	Exchange  string      `yaml:"exchange"`  // legacy single exchange
+	Exchanges []string    `yaml:"exchanges"` // preferred list of exchanges, e.g. ["bybit","gate"]
 	Symbol    string      `yaml:"symbol"`
 	APIKey    string      `yaml:"api_key"`
 	Secret    string      `yaml:"secret"`
