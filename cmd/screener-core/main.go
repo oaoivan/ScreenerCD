@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -74,8 +76,8 @@ func main() {
 	}
 	util.Infof("Loaded %d symbols from JSON file", len(symbols))
 
-	// Shared buffered channel (increase buffer to handle bursts)
-	dataChannel := make(chan *pb.MarketData, 8192)
+	// Shared buffered channel (configurable)
+	dataChannel := make(chan *pb.MarketData, cfg.DataChannelBuffer)
 
 	// Stop channel (close on signal)
 	stop := make(chan struct{})
@@ -90,6 +92,13 @@ func main() {
 	}
 	util.Infof("Exchanges: %s", strings.Join(exchanges, ", "))
 
+	// Metrics
+	var totalProcessed int64
+	var totalRedisOps int64
+	var totalDrops int64
+	var mu sync.Mutex
+	perExchange := map[string]int64{}
+
 	// Start connectors per exchange
 	for _, ex := range exchanges {
 		exLower := strings.ToLower(strings.TrimSpace(ex))
@@ -103,13 +112,25 @@ func main() {
 				if err := client.Connect(); err != nil {
 					return err
 				}
-				// subscribe all
+				// subscribe in batches
+				batchSize := cfg.SubscribeBatchSize
+				if batchSize <= 0 {
+					batchSize = 100
+				}
+				batchPause := time.Duration(cfg.SubscribeBatchPauseMs) * time.Millisecond
+				smallDelay := 5 * time.Millisecond
 				for i, s := range symbols {
 					util.Infof("%s subscribe %d/%d: %s", exName, i+1, len(symbols), s)
 					if err := client.Subscribe(s); err != nil {
 						util.Errorf("%s subscribe error for %s: %v", exName, s, err)
 					}
-					time.Sleep(10 * time.Millisecond)
+					// light pacing inside batch
+					time.Sleep(smallDelay)
+					// pause between batches
+					if (i+1)%batchSize == 0 {
+						util.Infof("%s subscribed %d symbols, pausing %dms", exName, i+1, cfg.SubscribeBatchPauseMs)
+						time.Sleep(batchPause)
+					}
 				}
 				// readers
 				go client.ReadLoop(exName, "MULTIPLE_SYMBOLS")
@@ -120,6 +141,7 @@ func main() {
 					case dataChannel <- md:
 					default:
 						util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
+						atomic.AddInt64(&totalDrops, 1)
 					}
 				}
 				client.Close()
@@ -135,14 +157,24 @@ func main() {
 				if err := client.Connect(); err != nil {
 					return err
 				}
-				// subscribe all (convert symbol format)
+				// subscribe in batches (convert symbol format)
+				batchSize := cfg.SubscribeBatchSize
+				if batchSize <= 0 {
+					batchSize = 100
+				}
+				batchPause := time.Duration(cfg.SubscribeBatchPauseMs) * time.Millisecond
+				smallDelay := 10 * time.Millisecond
 				for i, s := range symbols {
 					gateSym := util.BybitToGateSymbol(s)
-					util.Infof("%s subscribe %d/%d: %s -> %s", exName, i+1, len(symbols), s, gateSym)
+					util.Debugf("%s subscribe %d/%d: %s -> %s", exName, i+1, len(symbols), s, gateSym)
 					if err := client.Subscribe(gateSym); err != nil {
 						util.Errorf("%s subscribe error for %s: %v", exName, gateSym, err)
 					}
-					time.Sleep(15 * time.Millisecond)
+					time.Sleep(smallDelay)
+					if (i+1)%batchSize == 0 {
+						util.Infof("%s subscribed %d symbols, pausing %dms", exName, i+1, cfg.SubscribeBatchPauseMs)
+						time.Sleep(batchPause)
+					}
 				}
 				// readers
 				go client.ReadLoop(exName)
@@ -153,6 +185,7 @@ func main() {
 					case dataChannel <- md:
 					default:
 						util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
+						atomic.AddInt64(&totalDrops, 1)
 					}
 				}
 				client.Close()
@@ -163,26 +196,92 @@ func main() {
 		}
 	}
 
-	// Consumers: small worker pool to save to Redis concurrently
-	numWorkers := 8
+	// Consumers: worker pool with Redis pipelining
+	numWorkers := cfg.RedisWorkers
+	if numWorkers <= 0 {
+		numWorkers = 8
+	}
+	pipelineSize := cfg.RedisPipelineSize
+	if pipelineSize <= 0 {
+		pipelineSize = 300
+	}
+
 	for i := 0; i < numWorkers; i++ {
 		go func(workerID int) {
-			for marketData := range dataChannel {
-				key := fmt.Sprintf("price:%s:%s", marketData.Exchange, marketData.Symbol)
-				if err := redisClient.HSet(key,
-					"price", marketData.Price,
-					"timestamp", marketData.Timestamp,
-					"exchange", marketData.Exchange,
-					"symbol", marketData.Symbol); err != nil {
-					util.Errorf("Worker %d: Failed to save to Redis: %v", workerID, err)
+			batch := make([][]interface{}, 0, pipelineSize)
+			timer := time.NewTimer(100 * time.Millisecond)
+			defer timer.Stop()
+			flush := func() {
+				if len(batch) == 0 {
+					return
+				}
+				if err := redisClient.HSetBatch(batch); err != nil {
+					util.Errorf("Worker %d: pipeline exec error: %v", workerID, err)
 				} else {
-					util.Debugf("Worker %d: Saved to Redis: %s -> price=%.6f ts=%d", workerID, key, marketData.Price, marketData.Timestamp)
+					atomic.AddInt64(&totalRedisOps, int64(len(batch)))
+				}
+				batch = batch[:0]
+			}
+			for {
+				select {
+				case md, ok := <-dataChannel:
+					if !ok {
+						flush()
+						return
+					}
+					key := fmt.Sprintf("price:%s:%s", md.Exchange, md.Symbol)
+					entry := []interface{}{key, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol}
+					batch = append(batch, entry)
+					// metrics: processed messages
+					atomic.AddInt64(&totalProcessed, 1)
+					mu.Lock()
+					perExchange[md.Exchange]++
+					mu.Unlock()
+					if len(batch) >= pipelineSize {
+						flush()
+						if !timer.Stop() {
+							select {
+							case <-timer.C:
+							default:
+							}
+						}
+						timer.Reset(100 * time.Millisecond)
+					}
+				case <-timer.C:
+					flush()
+					timer.Reset(100 * time.Millisecond)
 				}
 			}
 		}(i)
 	}
 
 	util.Infof("Screener Core running: %d symbols across %s", len(symbols), strings.Join(exchanges, ", "))
+
+	// Periodic metrics logger
+	go func() {
+		period := time.Duration(cfg.MetricsPeriodSec) * time.Second
+		if period <= 0 {
+			period = 5 * time.Second
+		}
+		var prevProcessed, prevRedisOps, prevDrops int64
+		for range time.Tick(period) {
+			curProcessed := atomic.LoadInt64(&totalProcessed)
+			curRedisOps := atomic.LoadInt64(&totalRedisOps)
+			curDrops := atomic.LoadInt64(&totalDrops)
+			dMsgs := curProcessed - prevProcessed
+			dOps := curRedisOps - prevRedisOps
+			dDrops := curDrops - prevDrops
+			prevProcessed, prevRedisOps, prevDrops = curProcessed, curRedisOps, curDrops
+			mu.Lock()
+			// snapshot map
+			perExSnapshot := make(map[string]int64, len(perExchange))
+			for k, v := range perExchange {
+				perExSnapshot[k] = v
+			}
+			mu.Unlock()
+			util.Infof("metrics: msgs/s~%d, redisOps/s~%d, drops/s~%d, chanLen=%d, perExchange=%v", int64(float64(dMsgs)/period.Seconds()+0.5), int64(float64(dOps)/period.Seconds()+0.5), int64(float64(dDrops)/period.Seconds()+0.5), len(dataChannel), perExSnapshot)
+		}
+	}()
 
 	// Graceful shutdown
 	sigChan := make(chan os.Signal, 1)

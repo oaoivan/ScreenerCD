@@ -22,6 +22,14 @@ type Config struct {
 	APIKey    string      `yaml:"api_key"`
 	Secret    string      `yaml:"secret"`
 	Redis     RedisConfig `yaml:"redis"`
+
+	// Performance and runtime tuning
+	DataChannelBuffer     int `yaml:"data_channel_buffer"`      // default 8192
+	RedisWorkers          int `yaml:"redis_workers"`            // default 8
+	RedisPipelineSize     int `yaml:"redis_pipeline_size"`      // default 300
+	SubscribeBatchSize    int `yaml:"subscribe_batch_size"`     // default 100
+	SubscribeBatchPauseMs int `yaml:"subscribe_batch_pause_ms"` // default 150
+	MetricsPeriodSec      int `yaml:"metrics_period_sec"`       // default 5
 }
 
 func (r *RedisConfig) RedisAddress() string {
@@ -46,6 +54,26 @@ func LoadConfig(filePath string) (*Config, error) {
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		log.Fatalf("error unmarshalling config: %v", err)
 		return nil, err
+	}
+
+	// Defaults for new fields
+	if config.DataChannelBuffer <= 0 {
+		config.DataChannelBuffer = 8192
+	}
+	if config.RedisWorkers <= 0 {
+		config.RedisWorkers = 8
+	}
+	if config.RedisPipelineSize <= 0 {
+		config.RedisPipelineSize = 300
+	}
+	if config.SubscribeBatchSize <= 0 {
+		config.SubscribeBatchSize = 100
+	}
+	if config.SubscribeBatchPauseMs <= 0 {
+		config.SubscribeBatchPauseMs = 150
+	}
+	if config.MetricsPeriodSec <= 0 {
+		config.MetricsPeriodSec = 5
 	}
 
 	return &config, nil

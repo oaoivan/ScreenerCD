@@ -38,7 +38,7 @@ func (c *BybitClient) Connect() error {
 }
 
 func (c *BybitClient) Subscribe(symbol string) error {
-	util.Infof("Bybit subscribing to %s", symbol)
+	util.Debugf("Bybit subscribing to %s", symbol)
 	// use tickers channel for price updates in v5 public spot
 	msg := map[string]interface{}{
 		"op":   "subscribe",
@@ -66,31 +66,31 @@ func (c *BybitClient) ReadLoop(exchangeName, symbol string) {
 
 		util.Debugf("Bybit raw message: %s", string(message))
 
-		var raw map[string]interface{}
-		if err := json.Unmarshal(message, &raw); err != nil {
-			util.Errorf("Error unmarshalling message: %v", err)
+		// Minimal struct for Bybit tickers message
+		type bybitData struct {
+			Symbol    string `json:"symbol"`
+			LastPrice string `json:"lastPrice"`
+		}
+		type bybitMsg struct {
+			Topic string     `json:"topic"`
+			Data  *bybitData `json:"data"`
+		}
+		var m bybitMsg
+		if err := json.Unmarshal(message, &m); err != nil {
+			util.Errorf("Bybit unmarshal error: %v", err)
 			continue
 		}
-
 		var price float64
 		var messageSymbol string
-
-		// Extract symbol from topic (e.g., "tickers.BTCUSDT" -> "BTCUSDT")
-		if topic, ok := raw["topic"].(string); ok {
-			if len(topic) > 8 && topic[:8] == "tickers." {
-				messageSymbol = topic[8:] // Extract symbol after "tickers."
-			}
+		if len(m.Topic) > 8 && m.Topic[:8] == "tickers." {
+			messageSymbol = m.Topic[8:]
 		}
-
-		// Bybit v5 tickers format: {"topic":"tickers.SYMBOL","data":{"lastPrice":"123.45",...}}
-		if data, ok := raw["data"].(map[string]interface{}); ok {
-			if lastPriceStr, ok := data["lastPrice"].(string); ok {
-				if p, err := strconv.ParseFloat(lastPriceStr, 64); err == nil {
-					price = p
-				} else {
-					util.Errorf("Bybit failed to parse lastPrice '%s': %v", lastPriceStr, err)
-					continue
-				}
+		if m.Data != nil && m.Data.LastPrice != "" {
+			if p, err := strconv.ParseFloat(m.Data.LastPrice, 64); err == nil {
+				price = p
+			} else {
+				util.Errorf("Bybit failed to parse lastPrice '%s': %v", m.Data.LastPrice, err)
+				continue
 			}
 		}
 
@@ -127,14 +127,11 @@ func (c *BybitClient) Close() {
 func (c *BybitClient) KeepAlive() {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
-	for {
-		select {
-		case <-ticker.C:
-			if err := c.wsConn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-				util.Errorf("Error sending ping: %v", err)
-				return
-			}
-			util.Debugf("Bybit ping sent")
+	for range ticker.C {
+		if err := c.wsConn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
+			util.Errorf("Error sending ping: %v", err)
+			return
 		}
+		util.Debugf("Bybit ping sent")
 	}
 }

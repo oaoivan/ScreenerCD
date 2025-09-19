@@ -64,6 +64,32 @@ func (r *RedisClient) HGetAll(key string) (map[string]string, error) {
 	return res, err
 }
 
+// HSetBatch uses a pipeline to execute multiple HSET commands efficiently.
+// entries is a slice of: key, field1, value1, field2, value2, ...
+func (r *RedisClient) HSetBatch(entries [][]interface{}) error {
+	if len(entries) == 0 {
+		return nil
+	}
+	pipe := r.client.Pipeline()
+	for _, e := range entries {
+		if len(e) < 2 {
+			continue
+		}
+		key, ok := e[0].(string)
+		if !ok {
+			util.Errorf("HSetBatch: first element must be key string, got %T", e[0])
+			continue
+		}
+		util.Debugf("PIPE HSET %s %v", key, e[1:])
+		pipe.HSet(r.ctx, key, e[1:]...)
+	}
+	_, err := pipe.Exec(r.ctx)
+	if err != nil {
+		util.Errorf("HSetBatch pipeline exec error: %v", err)
+	}
+	return err
+}
+
 func (r *RedisClient) Close() error {
 	util.Infof("closing Redis client")
 	return r.client.Close()

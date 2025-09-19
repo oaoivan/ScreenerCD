@@ -11,3 +11,11 @@ redis:
 logging: 
   level: "info"
   file: "logs/screener.log"
+
+# Performance tuning
+data_channel_buffer: 8192         # 8k–32k в зависимости от нагрузки
+redis_workers: 8                  # 8–16 воркеров
+redis_pipeline_size: 300          # батч пайплайна 200–500
+subscribe_batch_size: 100         # подписываться пачками по N символов
+subscribe_batch_pause_ms: 150     # пауза между пачками, мс
+metrics_period_sec: 5             # период агрегированных логов

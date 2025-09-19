@@ -38,7 +38,7 @@ func (c *GateClient) Connect() error {
 
 // Subscribe subscribes to spot.tickers for one symbol in Gate format (e.g., BTC_USDT)
 func (c *GateClient) Subscribe(gateSymbol string) error {
-	util.Infof("Gate subscribing to %s", gateSymbol)
+	util.Debugf("Gate subscribing to %s", gateSymbol)
 	msg := map[string]interface{}{
 		"time":    time.Now().Unix(),
 		"channel": "spot.tickers",
@@ -67,26 +67,36 @@ func (c *GateClient) ReadLoop(exchangeName string) {
 
 		util.Debugf("Gate raw message: %s", string(message))
 
-		var raw map[string]interface{}
-		if err := json.Unmarshal(message, &raw); err != nil {
+		// Strict typed decode with flexible price parsing
+		type gateResult struct {
+			CurrencyPair string          `json:"currency_pair"`
+			Last         json.RawMessage `json:"last"`
+		}
+		type gateMsg struct {
+			Channel string      `json:"channel"`
+			Event   string      `json:"event"`
+			Result  *gateResult `json:"result"`
+		}
+		var m gateMsg
+		if err := json.Unmarshal(message, &m); err != nil {
 			util.Errorf("Gate unmarshal error: %v", err)
 			continue
 		}
-
-		// Expect channel spot.tickers and event update
-		if ch, _ := raw["channel"].(string); ch != "spot.tickers" {
+		if m.Channel != "spot.tickers" || m.Result == nil || m.Result.CurrencyPair == "" {
 			continue
 		}
-		// Some messages may carry "result" as object
-		res, ok := raw["result"].(map[string]interface{})
-		if !ok {
-			continue
-		}
-		lastStr, _ := res["last"].(string)
-		if lastStr == "" {
-			// sometimes price may be numeric; try other forms
-			if f, ok := res["last"].(float64); ok {
-				lastStr = strconv.FormatFloat(f, 'f', -1, 64)
+		// Parse price from RawMessage that can be string or number
+		var lastStr string
+		if len(m.Result.Last) > 0 {
+			// try string first
+			var s string
+			if err := json.Unmarshal(m.Result.Last, &s); err == nil {
+				lastStr = s
+			} else {
+				var f float64
+				if err2 := json.Unmarshal(m.Result.Last, &f); err2 == nil {
+					lastStr = strconv.FormatFloat(f, 'f', -1, 64)
+				}
 			}
 		}
 		if lastStr == "" {
@@ -97,10 +107,7 @@ func (c *GateClient) ReadLoop(exchangeName string) {
 			util.Errorf("Gate parse price error: %v", err)
 			continue
 		}
-		sym, _ := res["currency_pair"].(string)
-		if sym == "" {
-			continue
-		}
+		sym := m.Result.CurrencyPair
 
 		md := &protobuf.MarketData{
 			Exchange:  exchangeName,
