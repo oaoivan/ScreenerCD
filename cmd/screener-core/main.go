@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/signal"
@@ -191,6 +192,73 @@ func main() {
 				client.Close()
 				return fmt.Errorf("%s out channel closed", exName)
 			}, stop)
+
+		case "bitget":
+			exName := "Bitget"
+			url := "wss://ws.bitget.com/v2/ws/public"
+			go supervisor(exName, func() error {
+				client := exchange.NewBitgetClient(url)
+				if err := client.Connect(); err != nil {
+					return err
+				}
+
+				// Try to load pre-filtered Bitget symbols from file
+				bitgetListPath := "Temp/bitget_usdt_intersection.txt"
+				bitgetSymbols := loadLinesFile(bitgetListPath)
+				if len(bitgetSymbols) > 0 {
+					util.Infof("%s using prefiltered symbols from %s: %d", exName, bitgetListPath, len(bitgetSymbols))
+				} else {
+					bitgetSymbols = symbols
+					util.Infof("%s prefiltered list not found or empty, fallback to base symbols: %d", exName, len(bitgetSymbols))
+				}
+				// Bitget строгие лимиты: 10 сообщений/сек. Делаем батч-подписку + паузы.
+				batchSize := cfg.BitgetSubscribeBatchSize
+				if batchSize <= 0 {
+					batchSize = 30
+				}
+				batchPause := time.Duration(cfg.BitgetSubscribePauseMs) * time.Millisecond
+				if batchPause <= 0 {
+					batchPause = 700 * time.Millisecond
+				}
+				// формируем батчи instId и шлём одним сообщением
+				batch := make([]string, 0, batchSize)
+				pushBatch := func(count int) {
+					if len(batch) == 0 {
+						return
+					}
+					if err := client.SubscribeBatch(batch); err != nil {
+						util.Errorf("%s subscribe batch error (size=%d): %v", exName, len(batch), err)
+					}
+					util.Infof("%s subscribed %d symbols (batch), pausing %dms", exName, count, cfg.BitgetSubscribePauseMs)
+					batch = batch[:0]
+					time.Sleep(batchPause)
+				}
+				total := 0
+				for _, s := range bitgetSymbols {
+					instId := strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(s, "-", ""), "_", ""))
+					batch = append(batch, instId)
+					total++
+					if len(batch) >= batchSize {
+						pushBatch(total)
+					}
+				}
+				// остаток
+				pushBatch(total)
+				go client.ReadLoop(exName)
+				// параметризованный ping interval
+				pingInterval := time.Duration(cfg.BitgetPingIntervalSec) * time.Second
+				go client.KeepAlive(pingInterval)
+				for md := range client.Out() {
+					select {
+					case dataChannel <- md:
+					default:
+						util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
+						atomic.AddInt64(&totalDrops, 1)
+					}
+				}
+				client.Close()
+				return fmt.Errorf("%s out channel closed", exName)
+			}, stop)
 		default:
 			util.Errorf("unknown exchange in config: %s", ex)
 		}
@@ -298,4 +366,27 @@ func main() {
 	close(stop)
 	// allow some time for goroutines to exit
 	time.Sleep(2 * time.Second)
+}
+
+// loadLinesFile reads non-empty, trimmed lines from a text file; returns empty slice on error.
+func loadLinesFile(path string) []string {
+	f, err := os.Open(path)
+	if err != nil {
+		util.Errorf("loadLinesFile open error: %v", err)
+		return nil
+	}
+	defer f.Close()
+	s := bufio.NewScanner(f)
+	res := make([]string, 0, 512)
+	for s.Scan() {
+		line := strings.TrimSpace(s.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		res = append(res, line)
+	}
+	if err := s.Err(); err != nil {
+		util.Errorf("loadLinesFile scan error: %v", err)
+	}
+	return res
 }

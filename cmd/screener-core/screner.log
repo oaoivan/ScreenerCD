@@ -2,3 +2,5 @@
 2025/09/18 20:12:33 main.go:18: 2025-09-18T20:12:33+03:00 [INFO] starting Screener Core - Step 2: Bybit + Redis integration (Multiple Tickers)
 2025/09/19 23:04:50 logger.go:35: 2025-09-19T23:04:50+03:00 [INFO] logger initialized, output=screner.log
 2025/09/19 23:04:50 main.go:60: 2025-09-19T23:04:50+03:00 [INFO] starting Screener Core - multi-exchange with shared channel
+2025/09/20 00:09:07 logger.go:35: 2025-09-20T00:09:07+03:00 [INFO] logger initialized, output=screner.log
+2025/09/20 00:09:07 main.go:60: 2025-09-20T00:09:07+03:00 [INFO] starting Screener Core - multi-exchange with shared channel

@@ -30,6 +30,11 @@ type Config struct {
 	SubscribeBatchSize    int `yaml:"subscribe_batch_size"`     // default 100
 	SubscribeBatchPauseMs int `yaml:"subscribe_batch_pause_ms"` // default 150
 	MetricsPeriodSec      int `yaml:"metrics_period_sec"`       // default 5
+
+	// Bitget-specific rate limits
+	BitgetSubscribeBatchSize int `yaml:"bitget_subscribe_batch_size"` // default 30
+	BitgetSubscribePauseMs   int `yaml:"bitget_subscribe_pause_ms"`   // default 700
+	BitgetPingIntervalSec    int `yaml:"bitget_ping_interval_sec"`    // default 25
 }
 
 func (r *RedisConfig) RedisAddress() string {
@@ -74,6 +79,17 @@ func LoadConfig(filePath string) (*Config, error) {
 	}
 	if config.MetricsPeriodSec <= 0 {
 		config.MetricsPeriodSec = 5
+	}
+
+	// Defaults for Bitget specific settings
+	if config.BitgetSubscribeBatchSize <= 0 {
+		config.BitgetSubscribeBatchSize = 30
+	}
+	if config.BitgetSubscribePauseMs <= 0 {
+		config.BitgetSubscribePauseMs = 700
+	}
+	if config.BitgetPingIntervalSec <= 0 {
+		config.BitgetPingIntervalSec = 25
 	}
 
 	return &config, nil

@@ -1,5 +1,5 @@
 exchange: "bybit" # legacy single exchange, kept for backward compatibility
-exchanges: ["gate", "bybit"]
+exchanges: ["gate", "bybit", "bitget"]
 symbol: "BTC-USDT"
 api_key: ""
 secret: ""
@@ -19,3 +19,8 @@ redis_pipeline_size: 300          # батч пайплайна 200–500
 subscribe_batch_size: 100         # подписываться пачками по N символов
 subscribe_batch_pause_ms: 150     # пауза между пачками, мс
 metrics_period_sec: 5             # период агрегированных логов
+
+# Bitget-specific tuning (WS limits: 10 msgs/s, 240 subs/hour, <=1000 streams)
+bitget_subscribe_batch_size: 30   # сколько инстр. в одном сообщении подписки
+bitget_subscribe_pause_ms: 700    # пауза между батчами, мс
+bitget_ping_interval_sec: 25      # интервал ping
