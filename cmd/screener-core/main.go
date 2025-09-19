@@ -229,9 +229,16 @@ func main() {
 						flush()
 						return
 					}
-					key := fmt.Sprintf("price:%s:%s", md.Exchange, md.Symbol)
-					entry := []interface{}{key, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol}
-					batch = append(batch, entry)
+					// Raw key (как было)
+					keyRaw := fmt.Sprintf("price:%s:%s", md.Exchange, md.Symbol)
+					entryRaw := []interface{}{keyRaw, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol}
+					batch = append(batch, entryRaw)
+
+					// Canonical key для арбитража (нормализуем спот-символ)
+					canon := util.NormalizeSpotSymbol(md.Exchange, md.Symbol)
+					keyCanon := fmt.Sprintf("price_canon:%s:%s", canon, md.Exchange)
+					entryCanon := []interface{}{keyCanon, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol}
+					batch = append(batch, entryCanon)
 					// metrics: processed messages
 					atomic.AddInt64(&totalProcessed, 1)
 					mu.Lock()

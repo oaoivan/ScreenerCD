@@ -1,5 +1,7 @@
 package util
 
+import "strings"
+
 // BybitToGateSymbol converts Bybit spot symbol (e.g., BTCUSDT) to Gate format (BTC_USDT)
 // If input is too short or not in expected pattern, returns as-is.
 func BybitToGateSymbol(bybit string) string {
@@ -19,4 +21,17 @@ func BybitToGateSymbol(bybit string) string {
 		return bybit[:len(bybit)-4] + "_" + bybit[len(bybit)-4:]
 	}
 	return bybit
+}
+
+// NormalizeSpotSymbol normalizes raw spot symbol from any exchange to canonical BASEQUOTE form (e.g., BTC_USDT, BTC-USDT, BTC/USDT -> BTCUSDT).
+// Only removes common separators and uppercases; assumes input already in BASE/QUOTE semantics.
+func NormalizeSpotSymbol(exchange, raw string) string {
+	s := strings.ToUpper(raw)
+	s = strings.ReplaceAll(s, "-", "")
+	s = strings.ReplaceAll(s, "_", "")
+	s = strings.ReplaceAll(s, "/", "")
+	// Some venues might append spaces or extra dots; trim and drop dots
+	s = strings.ReplaceAll(s, ".", "")
+	s = strings.TrimSpace(s)
+	return s
 }
