@@ -47,6 +47,27 @@ To set up the project, follow these steps:
 5. **Access the frontend**:
    Open your web browser and navigate to `http://localhost:8080` to interact with the application.
 
+## Быстрый старт (единые скрипты)
+
+В корне добавлены утилиты для запуска/остановки и статуса:
+
+- `scripts/start_all.sh`
+   - По умолчанию: запускает локальный `screener-core` (go build) и поднимает Redis через Docker Compose при необходимости.
+   - Ключи:
+      - `--docker-all` — запустить весь стек в Docker (`redis + screener-core`, с `--with-api` — ещё и `api-gateway`).
+      - `--with-api` — вместе с `--docker-all` поднимет `api-gateway`.
+      - `--no-build` — не собирать бинарник, использовать существующий `build/screener-core`.
+      - `--clean-log` — обнулить `screner.log` перед стартом.
+   - Переменные окружения: `REDIS_HOST` (default `localhost`), `REDIS_PORT` (default `6379`).
+
+- `scripts/stop_all.sh`
+   - Останавливает локальный `screener-core` по PID.
+   - Ключ `--docker-all` (и опционально `--with-api`) — остановит docker compose сервисы.
+
+- `scripts/status_all.sh`
+   - Показывает состояние docker compose, PING Redis + счётчики ключей, локальный PID, последние строки логов.
+
+Логи приложения: `screner.log`. PID локального процесса: `build/screener-core.pid`.
 ## Contributing
 Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
 

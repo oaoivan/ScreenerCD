@@ -1,89 +1,54 @@
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.ICXUSDT","ts":1758208007825,"type":"snapshot","cs":106096763020,"data":{"symbol":"ICXUSDT","lastPrice":"0.133","highPrice24h":"0.13336","lowPrice24h":"0.12677","prevPrice24h":"0.12741","volume24h":"832549.4","turnover24h":"108095.2749657","price24hPcnt":"0.0439","usdIndexPrice":"0.133071"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.133000 for Bybit/ICXUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.RUNEUSDT","ts":1758208007825,"type":"snapshot","cs":106096820281,"data":{"symbol":"RUNEUSDT","lastPrice":"1.356","highPrice24h":"1.36","lowPrice24h":"1.251","prevPrice24h":"1.258","volume24h":"719961.89","turnover24h":"944320.94058","price24hPcnt":"0.0779","usdIndexPrice":"1.356706"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=1.356000 for Bybit/RUNEUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:A8USDT -> price=0.106000 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.DGBUSDT","ts":1758208007825,"type":"snapshot","cs":106096757896,"data":{"symbol":"DGBUSDT","lastPrice":"0.008395","highPrice24h":"0.008432","lowPrice24h":"0.008115","prevPrice24h":"0.008182","volume24h":"3628926.43","turnover24h":"30156.52062087","price24hPcnt":"0.0260","usdIndexPrice":"0.008399"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.008395 for Bybit/DGBUSDT
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.BLASTUSDT","ts":1758208007825,"type":"snapshot","cs":106096771475,"data":{"symbol":"BLASTUSDT","lastPrice":"0.002526","highPrice24h":"0.002531","lowPrice24h":"0.002392","prevPrice24h":"0.002399","volume24h":"174042357.41","turnover24h":"431163.47318445","price24hPcnt":"0.0529","usdIndexPrice":"0.00252919"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.002526 for Bybit/BLASTUSDT
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:DGBUSDT [price 0.008395 timestamp 1758208007]
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.FLOWUSDT","ts":1758208007825,"type":"snapshot","cs":106096768751,"data":{"symbol":"FLOWUSDT","lastPrice":"0.4153","highPrice24h":"0.4169","lowPrice24h":"0.3927","prevPrice24h":"0.3955","volume24h":"831893.8","turnover24h":"339902.538577","price24hPcnt":"0.0501","usdIndexPrice":"0.415911"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.415300 for Bybit/FLOWUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:DGBUSDT -> price=0.008395 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.COREUSDT","ts":1758208007839,"type":"snapshot","cs":76002941109,"data":{"symbol":"COREUSDT","lastPrice":"0.4695","highPrice24h":"0.47","lowPrice24h":"0.4442","prevPrice24h":"0.4449","volume24h":"401385.09","turnover24h":"183188.160253","price24hPcnt":"0.0553","usdIndexPrice":"0.469621"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.469500 for Bybit/COREUSDT
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.JSTUSDT","ts":1758208007839,"type":"snapshot","cs":76002949435,"data":{"symbol":"JSTUSDT","lastPrice":"0.0336","highPrice24h":"0.03387","lowPrice24h":"0.03262","prevPrice24h":"0.03278","volume24h":"30557093.78","turnover24h":"1002104.7853592","price24hPcnt":"0.0250","usdIndexPrice":"0.033616"}}
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:COREUSDT [price 0.4695 timestamp 1758208007]
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.033600 for Bybit/JSTUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.RDNTUSDT","ts":1758208007839,"type":"snapshot","cs":76002956370,"data":{"symbol":"RDNTUSDT","lastPrice":"0.0223","highPrice24h":"0.02236","lowPrice24h":"0.02082","prevPrice24h":"0.02095","volume24h":"5354307.04","turnover24h":"116124.4083707","price24hPcnt":"0.0644","usdIndexPrice":"0.0223107"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.022300 for Bybit/RDNTUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:COREUSDT -> price=0.469500 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.PRIMEUSDT","ts":1758208007839,"type":"snapshot","cs":76002946898,"data":{"symbol":"PRIMEUSDT","lastPrice":"2.122","highPrice24h":"2.131","lowPrice24h":"1.982","prevPrice24h":"2.008","volume24h":"71083.04","turnover24h":"146905.0097","price24hPcnt":"0.0568","usdIndexPrice":"2.123011"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=2.122000 for Bybit/PRIMEUSDT
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:PRIMEUSDT [price 2.122 timestamp 1758208007]
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:PRIMEUSDT -> price=2.122000 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.ACHUSDT","ts":1758208007839,"type":"snapshot","cs":76002960820,"data":{"symbol":"ACHUSDT","lastPrice":"0.02049","highPrice24h":"0.02053","lowPrice24h":"0.01938","prevPrice24h":"0.01947","volume24h":"13319841.2","turnover24h":"269044.038065","price24hPcnt":"0.0524","usdIndexPrice":"0.0204821"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.020490 for Bybit/ACHUSDT
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.ARBUSDT","ts":1758208007839,"type":"snapshot","cs":76002960563,"data":{"symbol":"ARBUSDT","lastPrice":"0.5201","highPrice24h":"0.5285","lowPrice24h":"0.485","prevPrice24h":"0.4885","volume24h":"22510684.88","turnover24h":"11481451.967607","price24hPcnt":"0.0647","usdIndexPrice":"0.520316"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.520100 for Bybit/ARBUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.AGIUSDT","ts":1758208007839,"type":"snapshot","cs":76002957105,"data":{"symbol":"AGIUSDT","lastPrice":"0.0517","highPrice24h":"0.05227","lowPrice24h":"0.04814","prevPrice24h":"0.04814","volume24h":"8348532.48","turnover24h":"423179.7455293","price24hPcnt":"0.0740","usdIndexPrice":"0.0517247"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.051700 for Bybit/AGIUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:ACHUSDT [price 0.02049 timestamp 1758208007]
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:ACHUSDT -> price=0.020490 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.AXLUSDT","ts":1758208007839,"type":"snapshot","cs":76002960656,"data":{"symbol":"AXLUSDT","lastPrice":"0.3364","highPrice24h":"0.3374","lowPrice24h":"0.3114","prevPrice24h":"0.3136","volume24h":"1378491.41","turnover24h":"452680.483695","price24hPcnt":"0.0727","usdIndexPrice":"0.336466"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.336400 for Bybit/AXLUSDT
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.TRXUSDT","ts":1758208007839,"type":"snapshot","cs":76002965257,"data":{"symbol":"TRXUSDT","lastPrice":"0.3479","highPrice24h":"0.3487","lowPrice24h":"0.3386","prevPrice24h":"0.3402","volume24h":"59409773.73","turnover24h":"20422409.7688326","price24hPcnt":"0.0226","usdIndexPrice":"0.34806"}}
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:AXLUSDT [price 0.3364 timestamp 1758208007]
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.347900 for Bybit/TRXUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.BLURUSDT","ts":1758208007839,"type":"snapshot","cs":76002927855,"data":{"symbol":"BLURUSDT","lastPrice":"0.08851","highPrice24h":"0.08876","lowPrice24h":"0.0823","prevPrice24h":"0.08301","volume24h":"6151205.05","turnover24h":"530050.4060355","price24hPcnt":"0.0663","usdIndexPrice":"0.0886991"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.088510 for Bybit/BLURUSDT
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:AXLUSDT -> price=0.336400 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.GMXUSDT","ts":1758208007839,"type":"snapshot","cs":76002957249,"data":{"symbol":"GMXUSDT","lastPrice":"16.3","highPrice24h":"16.71","lowPrice24h":"14.94","prevPrice24h":"15.15","volume24h":"29631.8","turnover24h":"468089.0515","price24hPcnt":"0.0759","usdIndexPrice":"16.291315"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=16.300000 for Bybit/GMXUSDT
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.BTTUSDT","ts":1758208007839,"type":"snapshot","cs":76002924635,"data":{"symbol":"BTTUSDT","lastPrice":"0.0000006504","highPrice24h":"0.0000006524","lowPrice24h":"0.0000006371","prevPrice24h":"0.0000006392","volume24h":"101904306707","turnover24h":"66032.5867540557","price24hPcnt":"0.0175","usdIndexPrice":"0.000000649783"}}
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:GMXUSDT [price 16.3 timestamp 1758208007]
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.000001 for Bybit/BTTUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:GMXUSDT -> price=16.300000 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.RSS3USDT","ts":1758208007839,"type":"snapshot","cs":76002946898,"data":{"symbol":"RSS3USDT","lastPrice":"0.04237","highPrice24h":"0.04258","lowPrice24h":"0.04087","prevPrice24h":"0.0412","volume24h":"408744.88","turnover24h":"17085.4837367","price24hPcnt":"0.0284","usdIndexPrice":"0.0423902"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.042370 for Bybit/RSS3USDT
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.SUNUSDT","ts":1758208007839,"type":"snapshot","cs":76002963299,"data":{"symbol":"SUNUSDT","lastPrice":"0.023311","highPrice24h":"0.024453","lowPrice24h":"0.020183","prevPrice24h":"0.020331","volume24h":"71176513.92","turnover24h":"1586147.55353945","price24hPcnt":"0.1466","usdIndexPrice":"0.0233221"}}
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:RSS3USDT [price 0.04237 timestamp 1758208007]
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.023311 for Bybit/SUNUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.RPLUSDT","ts":1758208007839,"type":"snapshot","cs":76002920397,"data":{"symbol":"RPLUSDT","lastPrice":"6.7","highPrice24h":"6.821","lowPrice24h":"6.194","prevPrice24h":"6.234","volume24h":"21725.58","turnover24h":"143339.13572","price24hPcnt":"0.0748","usdIndexPrice":"6.70319"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=6.700000 for Bybit/RPLUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:RSS3USDT -> price=0.042370 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.FXSUSDT","ts":1758208007839,"type":"snapshot","cs":76002956706,"data":{"symbol":"FXSUSDT","lastPrice":"2.748","highPrice24h":"2.761","lowPrice24h":"2.62","prevPrice24h":"2.644","volume24h":"140784.94","turnover24h":"382984.73515","price24hPcnt":"0.0393","usdIndexPrice":"2.746673"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=2.748000 for Bybit/FXSUSDT
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.NEIROUSDT","ts":1758208007840,"type":"snapshot","cs":76002946898,"data":{"symbol":"NEIROUSDT","lastPrice":"0.04841","highPrice24h":"0.05009","lowPrice24h":"0.0466","prevPrice24h":"0.04806","volume24h":"6668448.47","turnover24h":"321779.0694167","price24hPcnt":"0.0073","usdIndexPrice":"0.0484331"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.048410 for Bybit/NEIROUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.IDUSDT","ts":1758208007840,"type":"snapshot","cs":76002920650,"data":{"symbol":"IDUSDT","lastPrice":"0.16834","highPrice24h":"0.16872","lowPrice24h":"0.15691","prevPrice24h":"0.15829","volume24h":"715264.34","turnover24h":"117478.6299762","price24hPcnt":"0.0635","usdIndexPrice":"0.168383"}}
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:FXSUSDT [price 2.748 timestamp 1758208007]
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.168340 for Bybit/IDUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.MVLUSDT","ts":1758208007840,"type":"snapshot","cs":76002953156,"data":{"symbol":"MVLUSDT","lastPrice":"0.00295","highPrice24h":"0.002957","lowPrice24h":"0.002881","prevPrice24h":"0.002885","volume24h":"15154033.69","turnover24h":"44382.08780103","price24hPcnt":"0.0225","usdIndexPrice":"0.00295141"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.002950 for Bybit/MVLUSDT
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:FXSUSDT -> price=2.748000 timestamp=1758208007
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.CGPTUSDT","ts":1758208007840,"type":"snapshot","cs":76002921455,"data":{"symbol":"CGPTUSDT","lastPrice":"0.09781","highPrice24h":"0.099","lowPrice24h":"0.09211","prevPrice24h":"0.09325","volume24h":"1490494.64","turnover24h":"143743.2255885","price24hPcnt":"0.0489","usdIndexPrice":"0.0979115"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=0.097810 for Bybit/CGPTUSDT
-2025/09/18 18:06:47 bybit.go:67: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit raw message: {"topic":"tickers.SSVUSDT","ts":1758208007840,"type":"snapshot","cs":76002960998,"data":{"symbol":"SSVUSDT","lastPrice":"9.963","highPrice24h":"10.116","lowPrice24h":"9.089","prevPrice24h":"9.175","volume24h":"39729.39","turnover24h":"381449.43211","price24hPcnt":"0.0859","usdIndexPrice":"9.962732"}}
-2025/09/18 18:06:47 bybit.go:102: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit parsed price=9.963000 for Bybit/SSVUSDT
-2025/09/18 18:06:47 bybit.go:115: 2025-09-18T18:06:47+03:00 [DEBUG] Bybit drop message, no consumer
-2025/09/18 18:06:47 client.go:50: 2025-09-18T18:06:47+03:00 [DEBUG] HSET price:Bybit:CGPTUSDT [price 0.09781 timestamp 1758208007]
-2025/09/18 18:06:47 main.go:93: 2025-09-18T18:06:47+03:00 [INFO] Market Data saved to Redis: price:Bybit:CGPTUSDT -> price=0.097810 timestamp=1758208007
+sleep 65 && ./scripts/status_all.sh                     PIPE|0 ✔ 
+
+\n=== Docker Compose Services ===
+WARN[0000] /home/ivan/Work/Screner/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+NAME               IMAGE              COMMAND                  SERVICE    CREATED        STATUS                         PORTS
+screner-gateway    screner-gateway    "./gateway"              gateway    2 days ago     Restarting (1) 5 seconds ago   
+screner-ingestor   screner-ingestor   "./ingestor"             ingestor   2 days ago     Restarting (1) 5 seconds ago   
+screner-redis-1    redis:alpine       "docker-entrypoint.s…"   redis      25 hours ago   Up About an hour               0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+\n=== Redis ===
+2025-09-20T13:51:23+0300 [INFO] Redis PING ok at localhost:6379
+keys: price:* = 1838, price_canon:* = 1503
+\n=== Local process ===
+screener-core running, PID=119825
+\n=== Last logs ===
+2025/09/20 13:50:11 main.go:444: 2025-09-20T13:50:11+03:00 [INFO] metrics: msgs/s~243, redisOps/s~466, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:11747 Bybit:4139 Gate:5112 OKX:9927]
+2025/09/20 13:50:11 main.go:444: 2025-09-20T13:50:11+03:00 [INFO] metrics: msgs/s~243, redisOps/s~466, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:11747 Bybit:4139 Gate:5112 OKX:9927]
+2025/09/20 13:50:16 main.go:444: 2025-09-20T13:50:16+03:00 [INFO] metrics: msgs/s~263, redisOps/s~545, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12057 Bybit:4265 Gate:5407 OKX:10510]
+2025/09/20 13:50:16 main.go:444: 2025-09-20T13:50:16+03:00 [INFO] metrics: msgs/s~263, redisOps/s~545, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12057 Bybit:4265 Gate:5407 OKX:10510]
+2025/09/20 13:50:21 main.go:444: 2025-09-20T13:50:21+03:00 [INFO] metrics: msgs/s~272, redisOps/s~543, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12539 Bybit:4459 Gate:5629 OKX:10970]
+2025/09/20 13:50:21 main.go:444: 2025-09-20T13:50:21+03:00 [INFO] metrics: msgs/s~272, redisOps/s~543, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12539 Bybit:4459 Gate:5629 OKX:10970]
+2025/09/20 13:50:26 main.go:444: 2025-09-20T13:50:26+03:00 [INFO] metrics: msgs/s~223, redisOps/s~446, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12972 Bybit:4663 Gate:5779 OKX:11297]
+2025/09/20 13:50:26 main.go:444: 2025-09-20T13:50:26+03:00 [INFO] metrics: msgs/s~223, redisOps/s~446, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12972 Bybit:4663 Gate:5779 OKX:11297]
+2025/09/20 13:50:31 main.go:444: 2025-09-20T13:50:31+03:00 [INFO] metrics: msgs/s~193, redisOps/s~386, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:13318 Bybit:4822 Gate:5933 OKX:11602]
+2025/09/20 13:50:31 main.go:444: 2025-09-20T13:50:31+03:00 [INFO] metrics: msgs/s~193, redisOps/s~386, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:13318 Bybit:4822 Gate:5933 OKX:11602]
+2025/09/20 13:50:36 main.go:444: 2025-09-20T13:50:36+03:00 [INFO] metrics: msgs/s~286, redisOps/s~572, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:13887 Bybit:4989 Gate:6235 OKX:11994]
+2025/09/20 13:50:36 main.go:444: 2025-09-20T13:50:36+03:00 [INFO] metrics: msgs/s~286, redisOps/s~572, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:13887 Bybit:4989 Gate:6235 OKX:11994]
+2025/09/20 13:50:41 main.go:444: 2025-09-20T13:50:41+03:00 [INFO] metrics: msgs/s~228, redisOps/s~455, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14344 Bybit:5175 Gate:6411 OKX:12313]
+2025/09/20 13:50:41 main.go:444: 2025-09-20T13:50:41+03:00 [INFO] metrics: msgs/s~228, redisOps/s~455, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14344 Bybit:5175 Gate:6411 OKX:12313]
+2025/09/20 13:50:46 main.go:444: 2025-09-20T13:50:46+03:00 [INFO] metrics: msgs/s~180, redisOps/s~359, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14606 Bybit:5307 Gate:6597 OKX:12631]
+2025/09/20 13:50:46 main.go:444: 2025-09-20T13:50:46+03:00 [INFO] metrics: msgs/s~180, redisOps/s~359, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14606 Bybit:5307 Gate:6597 OKX:12631]
+2025/09/20 13:50:51 main.go:444: 2025-09-20T13:50:51+03:00 [INFO] metrics: msgs/s~90, redisOps/s~181, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14769 Bybit:5381 Gate:6682 OKX:12760]
+2025/09/20 13:50:51 main.go:444: 2025-09-20T13:50:51+03:00 [INFO] metrics: msgs/s~90, redisOps/s~181, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14769 Bybit:5381 Gate:6682 OKX:12760]
+2025/09/20 13:50:56 main.go:444: 2025-09-20T13:50:56+03:00 [INFO] metrics: msgs/s~195, redisOps/s~390, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:15029 Bybit:5503 Gate:6897 OKX:13137]
+2025/09/20 13:50:56 main.go:444: 2025-09-20T13:50:56+03:00 [INFO] metrics: msgs/s~195, redisOps/s~390, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:15029 Bybit:5503 Gate:6897 OKX:13137]
+2025/09/20 13:51:01 main.go:444: 2025-09-20T13:51:01+03:00 [INFO] metrics: msgs/s~323, redisOps/s~628, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:15758 Bybit:5812 Gate:7067 OKX:13542]
+2025/09/20 13:51:01 main.go:444: 2025-09-20T13:51:01+03:00 [INFO] metrics: msgs/s~323, redisOps/s~628, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:15758 Bybit:5812 Gate:7067 OKX:13542]
+2025/09/20 13:51:06 main.go:444: 2025-09-20T13:51:06+03:00 [INFO] metrics: msgs/s~368, redisOps/s~754, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:16465 Bybit:6162 Gate:7352 OKX:14042]
+2025/09/20 13:51:06 main.go:444: 2025-09-20T13:51:06+03:00 [INFO] metrics: msgs/s~368, redisOps/s~754, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:16465 Bybit:6162 Gate:7352 OKX:14042]
+2025/09/20 13:51:11 main.go:444: 2025-09-20T13:51:11+03:00 [INFO] metrics: msgs/s~252, redisOps/s~497, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:16878 Bybit:6361 Gate:7584 OKX:14457]
+2025/09/20 13:51:11 main.go:444: 2025-09-20T13:51:11+03:00 [INFO] metrics: msgs/s~252, redisOps/s~497, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:16878 Bybit:6361 Gate:7584 OKX:14457]
+2025/09/20 13:51:16 main.go:444: 2025-09-20T13:51:16+03:00 [INFO] metrics: msgs/s~141, redisOps/s~289, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:17076 Bybit:6455 Gate:7682 OKX:14773]
+2025/09/20 13:51:16 main.go:444: 2025-09-20T13:51:16+03:00 [INFO] metrics: msgs/s~141, redisOps/s~289, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:17076 Bybit:6455 Gate:7682 OKX:14773]
+2025/09/20 13:51:21 main.go:444: 2025-09-20T13:51:21+03:00 [INFO] metrics: msgs/s~296, redisOps/s~566, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:17502 Bybit:6563 Gate:7955 OKX:15444]
+2025/09/20 13:51:21 main.go:444: 2025-09-20T13:51:21+03:00 [INFO] metrics: msgs/s~296, redisOps/s~566, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:17502 Bybit:6563 Gate:7955 OKX:15444]
+2025/09/20 13:51:23 bitget.go:137: 2025-09-20T13:51:23+03:00 [ERROR] Bitget read error: websocket: close 1006 (abnormal closure): unexpected EOF
+2025/09/20 13:51:23 bitget.go:137: 2025-09-20T13:51:23+03:00 [ERROR] Bitget read error: websocket: close 1006 (abnormal closure): unexpected EOF
+2025/09/20 13:51:23 bitget.go:86: 2025-09-20T13:51:23+03:00 [INFO] Bitget ReadLoop exiting
+2025/09/20 13:51:23 bitget.go:86: 2025-09-20T13:51:23+03:00 [INFO] Bitget ReadLoop exiting
+2025/09/20 13:51:23 bitget.go:198: 2025-09-20T13:51:23+03:00 [INFO] closing Bitget client
+2025/09/20 13:51:23 bitget.go:198: 2025-09-20T13:51:23+03:00 [INFO] closing Bitget client
+2025/09/20 13:51:23 main.go:34: 2025-09-20T13:51:23+03:00 [ERROR] Bitget exited with error: Bitget out channel closed
+2025/09/20 13:51:23 main.go:34: 2025-09-20T13:51:23+03:00 [ERROR] Bitget exited with error: Bitget out channel closed
+2025/09/20 13:51:23 main.go:48: 2025-09-20T13:51:23+03:00 [INFO] restarting Bitget after 1s
+2025/09/20 13:51:23 main.go:48: 2025-09-20T13:51:23+03:00 [INFO] restarting Bitget after 1s
