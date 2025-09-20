@@ -1,5 +1,5 @@
 exchange: "bybit" # legacy single exchange, kept for backward compatibility
-exchanges: ["gate", "bybit", "bitget"]
+exchanges: ["gate", "bybit", "bitget", "okx"]
 symbol: "BTC-USDT"
 api_key: ""
 secret: ""

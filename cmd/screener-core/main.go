@@ -96,7 +96,9 @@ func main() {
 	// Metrics
 	var totalProcessed int64
 	var totalRedisOps int64
+	var totalRedisErrors int64
 	var totalDrops int64
+	var redisUp int32 // 1 = up, 0 = down
 	var mu sync.Mutex
 	perExchange := map[string]int64{}
 
@@ -254,7 +256,71 @@ func main() {
 				return fmt.Errorf("%s out channel closed", exName)
 			}, stop)
 		default:
-			util.Errorf("unknown exchange in config: %s", ex)
+			// OKX integration
+			if exLower == "okx" {
+				exName := "OKX"
+				url := "wss://ws.okx.com:8443/ws/v5/public"
+				go supervisor(exName, func() error {
+					client := exchange.NewOkxClient(url)
+					if err := client.Connect(); err != nil {
+						return err
+					}
+					// батч-подписка
+					batchSize := cfg.SubscribeBatchSize
+					if batchSize <= 0 {
+						batchSize = 100
+					}
+					batchPause := time.Duration(cfg.SubscribeBatchPauseMs) * time.Millisecond
+					if batchPause <= 0 {
+						batchPause = 200 * time.Millisecond
+					}
+					batch := make([]string, 0, batchSize)
+					push := func(count int) {
+						if len(batch) == 0 {
+							return
+						}
+						if err := client.SubscribeBatch(batch); err != nil {
+							util.Errorf("%s subscribe batch error (size=%d): %v", exName, len(batch), err)
+						}
+						util.Infof("%s subscribed %d symbols (batch), pausing %dms", exName, count, cfg.SubscribeBatchPauseMs)
+						batch = batch[:0]
+						time.Sleep(batchPause)
+					}
+					total := 0
+					for _, s := range symbols {
+						// OKX instId формат: BASE-QUOTE (например, BTC-USDT)
+						instId := strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(s, "_", "-"), "/", "-"))
+						// если уже в виде BTCUSDT, вставим дефис перед 4-символьным суффиксом
+						if !strings.Contains(instId, "-") && len(instId) > 4 {
+							instId = instId[:len(instId)-4] + "-" + instId[len(instId)-4:]
+						}
+						batch = append(batch, instId)
+						total++
+						if len(batch) >= batchSize {
+							push(total)
+						}
+					}
+					push(total)
+					go client.ReadLoop(exName)
+					pingInterval := time.Duration(cfg.MetricsPeriodSec) * time.Second // используем период метрик как безопасный пинг, либо 30с
+					if pingInterval <= 0 {
+						pingInterval = 25 * time.Second
+					}
+					go client.KeepAlive(pingInterval)
+					for md := range client.Out() {
+						select {
+						case dataChannel <- md:
+						default:
+							util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
+							atomic.AddInt64(&totalDrops, 1)
+						}
+					}
+					client.Close()
+					return fmt.Errorf("%s out channel closed", exName)
+				}, stop)
+			} else {
+				util.Errorf("unknown exchange in config: %s", ex)
+			}
 		}
 	}
 
@@ -278,7 +344,9 @@ func main() {
 					return
 				}
 				if err := redisClient.HSetBatch(batch); err != nil {
-					util.Errorf("Worker %d: pipeline exec error: %v", workerID, err)
+					// агрегируем ошибки пайплайна без спама
+					atomic.AddInt64(&totalRedisErrors, 1)
+					util.Debugf("Worker %d: pipeline exec error: %v", workerID, err)
 				} else {
 					atomic.AddInt64(&totalRedisOps, int64(len(batch)))
 				}
@@ -326,21 +394,45 @@ func main() {
 
 	util.Infof("Screener Core running: %d symbols across %s", len(symbols), strings.Join(exchanges, ", "))
 
+	// Redis health checker (updates redisUp flag)
+	go func() {
+		period := time.Duration(cfg.MetricsPeriodSec) * time.Second
+		if period <= 0 {
+			period = 5 * time.Second
+		}
+		ticker := time.NewTicker(period)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				if err := redisClient.Ping(); err != nil {
+					atomic.StoreInt32(&redisUp, 0)
+				} else {
+					atomic.StoreInt32(&redisUp, 1)
+				}
+			case <-stop:
+				return
+			}
+		}
+	}()
+
 	// Periodic metrics logger
 	go func() {
 		period := time.Duration(cfg.MetricsPeriodSec) * time.Second
 		if period <= 0 {
 			period = 5 * time.Second
 		}
-		var prevProcessed, prevRedisOps, prevDrops int64
+		var prevProcessed, prevRedisOps, prevDrops, prevRedisErrors int64
 		for range time.Tick(period) {
 			curProcessed := atomic.LoadInt64(&totalProcessed)
 			curRedisOps := atomic.LoadInt64(&totalRedisOps)
+			curRedisErrors := atomic.LoadInt64(&totalRedisErrors)
 			curDrops := atomic.LoadInt64(&totalDrops)
 			dMsgs := curProcessed - prevProcessed
 			dOps := curRedisOps - prevRedisOps
+			dErrs := curRedisErrors - prevRedisErrors
 			dDrops := curDrops - prevDrops
-			prevProcessed, prevRedisOps, prevDrops = curProcessed, curRedisOps, curDrops
+			prevProcessed, prevRedisOps, prevRedisErrors, prevDrops = curProcessed, curRedisOps, curRedisErrors, curDrops
 			mu.Lock()
 			// snapshot map
 			perExSnapshot := make(map[string]int64, len(perExchange))
@@ -348,7 +440,14 @@ func main() {
 				perExSnapshot[k] = v
 			}
 			mu.Unlock()
-			util.Infof("metrics: msgs/s~%d, redisOps/s~%d, drops/s~%d, chanLen=%d, perExchange=%v", int64(float64(dMsgs)/period.Seconds()+0.5), int64(float64(dOps)/period.Seconds()+0.5), int64(float64(dDrops)/period.Seconds()+0.5), len(dataChannel), perExSnapshot)
+			up := atomic.LoadInt32(&redisUp) == 1
+			util.Infof("metrics: msgs/s~%d, redisOps/s~%d, redisErr/s~%d, redisUp=%t, drops/s~%d, chanLen=%d, perExchange=%v",
+				int64(float64(dMsgs)/period.Seconds()+0.5),
+				int64(float64(dOps)/period.Seconds()+0.5),
+				int64(float64(dErrs)/period.Seconds()+0.5),
+				up,
+				int64(float64(dDrops)/period.Seconds()+0.5),
+				len(dataChannel), perExSnapshot)
 		}
 	}()
 

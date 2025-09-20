@@ -85,7 +85,8 @@ func (r *RedisClient) HSetBatch(entries [][]interface{}) error {
 	}
 	_, err := pipe.Exec(r.ctx)
 	if err != nil {
-		util.Errorf("HSetBatch pipeline exec error: %v", err)
+		// Шум подавляем: агрегация ошибок происходит в core (metrics)
+		util.Debugf("HSetBatch pipeline exec error: %v", err)
 	}
 	return err
 }
