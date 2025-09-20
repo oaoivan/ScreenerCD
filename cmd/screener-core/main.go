@@ -202,15 +202,9 @@ func main() {
 					return err
 				}
 
-				// Try to load pre-filtered Bitget symbols from file
-				bitgetListPath := "Temp/bitget_usdt_intersection.txt"
-				bitgetSymbols := loadLinesFile(bitgetListPath)
-				if len(bitgetSymbols) > 0 {
-					util.Infof("%s using prefiltered symbols from %s: %d", exName, bitgetListPath, len(bitgetSymbols))
-				} else {
-					bitgetSymbols = symbols
-					util.Infof("%s prefiltered list not found or empty, fallback to base symbols: %d", exName, len(bitgetSymbols))
-				}
+				// Используем общий список символов (как у Bybit и Gate), без отдельного файла
+				bitgetSymbols := symbols
+				util.Infof("%s using common symbols list: %d", exName, len(bitgetSymbols))
 				// Bitget строгие лимиты: 10 сообщений/сек. Делаем батч-подписку + паузы.
 				batchSize := cfg.BitgetSubscribeBatchSize
 				if batchSize <= 0 {
