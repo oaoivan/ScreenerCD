@@ -20,6 +20,29 @@ subscribe_batch_size: 100         # подписываться пачками п
 subscribe_batch_pause_ms: 150     # пауза между пачками, мс
 metrics_period_sec: 5             # период агрегированных логов
 
+# Reference pools for deriving base-asset USD prices
+reference_pools:
+  - chain: "ethereum"
+    dex: "uniswap_v3"
+    base_token:
+      symbol: "WETH"
+      address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+    quote_token:
+      symbol: "USDC"
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    pool_address: "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640"
+    fee_tier: 500
+
+  - chain: "bsc"
+    dex: "pancakeswap_v2"
+    base_token:
+      symbol: "WBNB"
+      address: "0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+    quote_token:
+      symbol: "USDT"
+      address: "0x55d398326f99059fF775485246999027B3197955"
+    pool_address: "0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE"
+
 # Bitget-specific tuning (WS limits: 10 msgs/s, 240 subs/hour, <=1000 streams)
 bitget_subscribe_batch_size: 30   # сколько инстр. в одном сообщении подписки
 bitget_subscribe_pause_ms: 700    # пауза между батчами, мс
