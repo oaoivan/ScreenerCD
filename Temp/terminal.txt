@@ -1,54 +1,23 @@
-sleep 65 && ./scripts/status_all.sh                     PIPE|0 ✔ 
-
-\n=== Docker Compose Services ===
-WARN[0000] /home/ivan/Work/Screner/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
-NAME               IMAGE              COMMAND                  SERVICE    CREATED        STATUS                         PORTS
-screner-gateway    screner-gateway    "./gateway"              gateway    2 days ago     Restarting (1) 5 seconds ago   
-screner-ingestor   screner-ingestor   "./ingestor"             ingestor   2 days ago     Restarting (1) 5 seconds ago   
-screner-redis-1    redis:alpine       "docker-entrypoint.s…"   redis      25 hours ago   Up About an hour               0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
-\n=== Redis ===
-2025-09-20T13:51:23+0300 [INFO] Redis PING ok at localhost:6379
-keys: price:* = 1838, price_canon:* = 1503
-\n=== Local process ===
-screener-core running, PID=119825
-\n=== Last logs ===
-2025/09/20 13:50:11 main.go:444: 2025-09-20T13:50:11+03:00 [INFO] metrics: msgs/s~243, redisOps/s~466, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:11747 Bybit:4139 Gate:5112 OKX:9927]
-2025/09/20 13:50:11 main.go:444: 2025-09-20T13:50:11+03:00 [INFO] metrics: msgs/s~243, redisOps/s~466, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:11747 Bybit:4139 Gate:5112 OKX:9927]
-2025/09/20 13:50:16 main.go:444: 2025-09-20T13:50:16+03:00 [INFO] metrics: msgs/s~263, redisOps/s~545, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12057 Bybit:4265 Gate:5407 OKX:10510]
-2025/09/20 13:50:16 main.go:444: 2025-09-20T13:50:16+03:00 [INFO] metrics: msgs/s~263, redisOps/s~545, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12057 Bybit:4265 Gate:5407 OKX:10510]
-2025/09/20 13:50:21 main.go:444: 2025-09-20T13:50:21+03:00 [INFO] metrics: msgs/s~272, redisOps/s~543, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12539 Bybit:4459 Gate:5629 OKX:10970]
-2025/09/20 13:50:21 main.go:444: 2025-09-20T13:50:21+03:00 [INFO] metrics: msgs/s~272, redisOps/s~543, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12539 Bybit:4459 Gate:5629 OKX:10970]
-2025/09/20 13:50:26 main.go:444: 2025-09-20T13:50:26+03:00 [INFO] metrics: msgs/s~223, redisOps/s~446, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12972 Bybit:4663 Gate:5779 OKX:11297]
-2025/09/20 13:50:26 main.go:444: 2025-09-20T13:50:26+03:00 [INFO] metrics: msgs/s~223, redisOps/s~446, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:12972 Bybit:4663 Gate:5779 OKX:11297]
-2025/09/20 13:50:31 main.go:444: 2025-09-20T13:50:31+03:00 [INFO] metrics: msgs/s~193, redisOps/s~386, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:13318 Bybit:4822 Gate:5933 OKX:11602]
-2025/09/20 13:50:31 main.go:444: 2025-09-20T13:50:31+03:00 [INFO] metrics: msgs/s~193, redisOps/s~386, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:13318 Bybit:4822 Gate:5933 OKX:11602]
-2025/09/20 13:50:36 main.go:444: 2025-09-20T13:50:36+03:00 [INFO] metrics: msgs/s~286, redisOps/s~572, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:13887 Bybit:4989 Gate:6235 OKX:11994]
-2025/09/20 13:50:36 main.go:444: 2025-09-20T13:50:36+03:00 [INFO] metrics: msgs/s~286, redisOps/s~572, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:13887 Bybit:4989 Gate:6235 OKX:11994]
-2025/09/20 13:50:41 main.go:444: 2025-09-20T13:50:41+03:00 [INFO] metrics: msgs/s~228, redisOps/s~455, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14344 Bybit:5175 Gate:6411 OKX:12313]
-2025/09/20 13:50:41 main.go:444: 2025-09-20T13:50:41+03:00 [INFO] metrics: msgs/s~228, redisOps/s~455, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14344 Bybit:5175 Gate:6411 OKX:12313]
-2025/09/20 13:50:46 main.go:444: 2025-09-20T13:50:46+03:00 [INFO] metrics: msgs/s~180, redisOps/s~359, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14606 Bybit:5307 Gate:6597 OKX:12631]
-2025/09/20 13:50:46 main.go:444: 2025-09-20T13:50:46+03:00 [INFO] metrics: msgs/s~180, redisOps/s~359, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14606 Bybit:5307 Gate:6597 OKX:12631]
-2025/09/20 13:50:51 main.go:444: 2025-09-20T13:50:51+03:00 [INFO] metrics: msgs/s~90, redisOps/s~181, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14769 Bybit:5381 Gate:6682 OKX:12760]
-2025/09/20 13:50:51 main.go:444: 2025-09-20T13:50:51+03:00 [INFO] metrics: msgs/s~90, redisOps/s~181, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:14769 Bybit:5381 Gate:6682 OKX:12760]
-2025/09/20 13:50:56 main.go:444: 2025-09-20T13:50:56+03:00 [INFO] metrics: msgs/s~195, redisOps/s~390, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:15029 Bybit:5503 Gate:6897 OKX:13137]
-2025/09/20 13:50:56 main.go:444: 2025-09-20T13:50:56+03:00 [INFO] metrics: msgs/s~195, redisOps/s~390, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:15029 Bybit:5503 Gate:6897 OKX:13137]
-2025/09/20 13:51:01 main.go:444: 2025-09-20T13:51:01+03:00 [INFO] metrics: msgs/s~323, redisOps/s~628, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:15758 Bybit:5812 Gate:7067 OKX:13542]
-2025/09/20 13:51:01 main.go:444: 2025-09-20T13:51:01+03:00 [INFO] metrics: msgs/s~323, redisOps/s~628, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:15758 Bybit:5812 Gate:7067 OKX:13542]
-2025/09/20 13:51:06 main.go:444: 2025-09-20T13:51:06+03:00 [INFO] metrics: msgs/s~368, redisOps/s~754, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:16465 Bybit:6162 Gate:7352 OKX:14042]
-2025/09/20 13:51:06 main.go:444: 2025-09-20T13:51:06+03:00 [INFO] metrics: msgs/s~368, redisOps/s~754, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:16465 Bybit:6162 Gate:7352 OKX:14042]
-2025/09/20 13:51:11 main.go:444: 2025-09-20T13:51:11+03:00 [INFO] metrics: msgs/s~252, redisOps/s~497, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:16878 Bybit:6361 Gate:7584 OKX:14457]
-2025/09/20 13:51:11 main.go:444: 2025-09-20T13:51:11+03:00 [INFO] metrics: msgs/s~252, redisOps/s~497, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:16878 Bybit:6361 Gate:7584 OKX:14457]
-2025/09/20 13:51:16 main.go:444: 2025-09-20T13:51:16+03:00 [INFO] metrics: msgs/s~141, redisOps/s~289, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:17076 Bybit:6455 Gate:7682 OKX:14773]
-2025/09/20 13:51:16 main.go:444: 2025-09-20T13:51:16+03:00 [INFO] metrics: msgs/s~141, redisOps/s~289, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:17076 Bybit:6455 Gate:7682 OKX:14773]
-2025/09/20 13:51:21 main.go:444: 2025-09-20T13:51:21+03:00 [INFO] metrics: msgs/s~296, redisOps/s~566, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:17502 Bybit:6563 Gate:7955 OKX:15444]
-2025/09/20 13:51:21 main.go:444: 2025-09-20T13:51:21+03:00 [INFO] metrics: msgs/s~296, redisOps/s~566, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:17502 Bybit:6563 Gate:7955 OKX:15444]
-2025/09/20 13:51:23 bitget.go:137: 2025-09-20T13:51:23+03:00 [ERROR] Bitget read error: websocket: close 1006 (abnormal closure): unexpected EOF
-2025/09/20 13:51:23 bitget.go:137: 2025-09-20T13:51:23+03:00 [ERROR] Bitget read error: websocket: close 1006 (abnormal closure): unexpected EOF
-2025/09/20 13:51:23 bitget.go:86: 2025-09-20T13:51:23+03:00 [INFO] Bitget ReadLoop exiting
-2025/09/20 13:51:23 bitget.go:86: 2025-09-20T13:51:23+03:00 [INFO] Bitget ReadLoop exiting
-2025/09/20 13:51:23 bitget.go:198: 2025-09-20T13:51:23+03:00 [INFO] closing Bitget client
-2025/09/20 13:51:23 bitget.go:198: 2025-09-20T13:51:23+03:00 [INFO] closing Bitget client
-2025/09/20 13:51:23 main.go:34: 2025-09-20T13:51:23+03:00 [ERROR] Bitget exited with error: Bitget out channel closed
-2025/09/20 13:51:23 main.go:34: 2025-09-20T13:51:23+03:00 [ERROR] Bitget exited with error: Bitget out channel closed
-2025/09/20 13:51:23 main.go:48: 2025-09-20T13:51:23+03:00 [INFO] restarting Bitget after 1s
-2025/09/20 13:51:23 main.go:48: 2025-09-20T13:51:23+03:00 [INFO] restarting Bitget after 1s
+2025/09/26 13:38:53.975154 [INFO] subscribe batch=0 id=1 size=42
+2025/09/26 13:38:53.975206 [INFO] total subscribe batches=1
+2025/09/26 13:38:54.020808 [INFO] subscribed id=0x71745f763be15da2ab2ff43fd97f418b
+2025/09/26 13:39:14.514185 [PRICE] V2 pair=USDC / WETH (hard) 1 WETH = 3887.44262902 USDC block=23446646 tx=0x33933552ecf03b8adb84149c362796232825cf5efefd6bc280233095836acecd
+2025/09/26 13:39:14.514223 [USD ] WETHUSD=3887.44262902 USDC src=USDC / WETH (hard)
+2025/09/26 13:39:14.514308 [PRICE] V2 pair=PAXG / WETH 1 4580…AF78 = 3756.88737358 USDC (USD via WETH) block=23446646 tx=0x9786d6478e900d674a0c38e96a4c3fe8cb343d0b8c2216f5f21211590f757de0
+2025/09/26 13:39:14.514390 [PRICE] V2 pair=UNI / WETH 1 1F98…F984 = 7.35372851 USDC (USD via WETH) block=23446646 tx=0xccce2617aacba19411a2650736d08086127a51533b9feaa39b6b79c4af9139c3
+2025/09/26 13:39:25.782267 [PRICE] V2 pair=PEPE / WETH 1 6982…1933 = 0.00000909 USDC (USD via WETH) block=23446647 tx=0x7996a76935f977c9bf3e3923564d72a28499f719100f46f057cb14617e08d212
+2025/09/26 13:39:25.782330 [PRICE] V2 pair=DAI / WETH (hard) 1 WETH = 3885.07978730 DAI block=23446647 tx=0xac6d54b84a7258802b7f2f5f02ff5ef4784095404647f0c6680aef5f446ece44
+2025/09/26 13:39:25.782370 [PRICE] V2 pair=USDT / MOCA 1 F944…E8C5 = 0.06898109 USDT block=23446647 tx=0xe09b473d8c540d0edce7cdb5d9be13af3bc316f72b4aa353fbf4ceefefe41adc
+2025/09/26 13:39:25.782386 [USD ] token=F944…E8C5 price=0.06898109 USDT mode=direct block=23446647
+2025/09/26 13:39:37.381721 [PRICE] V2 pair=PEIPEI / WETH 1 3FFE…5790 = 0.00000003 USDC (USD via WETH) block=23446648 tx=0xdda32692b6da6a6c4ec23d259a9c751c5966ae7e6890e6902e8eacb1507e1b7d
+2025/09/26 13:40:13.394665 [PRICE] V2 pair=PAXG / WETH 1 4580…AF78 = 3757.32385162 USDC (USD via WETH) block=23446651 tx=0xfa6f9628f969940485121eaf41f2a6b1d98c962e1c297c40320b484a8cdb8d16
+2025/09/26 13:40:25.348543 [PRICE] V2 pair=UNI / WETH 1 1F98…F984 = 7.35777059 USDC (USD via WETH) block=23446652 tx=0x0a8cca4077f8f1d94d620ee0d9d3f6da23a99075282d474558f4abfb7001db34
+2025/09/26 13:40:25.350841 [PRICE] V2 pair=WETH / USDT (hard) 1 WETH = 3885.04416036 USDT block=23446652 tx=0xc9e52f995ee992b79c104beb9e6c294588ae15d6a50780999694028636005551
+2025/09/26 13:40:37.834254 [PRICE] V2 pair=SNX / WETH 1 C011…2A6F = 0.91181363 USDC (USD via WETH) block=23446653 tx=0xc8f9c5451ec6f5e68b4814d5d94630ea659f1afe5a251a9e963ebc055f6a93f5
+2025/09/26 13:40:48.778165 [PRICE] V2 pair=SPX / WETH 1 E0F6…C56C = 0.00158756 USDC (USD via WETH) block=23446654 tx=0xd59f082bacccec5816c091d5011ed998cc2057447461db93ac651d59fda74e20
+2025/09/26 13:41:14.891549 [PRICE] V2 pair=Mog / WETH 1 AAEE…1C7A = 0.00000062 USDC (USD via WETH) block=23446656 tx=0xde4f9d8a996eed071384561d2bfa8f8942de4f1b4932ea03016d64acf485dd60
+2025/09/26 13:41:37.634940 [PRICE] V2 pair=SNX / WETH 1 C011…2A6F = 0.90784034 USDC (USD via WETH) block=23446658 tx=0x17bcd6da98e6267fd03db9f82d27c68c600f656b544df71fdb021daa47f10108
+2025/09/26 13:42:25.053060 [PRICE] V2 pair=SUPER / WETH 1 E53E…0A55 = 31070551.43661046 USDC (USD via WETH) block=23446662 tx=0xcea7c791824a0dc1940f57c72d5a3dbbdd2626e9d9e07da4322c13204a91d2ac
+2025/09/26 13:42:49.299249 [PRICE] V2 pair=USDT / MOCA 1 F944…E8C5 = 0.06875988 USDT block=23446664 tx=0x1a93ff385167b55e0c3f070837648e29bd66ec9f3b83e9c57670e6af005a4912
+2025/09/26 13:42:49.299271 [USD ] token=F944…E8C5 price=0.06875988 USDT mode=direct block=23446664
+^C2025/09/26 13:43:27.647444 [INFO] interrupt
