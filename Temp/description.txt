@@ -1,0 +1,354 @@
+build:
+    screener-core — готовый бинарник; используется для запуска сервиса без пересборки (удобно в проде и для локального запуска).
+    screener-core.pid — хранит PID фонового/локального процесса, чтобы скрипты (например stop_all.sh, status_all.sh) могли корректно останавливать/контролировать процесс.
+cmd:
+    api-gateway/ — содержит main.go и dump.rdb. main.go реализует WebSocket-ориентированный API gateway, подписки на Bybit и Gate, запись/логирование в Redis и обслуживает /ws.
+        main.go
+            Основные обязанности:
+            Загружает конфигурацию (config.LoadConfig("configs/screener-core.yaml")).
+            Инициализирует Redis-клиент с проверкой подключения.
+            Подгружает список символов из all_contracts_merged_reformatted.json.
+            Создаёт WebSocket-клиенты для Bybit и Gate, подписывается на символы (с паузами, чтобы не превысить rate limits).
+            Запускает read loops для каждого клиента и сохраняет MarketData в Redis (если доступен), либо логирует.
+            Запускает HTTP-роут /ws, который апгрейдит соединение и читает входящие сообщения (сейчас только логирует).
+            Логирование состояния и ошибок через util пакет.
+            Стиль и замечания:
+            Код предполагает пакеты exchange, redisclient, util, config.
+            Файлы делают conservative connect/subscribe sequence с задержками.
+            Поддерживается отключение Redis (приложение продолжит работать, но без сохранения).
+            WebSocket сервер в gateway в настоящее время только читает входящие сообщения — не отправляет данные клиенту. Можно расширить, чтобы пушить аггрегированные данные.
+    screener-core/ — содержит main.go, скомпилированный бинарник screener-core и лог screner.log. main.go — основной сервис, который запускает коннекторы к биржам, читает данные, делает batching и pipelining к Redis, метрики и graceful shutdown.
+        main.go
+            Основные обязанности:
+            Загружает конфигурацию (screener-core.yaml).
+            Инициализирует Redis клиент.
+            Загружает символы.
+            Создаёт общий буферизованный dataChannel для pb.MarketData.
+            Запускает supervisors (функция supervisor) для каждого коннектора/биржи (Bybit, Gate, Bitget, OKX и др.). Supervisor перезапускает коннектор при падении, с экспоненциальным бэкоффом.
+            Каждый коннектор:
+            Подключается к WS, подписывается батчами, запускает ReadLoop и KeepAlive.
+            Публикует данные в dataChannel.
+            Запускает пул воркеров (worker pool) для пакетной (pipeline) записи в Redis (HSetBatch) с параметрами RedisWorkers и RedisPipelineSize.
+            Метрики: собирает и логирует сообщения/сек, redis ops/сек, ошибки, и др.
+            Реализован graceful shutdown (SIGINT/SIGTERM, закрытие stop канала).
+            Включает утилиты: loadLinesFile для чтения списка символов.
+            Стиль и замечания:
+            Хорошая архитектура для высокой пропускной способности: отдельные читатели, общий канал, worker pool для Redis.
+            Supervisor обеспечивает отказоустойчивость.
+            Дисциплина батчей и пауз при подписке помогает избежать rate limits и троттлинга.
+            Нужно следить за backpressure: при переполнении dataChannel код дропает сообщения и инкрементит totalDrops — это ожидаемо для throughput-first решения, но стоит иметь контролируемую стратегию (метрики/алёрты, sampling).
+config
+    screener-core.yaml — конфиг для основного сервиса screener-core.
+        legacy/общие:
+        exchange: "bybit" — устаревшее поле для единственной биржи; держится для backward-compat.
+        exchanges: ["gate", "bybit", "bitget", "okx"] — список бирж, которые запускаются коннекторами.
+        symbol: "BTC-USDT` — возможно, используется для тестов/по умолчанию.
+        api_key, secret — поля для ключей API (скорее всего не заданы здесь, лучше использовать env vars).
+        Redis:
+        redis.host, redis.port — адрес Redis (по умолчанию локальный).
+        Logging:
+        logging.level, logging.file — уровень логов и файл логов (путь logs/screener.log).
+        Performance tuning:
+        data_channel_buffer: 8192 — размер буфера общего канала (горячая часть, 8k).
+        redis_workers: 8 — число воркеров для записи в Redis.
+        redis_pipeline_size: 300 — размер батча для пайплайна Redis.
+        subscribe_batch_size: 100 — сколько символов подписывать за раз.
+        subscribe_batch_pause_ms: 150 — пауза между батчами.
+        metrics_period_sec: 5 — период логирования агрегированных метрик.
+        Reference pools:
+        Список эталонных пулов на Ethereum и BSC (Uniswap V3, Pancake V2) с адресами токенов и пула. Используется для вычисления USD-цен базовых активов.
+        Bitget tuning:
+        bitget_subscribe_batch_size, bitget_subscribe_pause_ms, bitget_ping_interval_sec — настройки специально для Bitget из-за их ограничений.
+        Где используется (коротко)
+
+        main.go читает большинство параметров: buffer size, redis worker/pipeline, subscribe batch sizing, metrics period, exchanges list.
+        main.go читает redis адрес/credentials, возможно logging settings.
+        internal-пакеты (config loader) парсят эти YAML и предоставляют типобезопасный доступ.
+
+    api-gateway.yaml — конфиг для API Gateway (веб/WS).
+        api.host, api.port — хост/порт для gateway.
+        api.websocket.path — путь вебсокета (/ws).
+        ping_interval, read_buffer_size — настройки вебсокета.
+        CORS: allowed_origins, allowed_methods, allowed_headers — сейчас разрешают всё ("*"), что удобно для dev, но рисковано для продакшн.
+
+internal
+    config/ — конфиг-лоадер (config.go)
+        config.go
+            Парсит YAML в структуру Config.
+            Предоставляет методы LoadConfig(filePath string) (*Config, error) и RedisConfig.RedisAddress().
+            Ставит разумные дефолты (buffer sizes, batch sizes и т.д.).
+    dex/ — пустая папка сейчас (готово для DEX-ingestion реализаций).
+    exchange/ — реализация WS-коннекторов и абстракций:
+        connector.go — общая утилита/брокер для подписываемых клиентов (простая broadcast-структура).
+        bybit.go, gateio.go, bitget.go, okx.go, uniswap.go — коннекторы к конкретным биржам (прочитал bybit.go, gateio.go, bitget.go).
+        Каждый клиент реализует:
+            NewXClient(url string) *XClient
+            Connect() error
+            Subscribe(...) error (разные форматы)
+            ReadLoop(...) — читает WS, парсит JSON, пушит в out channel типа *protobuf.MarketData
+            KeepAlive() — Ping-таймер
+            Close()
+            Контракт: consumer читает из Out() канала.
+    processor/ — 
+        processor.go (реализация Processor, сохраняет 
+            Реализован пример Processor, использующий go-redis Client (из другой директории) — возможно требует адаптации типов.
+            Сохранение в Redis: HSet key price/timestamp.
+            Место для арбитражной логики — пока stub.
+    MarketData в Redis и пространство для арбитражной логики).
+    redisclient/ — client.go (обёртка над go-redis/v8 с HSetBatch, ping, HSet, HGetAll).
+        client.go
+            Обёртка вокруг go-redis/redis/v8.
+            Методы:
+            NewRedisClient(addr, password, db) *RedisClient
+            Set, Get, HSet, HGetAll, HSetBatch, Ping, Close.
+            HSetBatch принимает [][]interface{} — каждая запись: [key, field1, value1, ...] и использует pipeline.Exec.
+    util/
+         helpers.go
+            Назначение: простые строковые хелперы для работы с символами торговых пар.
+
+            Функции:
+
+            BybitToGateSymbol(bybit string) string
+
+            Что делает: конвертирует символ формата Bybit (например BTCUSDT) в формат Gate (BTC_USDT).
+            Поведение: ищет известные суффиксы (USDT, USDC, DAI, BUSD) и вставляет _ перед ними; по умолчанию вставляет _ перед последними 4 символами.
+            Контракт: принимает строку, возвращает преобразованную строку; при короткой строке возвращает как есть.
+            Граничные случаи: нет валидации формата, может неверно обработать пары с нетипичными квотами (например 3-символьные).
+            NormalizeSpotSymbol(exchange, raw string) string
+
+            Что делает: нормализует символ (удаляет -, _, /, ., делает upper и trim).
+            Контракт: idempotent — одинаковый вход даёт одинаковый выход.
+            Использование: генерация "канонических" ключей для Redis/сопоставления.
+            Где используются: конвертация символов при подписках и формировании ключей Redis (screener-core, api-gateway, internal/exchange/*).
+
+        symbol_loader.go
+            Назначение: загрузка списка символов из JSON-файла (формата all_contracts_merged_reformatted.json) и конвертация в формат Bybit.
+
+            Функции:
+
+            LoadSymbolsFromFile(filePath string) ([]string, error)
+            Что делает: читает JSON в map[string]interface{}, собирает ключи, сортирует и формирует список ticker + "USDT" для каждого (игнорирует стабильные монеты и fiat).
+            Контракт/возврат: возвращает slice строк (Bybit-символы, например BTCUSDT) и ошибку.
+            Граничные случаи: если JSON структура не map[string]interface{}, вернётся ошибка; не проверяет уникальность/валидность результирующих символов.
+            Где используется: cmd/* для подписки на список символов.
+        symbols.go
+            Назначение: расширенный загрузчик/фильтра символов и утилиты для работы с валидацией.
+
+            Типы и функции:
+
+            type CoinSymbol struct { Symbol string; BybitSymbol string; IsValid bool }
+
+            Структура для описания символа и валидности.
+            LoadSymbolsFromJSON(filePath string) ([]CoinSymbol, error)
+
+            Что делает: читает JSON, формирует CoinSymbol (BybitSymbol = Symbol + "USDT"), помечает IsValid=false.
+            isStablecoinOrFiat(symbol string) bool
+
+            Проверяет, является ли символ стабильной монетой или фиатом (жёсткий список).
+            GetValidBybitSymbols(symbols []CoinSymbol) []string
+
+            Возвращает Bybit-строки для тех CoinSymbol, у которых IsValid==true.
+            FilterBybitSymbols(symbols []CoinSymbol, availableSymbols []string) []CoinSymbol
+
+            Помечает IsValid по наличию в availableSymbols.
+            Где используются: более структурная подготовка/фильтрация символов (может использоваться для пошаговой валидации через API бирж).
+        logger.go
+            Назначение: централизованный логгер проекта (stdout + файл), простая система уровней.
+
+            Переменные/функции:
+
+            Глобалы:
+
+            var Level = "info"
+            var Logger *log.Logger
+            var logFile *os.File
+            Инициализация init()
+
+            Создаёт директорию (. — текущую), открывает screner.log и инициализирует Logger как io.MultiWriter(os.Stdout, logFile).
+            Вызывает Infof("logger initialized, output=%s", logPath).
+            Утилиты:
+
+            SetLevel(l string) — устанавливает уровень.
+            format(formatStr string, v ...interface{}) string — формирует строку с RFC3339 timestamp.
+            Лог-функции:
+            Debugf(formatStr string, v ...interface{}) — лог только когда Level == "debug".
+            Infof(formatStr string, v ...interface{})
+            Errorf(formatStr string, v ...interface{})
+            Fatalf(formatStr string, v ...interface{}) — лог и os.Exit(1) (с logFile.Sync() и закрытием).
+            Контракты:
+            Логгер инициализируется автоматически при загрузке пакета.
+            Fatalf завершает процесс — используется при критических ошибках (например, не удалось прочитать конфиг).
+            Граничные случаи и наблюдения:
+
+            init() вызывает log.Fatalf если не удалось создать директорию/файл — приложение завершит работу ещё до парсинга конфигов. Это удобно для dev, но в контейнеризированном окружении обычно лог пишут в stdout/stderr, а не в файл.
+            Путь и уровень логирования хардкодятся в коде (screner.log и default level), хотя есть logging секция в YAML — текущий код не читает её при инициализации (логи устанавливаются до загрузки конфига).
+            Logger.Output(2, ...) используется для корректного указания файла/строки.
+
+
+pkg
+    common
+        models.go — Go-структуры MarketData и ArbitrageOpportunity (JSON-теги).
+            MarketData (Exchange, Symbol, Price, Timestamp) — JSON-теги.
+            ArbitrageOpportunity (Pair, Profit, Exchange1, Exchange2, Timestamp) — JSON-теги, поля называются немного иначе, чем в protobuf (Exchange1/Exchange2 vs from_exchange/to_exchange).
+    protobuf
+        arbitrage.pb.go
+            Это упрощённый stub Go-файл, содержащий только:
+            type MarketData struct { Exchange string; Symbol string; Price float64; Timestamp int64 }
+            Комментарий в файле указывает, что это "минимальный stub для локальной сборки" — похоже, реальный сгенерированный код (с marshaling, descriptors и т.д.) не включён.
+        arbitrage.proto
+            Протокол:
+            message MarketData { string exchange = 1; string symbol = 2; double price = 3; int64 timestamp = 4; }
+            message ArbitrageOpportunity { string pair = 1; double profit = 2; string from_exchange = 3; string to_exchange = 4; int64 timestamp = 5; }
+            Package name: protobuf.
+scripts
+    generate_proto.sh
+        Что делает:
+        Проверяет наличие protoc.
+        Запускает: $PROTOC --go_out=plugins=grpc:pkg/protobuf arbitrage.proto    
+    start_all.sh
+        Что делает:
+        Режимы:
+        По умолчанию: собирает локально screener-core и стартует бинарь screener-core, поднимает Redis через docker-compose при необходимости.
+        --docker-all: поднимает стек через docker compose.
+        --with-api: вместе с docker-all также добавляет api-gateway.
+        --no-build: пропускает сборку.
+        --clean-log: очищает screner.log.
+        Логика:
+        Проверка наличия docker compose, redis-cli.
+        Build через go build.
+        Запуск nohup бинарника и запись PID в screener-core.pid.
+    stop_all.sh
+        Что делает:
+        Останавливает локальный процесс по PID из screener-core.pid (SIGTERM, затем SIGKILL).
+        При --docker-all останавливает docker compose сервисы.
+    status_all.sh
+        Что делает:
+        Показывает docker compose services (docker compose ps), Redis PING, счётчики ключей price:* / price_canon:*, локальный PID и последние 40 строк логов.
+    extract_tickers.go
+        Что делает:
+        Читает all_contracts_merged_reformatted.json, выводит список тикеров, и преобразует их в Bybit-формат TickerUSDT.
+        Печатает Go-slice var symbols = []string{ ... }, удобное для копирования в код.
+    bitget_filter_symbols
+        main.go
+            Назначение: оффлайн-утилита, которая:
+            Загружает базовый список символов из all_contracts_merged_reformatted.json (через util.LoadSymbolsFromFile).
+            Делает REST-запрос(ы) к Bitget API (v2, fallback v1) и получает список торговых инструментов.
+            Нормализует их, фильтрует только пары с USDT, делает пересечение с базовым списком и записывает результат в bitget_usdt_intersection.txt.
+            Ключевые функции:
+            fetchBitgetSpotUSDT() — orchestration: пробует v2, fallback v1.
+            requestBitgetSymbolsV2() и requestBitgetSymbolsV1() — запросы к API, парсинг JSON.
+            normalizeAndFilterUSDT() — нормализация символов и фильтр по суффиксу USDT.
+            writeLines() — записывает результат в файл.
+            firstNonEmpty(), setToSlice() — утилитные хелперы.
+            Вывод: результат пишется в bitget_usdt_intersection.txt.
+        test_symbols.go
+            Назначение: утилита для локальной проверки/отладки списка символов:
+            Загружает JSON all_contracts_merged_reformatted.json (через util.LoadSymbolsFromJSON).
+            Печатает первые 20 символов/примеры.
+            Формирует тестовый набор testSymbols и фильтрует базовый список через util.FilterBybitSymbols.
+            Печатает валидные Bybit-символы и формирует готовый var symbols = []string{...} для копирования в код.
+            Полезно для ручного отбора и проверки, какие тикеры будут использоваться в подписках.
+test_scripts/
+    run_test.sh — bash wrapper / shortcut, запускает go run ./cmd/screener-core/main.go с небольшой предварительной информацией о файлах. Удобен для локального smoke run.
+    test_all_tickers.go — самостоятельная Go-программа, запускает тест для Bybit: загружает конфиг/символы, инициализирует Bybit-клиент из exchange, подписывается на несколько тикеров, пишет полученные данные в Redis и считает статистику.
+    Важное: использует github.com/yourusername/screner/internal/... импорты — при запуске из локальной рабочей папки это зависит от корректного модуля (go.mod) / путей.
+    bitget
+        connect_bitget_ws.go — компактный WS smoke-test для Bitget.
+        Поддерживает подключение к двух возможным публичным WS endpoint'ам (v1 и v2), несколько форматов подписки (v1/v2/_SPBL/spot/variants), отправляет ping и читает сообщения 30s или до Ctrl+C. Полезен для экспериментального определения правильного subscribe payload.
+            Зависимости: gorilla/websocket.
+            Recommendation: логирование уже достаточно подробное; можно вынести common ping/read/subscribe code в re-usable helper.
+            filter_symbols.go — утилита, которая делает REST вызовы к Bitget для получения списка символов (v2, fallback v1), нормализует (убирает _SPBL, strtoupper), фильтрует только USDT пары и пишет результат в bitget_usdt_intersection.txt.
+            Использует internal/util.LoadSymbolsFromFile для базового листа.
+            Реализованы v2 и v1 парсеры, нормализация, сортировка и запись.
+            Потенциальные проблемы: в репозитории есть похожий скрипт main.go — дублирование логики; стоит унифицировать в одном месте.
+    gateio/
+        connect_gate_ws.go — простой Gate.io WS connect smoke-test (v4 API). Подключается, держит соединение заданное время (флаг -t), логирует входящие фреймы, шлёт периодические ping и закрывается корректно.
+        Использует util для логирования.
+    okx
+        connect_okx_ws.go — standalone OKX WS connector. Загружает список общих символов из all_contracts_merged_reformatted.json, преобразует Bybit-формат в OKX формат (BTCUSDT -> BTC-USDT), делает batch-подписки (параметры -batch и -pause), считает и логирует throughput (сообщения/5s) и ошибки.
+        Примечание: использует JSON распаковку сообщений OKX, считает агрегацию, имеет KeepAlive.
+    uniswap/
+        Краткая цель скриптов
+        Подключиться к WebSocket провайдеру (например Alchemy mainnet WS).
+        Подписаться на логи конкретного пула (фильтр по адресу) через eth_subscribe (logs).
+        Декодировать логи на основе ABI пула (events), извлечь поля событий (Swap и др.).
+        Вычислить цену/форматировать и логировать детализированные сообщения о swap’ах и метаданных пула.
+        Вспомогательно: резолвить pool address из 32-байтного идентификатора, подгружать метаданные токенов (symbol/decimals) через RPC.
+api-gateway
+    Тип: файл в корне (не папка).
+    Назначение: исполняемый бинарный артефакт для API Gateway (судя по именованию и Dockerfile). В репозитории корневой api-gateway — не директория, а файл (возможно бинарник или скрипт).
+    Ключи/поведение: используется Dockerfile.api-gateway для сборки и в docker-compose подключается как сервис api-gateway, который зависит от screener-core и слушает порт 3000:3000.
+    Проблемы/заметки: как файл, он не содержит исходников — исходники в api-gateway. Наличие бинарника в корне может путать разработку (лучше хранить билды в build).
+    Если это скрипт (shell wrapper), переименовать в api-gateway.sh и сделать исполняемым с явной shebang.
+connect_uniswap_v3_all
+    Тип: файл в корне — бинарный (в прошлых чтениях отмечено, что файл не текстовый).
+    Назначение: вероятно, скомпилированный бинарный инструмент для коннекта к Uniswap v3 или набор артефактов (возможно сборник ABI/инструмент).
+    Ключи/поведение: упомянут в репозитории как artefact; в Dockerfiles/compose не участвует напрямую.
+    Проблемы/заметки: бинарный файл в корне мешает обзорности и увеличивает репозиторий. Не читается как текст.
+docker-compose.yml
+    Назначение: локальная оркестрация сервисов (screener-core, api-gateway, redis).
+    Ключевые строки:
+    version: "3.8"
+    services:
+    screener-core:
+    build: context . file Dockerfile.screener-core
+    ports: "8080:8080"
+    depends_on: redis
+    api-gateway:
+    build: context . file Dockerfile.api-gateway
+    ports: "3000:3000"
+    depends_on: screener-core
+    redis:
+    image: redis:alpine
+    ports: "6379:6379"
+Dockerfile.api-gateway
+    Назначение: двустадийная сборка api-gateway binary и упаковка в distroless образ.
+    Ключевые строки:
+    FROM golang:1.18 AS builder
+    WORKDIR /build
+    COPY . .
+    RUN CGO_ENABLED=0 GOOS=linux go build -o api-gateway main.go
+    Final FROM gcr.io/distroless/base; COPY --from=builder /build/api-gateway /api-gateway; CMD ["/api-gateway"]
+Dockerfile.screener-core
+    Назначение: двустадийная сборка screener-core binary и упаковка в легкий runtime образ (alpine).
+    Ключевые строки:
+    FROM golang:1.18 AS builder
+    RUN CGO_ENABLED=0 GOOS=linux go build -o screener-core main.go
+    FROM alpine:latest; COPY --from=builder /build/screener-core /screener-core; CMD ["./screener-core"]
+go.mod
+    Назначение: указание модуля и зависимостей.
+    Основное:
+    module github.com/yourusername/screner
+    go 1.20
+    require includes github.com/ethereum/go-ethereum v1.13.15, github.com/go-redis/redis/v8 v8.11.5, github.com/gorilla/websocket, gopkg.in/yaml.v2, и т.д.
+go.sum
+    Назначение: контрольные суммы зависимостей.
+    Замечания: длинный, нормальный файл — не нужно редактировать вручную.
+main
+    Тип: файл в корне (не каталог). Возможно бинарник main (собранный).
+    Назначение: вероятно, артефакт сборки/тест. Не исходный код.
+README.md
+    Назначение: документация проекта.
+    Ключевые моменты:
+    Описывает структуру: cmd/, internal/, pkg/, configs/, web/, scripts/.
+    Инструкции по запуску: start_all.sh, stop_all.sh, status_all.sh.
+    Указания по логам (screner.log) и PID (screener-core.pid).
+run_core.log
+    Назначение: лог запуска (ранних попыток).
+    Ключевые записи:
+    Ошибка при попытке запустить: "zsh: Нет такого файла или каталога: ./cmd/screener-core/screener-core" — указывает на некорректный путь к бинарю.
+    Сообщение: "error reading config file: open configs/screener-core.yaml: no such file or directory" — запуск пытался прочитать конфиг, но не нашёл.
+    Успешные записи: Redis init, Loaded 582 symbols, подписки по Bybit (subscribe progress).
+screener-core
+    Тип: файл в корне — бинарный (раннее чтение показало, что бинарный).
+    Назначение: собранный исполняемый screener-core.
+screner.log
+    Назначение: основной runtime лог (последний старт).
+    Ключевые записи:
+    Logger initialized; Redis client initialized; Loaded 582 symbols.
+    Exchanges: gate, bybit, bitget, okx.
+    Подписки шли пачками с паузами (подписка Bybit/OKX).
+    Много ошибок от OKX: code=60018 "Wrong URL or channel:tickers, instId:... doesn't exist" — указывает на несовпадение формата символов при подписке (например, используя Bybit символы для OKX).
+uniswap
+    Тип: файл в корне (не папка).
+    Назначение: вероятно бинар/скрипт связанный с Uniswap tooling (в проекте есть папка uniswap/ с ABI, но корневой uniswap — это артефакт).
