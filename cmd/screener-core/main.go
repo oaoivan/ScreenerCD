@@ -70,20 +70,7 @@ func main() {
 	redisClient := redisclient.NewRedisClient(cfg.Redis.RedisAddress(), cfg.Redis.Password, 0)
 	util.Infof("Redis client initialized: %s", cfg.Redis.RedisAddress())
 
-	// Load symbols (Bybit format, e.g., BTCUSDT)
-	symbols, err := util.LoadSymbolsFromFile("Temp/all_contracts_merged_reformatted.json")
-	if err != nil {
-		util.Fatalf("Error loading symbols: %v", err)
-	}
-	util.Infof("Loaded %d symbols from JSON file", len(symbols))
-
-	// Shared buffered channel (configurable)
-	dataChannel := make(chan *pb.MarketData, cfg.DataChannelBuffer)
-
-	// Stop channel (close on signal)
-	stop := make(chan struct{})
-
-	// Build list of exchanges
+	// Build list of exchanges (preserve legacy fallbacks)
 	exchanges := cfg.Exchanges
 	if len(exchanges) == 0 && cfg.Exchange != "" {
 		exchanges = []string{cfg.Exchange}
@@ -91,7 +78,81 @@ func main() {
 	if len(exchanges) == 0 {
 		exchanges = []string{"bybit"}
 	}
-	util.Infof("Exchanges: %s", strings.Join(exchanges, ", "))
+	util.Infof("Exchanges from config: %s", strings.Join(exchanges, ", "))
+
+	// Resolve symbols per exchange
+	exConfigByName := make(map[string]config.ExchangeConfig)
+	for _, exCfg := range cfg.ExchangeConfigs {
+		name := strings.ToLower(strings.TrimSpace(exCfg.Name))
+		if name == "" {
+			continue
+		}
+		exConfigByName[name] = exCfg
+	}
+
+	symbolCache := make(map[string][]string)
+	loadSymbolsFromFile := func(path string) ([]string, error) {
+		if cached, ok := symbolCache[path]; ok {
+			return cached, nil
+		}
+		list, err := util.LoadSymbolsFromFile(path)
+		if err != nil {
+			return nil, err
+		}
+		util.Infof("Loaded %d symbols from %s", len(list), path)
+		symbolCache[path] = list
+		return list, nil
+	}
+
+	var defaultSymbols []string
+	if cfg.DefaultSymbolsFile != "" {
+		if list, err := loadSymbolsFromFile(cfg.DefaultSymbolsFile); err != nil {
+			util.Errorf("Failed to load default symbols file %s: %v", cfg.DefaultSymbolsFile, err)
+		} else {
+			defaultSymbols = list
+		}
+	}
+
+	const legacySymbolsPath = "Temp/all_contracts_merged_reformatted.json"
+	symbolsByExchange := make(map[string][]string)
+	for _, ex := range exchanges {
+		exKey := strings.ToLower(strings.TrimSpace(ex))
+		if exKey == "" {
+			continue
+		}
+		exCfg, ok := exConfigByName[exKey]
+		switch {
+		case ok && len(exCfg.Symbols) > 0:
+			symbolsByExchange[exKey] = append([]string(nil), exCfg.Symbols...)
+			util.Infof("Exchange %s uses %d inline symbols from config", exKey, len(exCfg.Symbols))
+		case ok && exCfg.SymbolsFile != "":
+			list, err := loadSymbolsFromFile(exCfg.SymbolsFile)
+			if err != nil {
+				util.Fatalf("Error loading symbols for %s from %s: %v", exKey, exCfg.SymbolsFile, err)
+			}
+			symbolsByExchange[exKey] = list
+			util.Infof("Exchange %s loaded %d symbols from %s", exKey, len(list), exCfg.SymbolsFile)
+		case len(defaultSymbols) > 0:
+			symbolsByExchange[exKey] = defaultSymbols
+			util.Infof("Exchange %s uses default symbols (%d)", exKey, len(defaultSymbols))
+		default:
+			list, err := loadSymbolsFromFile(legacySymbolsPath)
+			if err != nil {
+				util.Fatalf("Error loading legacy symbols for %s: %v", exKey, err)
+			}
+			symbolsByExchange[exKey] = list
+			util.Infof("Exchange %s uses legacy symbols file %s (%d)", exKey, legacySymbolsPath, len(list))
+		}
+		if len(symbolsByExchange[exKey]) == 0 {
+			util.Fatalf("No symbols resolved for exchange %s", exKey)
+		}
+	}
+
+	// Shared buffered channel (configurable)
+	dataChannel := make(chan *pb.MarketData, cfg.DataChannelBuffer)
+
+	// Stop channel (close on signal)
+	stop := make(chan struct{})
 
 	// Metrics
 	var totalProcessed int64
@@ -105,6 +166,7 @@ func main() {
 	// Start connectors per exchange
 	for _, ex := range exchanges {
 		exLower := strings.ToLower(strings.TrimSpace(ex))
+		symbols := symbolsByExchange[exLower]
 		switch exLower {
 		case "bybit":
 			exName := "Bybit"
@@ -204,9 +266,8 @@ func main() {
 					return err
 				}
 
-				// Используем общий список символов (как у Bybit и Gate), без отдельного файла
 				bitgetSymbols := symbols
-				util.Infof("%s using common symbols list: %d", exName, len(bitgetSymbols))
+				util.Infof("%s using symbols list: %d", exName, len(bitgetSymbols))
 				// Bitget строгие лимиты: 10 сообщений/сек. Делаем батч-подписку + паузы.
 				batchSize := cfg.BitgetSubscribeBatchSize
 				if batchSize <= 0 {
@@ -392,7 +453,13 @@ func main() {
 		}(i)
 	}
 
-	util.Infof("Screener Core running: %d symbols across %s", len(symbols), strings.Join(exchanges, ", "))
+	summary := make([]string, 0, len(exchanges))
+	for _, ex := range exchanges {
+		exKey := strings.ToLower(strings.TrimSpace(ex))
+		count := len(symbolsByExchange[exKey])
+		summary = append(summary, fmt.Sprintf("%s:%d", exKey, count))
+	}
+	util.Infof("Screener Core running with exchanges %s", strings.Join(summary, ", "))
 
 	// Redis health checker (updates redisUp flag)
 	go func() {

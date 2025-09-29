@@ -16,12 +16,16 @@ type RedisConfig struct {
 }
 
 type Config struct {
-	Exchange  string      `yaml:"exchange"`  // legacy single exchange
-	Exchanges []string    `yaml:"exchanges"` // preferred list of exchanges, e.g. ["bybit","gate"]
-	Symbol    string      `yaml:"symbol"`
-	APIKey    string      `yaml:"api_key"`
-	Secret    string      `yaml:"secret"`
-	Redis     RedisConfig `yaml:"redis"`
+	Exchange  string   `yaml:"exchange"`  // legacy single exchange
+	Exchanges []string `yaml:"exchanges"` // preferred list of exchanges, e.g. ["bybit","gate"]
+	Symbol    string   `yaml:"symbol"`
+	APIKey    string   `yaml:"api_key"`
+	Secret    string   `yaml:"secret"`
+	// DefaultSymbolsFile allows pointing to a shared JSON with tickers
+	DefaultSymbolsFile string `yaml:"default_symbols_file"`
+	// ExchangeConfigs describe per-exchange symbol sources
+	ExchangeConfigs []ExchangeConfig `yaml:"exchange_configs"`
+	Redis           RedisConfig      `yaml:"redis"`
 
 	// Performance and runtime tuning
 	DataChannelBuffer     int `yaml:"data_channel_buffer"`      // default 8192
@@ -35,6 +39,13 @@ type Config struct {
 	BitgetSubscribeBatchSize int `yaml:"bitget_subscribe_batch_size"` // default 30
 	BitgetSubscribePauseMs   int `yaml:"bitget_subscribe_pause_ms"`   // default 700
 	BitgetPingIntervalSec    int `yaml:"bitget_ping_interval_sec"`    // default 25
+}
+
+// ExchangeConfig describes how to load symbols for a specific exchange
+type ExchangeConfig struct {
+	Name        string   `yaml:"name"`
+	Symbols     []string `yaml:"symbols"`
+	SymbolsFile string   `yaml:"symbols_file"`
 }
 
 func (r *RedisConfig) RedisAddress() string {

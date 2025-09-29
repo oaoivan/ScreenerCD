@@ -15,7 +15,7 @@ To run the integration tests, use the following command:
 go test ./tests/integration
 ```
 
-Make sure that all necessary services (Screener Core, API Gateway, Redis) are running before executing the tests.
+Make sure that all necessary services (Screener Core and Redis) are running before executing the tests.
 
 ## Adding New Tests
 

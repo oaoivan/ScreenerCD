@@ -4,6 +4,18 @@ symbol: "BTC-USDT"
 api_key: ""
 secret: ""
 
+default_symbols_file: "Temp/all_contracts_merged_reformatted.json"
+
+exchange_configs:
+  - name: "gate"
+    symbols_file: "Temp/all_contracts_merged_reformatted.json"
+  - name: "bybit"
+    symbols_file: "Temp/all_contracts_merged_reformatted.json"
+  - name: "bitget"
+    symbols_file: "Temp/all_contracts_merged_reformatted.json"
+  - name: "okx"
+    symbols_file: "Temp/all_contracts_merged_reformatted.json"
+
 redis: 
   host: "localhost"
   port: 6379

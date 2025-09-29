@@ -1,6 +1,30 @@
 создаем скринер цен cex-dex бирж.
 вот общий план:
 
+### Блок-схема (актуальная, Mermaid)
+
+```mermaid
+flowchart LR
+    Config[screener-core.yaml\n(YAML конфиг)] --> Resolver[Резолвер тикеров\ninline → symbols_file → default]
+    Resolver --> Bybit[Коннектор Bybit]
+    Resolver --> Gate[Коннектор Gate]
+    Resolver --> Bitget[Коннектор Bitget]
+    Resolver --> OKX[Коннектор OKX]
+
+    Bybit --> Channel[dataChannel\nобщий буфер]
+    Gate --> Channel
+    Bitget --> Channel
+    OKX --> Channel
+
+    Channel --> Workers[Воркеры Redis\nbatch HSET]
+    Workers --> Redis[(Redis)]
+    Redis --> Desktop[Десктопный клиент\nчитает price:*]
+
+    Workers --> Logs[Логи и метрики\napp.log]
+```
+
+Источник списка тикеров фиксируется в YAML-конфиге: для каждой биржи задаём inline-список или путь к `symbols_file`. Фолбэк — глобальный `default_symbols_file`.
+
 Общая Архитектура Проекта и Стек Технологий
 
 Название проекта: arbitrage-screener
@@ -27,49 +51,43 @@ IGNORE_WHEN_COPYING_END
 дерево каталогов примерное!    
 arbitrage-screener/
 ├── cmd/
-│   ├── screener-core/
-│   │   └── main.go           # Точка входа для сервиса Screener Core
-│   └── api-gateway/
-│       └── main.go           # Точка входа для сервиса API Gateway
+│   └── screener-core/
+│       └── main.go           # Точка входа для сервиса Screener Core
 ├── internal/
 │   ├── config/
 │   │   └── config.go         # Загрузка и парсинг конфигурации
 │   ├── exchange/
-│   │   └── connector.go      # Абстракция для подключения к биржам (WS)
-│   │   └── bybit.go        # Специфическая реализация для Bybit
-│   │   └── kraken.go         # Специфическая реализация для Kraken
-│   │   └── uniswap.go        # Специфическая реализация для Uniswap
+│   │   ├── connector.go      # Общая абстракция WS-коннекторов
+│   │   ├── bybit.go          # Коннектор Bybit
+│   │   ├── gateio.go         # Коннектор Gate
+│   │   ├── bitget.go         # Коннектор Bitget
+│   │   └── okx.go            # Коннектор OKX
 │   ├── processor/
-│   │   └── processor.go      # Логика обработки данных и вычисления дельт
+│   │   └── processor.go      # Логика обработки/агрегации (стаб)
 │   ├── redisclient/
 │   │   └── client.go         # Обёртка для работы с Redis
-│   ├── wsclient/
-│   │   └── client.go         # Общая обёртка для WebSocket-клиентов
 │   └── util/
-│       └── logger.go         # Логирование
-│       └── helpers.go        # Общие вспомогательные функции
+│       ├── logger.go         # Логирование
+│       ├── helpers.go        # Строковые хелперы
+│       └── symbol_loader.go  # Чтение списков тикеров
 ├── pkg/
 │   ├── protobuf/
-│   │   ├── arbitrage.proto   # Определение Protobuf сообщений (MarketData, ArbitrageOpportunity)
-│   │   └── arbitrage.pb.go   # Сгенерированный Go код
+│   │   ├── arbitrage.proto   # Определение Protobuf сообщений
+│   │   └── arbitrage.pb.go   # Минимальный Go-стаб
 │   └── common/
-│       └── models.go         # Общие Go-структуры (если не Protobuf)
+│       └── models.go         # Общие структуры моделей
 ├── configs/
-│   └── screener-core.yaml    # Конфигурация для Screener Core
-│   └── api-gateway.yaml      # Конфигурация для API Gateway
-├── web/
-│   ├── index.html            # Фронтенд-страница
-│   ├── style.css             # Стили для фронтенда
-│   ├── app.js                # JavaScript логика фронтенда
-│   └── js/
-│       └── protobuf_gen.js   # Сгенерированный JS код из arbitrage.proto
-│       └── protobuf.min.js   # Библиотека protobuf.js
+│   └── screener-core.yaml    # Конфигурация для Screener Core (YAML)
 ├── scripts/
-│   └── generate_proto.sh     # Скрипт для генерации Protobuf кода
+│   ├── start_all.sh          # Запуск локально/через Docker
+│   ├── stop_all.sh           # Остановка сервисов
+│   └── status_all.sh         # Быстрый статус Redis/процесса
+├── web/                      # Прототип веб-фронтенда (legacy)
+├── plan.md                   # Актуальный план работ
 ├── Dockerfile.screener-core  # Dockerfile для Screener Core
-├── Dockerfile.api-gateway    # Dockerfile для API Gateway
-├── docker-compose.yml        # Docker Compose файл
-└── README.md
+├── docker-compose.yml        # Docker Compose файл (core + redis)
+└── tests/
+    └── integration/         # Шаблон для интеграционных тестов
 
   Сквозной План Разработки (End-to-End)
 
@@ -79,7 +97,7 @@ arbitrage-screener/
 
 Стек: Go, Redis, Protocol Buffers, Docker.
 
-Архитектура: Единый сервис screener, который внутренне разделен на модули. Сбор и обработка данных (Core) и отправка данных клиенту (Gateway) работают как независимые компоненты внутри одного процесса, общаясь через каналы Go.
+Архитектура: основной сервис `screener-core` забирает рыночные данные с нескольких бирж, складывает их в Redis и логирует метрики. Клиентская часть (десктопное приложение) читает готовые ключи `price:*` напрямую из Redis.
 
 Шаг 1: Инициализация проекта и получение данных с одной биржи.
 
@@ -135,28 +153,20 @@ arbitrage-screener/
 
     Результат: Консольное приложение, которое конкурентно слушает 4 биржи и автоматически выводит все найденные арбитражные возможности.
 
-Шаг 4: Интеграция WebSocket-сервера в единый сервис.
+Шаг 4: Подготовка данных для десктопного клиента.
 
-    Создать новый модуль internal/gateway/server.go. Его задача — запустить веб-сервер и обслуживать WebSocket-соединение.
+    Задокументировать формат ключей Redis (`price:{exchange}:{symbol}`, timestamp/price).
 
-    В cmd/screener/main.go:
+    Реализовать простой CLI-скрипт (или модуль) для чтения последних значений из Redis и сериализации их в удобный для десктопного приложения формат (JSON/Protobuf).
 
-        Многопоточность (Каналы): Создать второй, буферизированный канал Go (frontendChannel) для ArbitrageOpportunity.
+    Обновить README, добавив примеры запросов к Redis и ожидания по частоте обновлений.
 
-        Многопоточность (Веб-сервер): Запустить gateway.StartServer() в отдельной горутине. Передать в него frontendChannel. Gateway будет читать из этого канала и отправлять данные в WebSocket.
+    Результат: данные Screener Core можно забирать напрямую из Redis, подключив настольное приложение без промежуточного веб-шлюза.
 
-    В internal/processor/processor.go изменить логику: вместо вывода ArbitrageOpportunity в консоль, отправлять его в frontendChannel.
+Шаг 5: Визуализация и контейнеризация.
 
-    Создать базовый фронтенд (web/index.html, web/app.js). app.js должен подключаться к WebSocket нашего сервиса screener и выводить десериализованные Protobuf-объекты в консоль браузера.
+    При желании использовать прототип `web/` как справочный материал, либо подготовить макет UI в настольном приложении.
 
-    Результат: Полностью рабочий сквозной конвейер данных в рамках одного сервиса. Данные с бирж обрабатываются и доставляются в браузер без внешних зависимостей, кроме Redis.
+    Собрать `Dockerfile.screener-core` и убедиться, что `docker-compose.yml` поднимает только `screener-core` и `redis`.
 
-Шаг 5: Визуализация данных и контейнеризация.
-
-    В web/app.js доработать логику: вместо вывода в консоль, динамически создавать и обновлять строки в HTML-таблице.
-
-    Создать один Dockerfile.screener для сборки единого Go-приложения в легковесный образ.
-
-    Создать docker-compose.yml, который одной командой docker-compose up запускает два сервиса: screener и redis.
-
-    Результат: Готовое к развертыванию, простое в поддержке, контейнеризированное приложение, отображающее арбитражные возможности в реальном времени.
+    Результат: контейнеризированный сервис с документированным интерфейсом данных, готовый к интеграции с десктопным клиентом.

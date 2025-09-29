@@ -24,28 +24,6 @@
 			"group": "build"
 		},
 		{
-			"label": "Build API Gateway after Gate integration",
-			"type": "shell",
-			"command": "go build ./...",
-			"args": [],
-			"isBackground": false,
-			"problemMatcher": [
-				"$go"
-			],
-			"group": "build"
-		},
-		{
-			"label": "Build only API Gateway",
-			"type": "shell",
-			"command": "go build ./cmd/api-gateway",
-			"args": [],
-			"isBackground": false,
-			"problemMatcher": [
-				"$go"
-			],
-			"group": "build"
-		},
-		{
 			"label": "Run screener-core (Gate only)",
 			"type": "shell",
 			"command": "go run ./cmd/screener-core/main.go",

@@ -9,7 +9,6 @@ PID_DIR="$ROOT_DIR/build"
 LOG_FILE="$ROOT_DIR/screner.log"
 
 STOP_DOCKER=0
-WITH_API=0
 
 ts() { date +"%Y-%m-%dT%H:%M:%S%z"; }
 info() { echo "$(ts) [INFO] $*"; }
@@ -19,8 +18,7 @@ err()  { echo "$(ts) [ERROR] $*" >&2; }
 usage() {
   cat <<USAGE
 Usage: $(basename "$0") [options]
-  --docker-all   Stop docker compose services (redis + screener-core [+ api-gateway])
-  --with-api     Also stop api-gateway (only with --docker-all)
+  --docker-all   Stop docker compose services (redis + screener-core)
   -h, --help     Show help
 USAGE
 }
@@ -28,7 +26,6 @@ USAGE
 for arg in "$@"; do
   case "$arg" in
     --docker-all) STOP_DOCKER=1 ;;
-    --with-api)   WITH_API=1 ;;
     -h|--help)    usage; exit 0 ;;
     *) warn "Unknown option: $arg" ;;
   esac
@@ -66,13 +63,8 @@ stop_docker() {
     err "docker compose plugin not found"
     exit 1
   fi
-  if [[ "$WITH_API" == "1" ]]; then
-    info "Stopping docker services: api-gateway, screener-core, redis"
-    (cd "$ROOT_DIR" && docker compose stop api-gateway screener-core redis || true)
-  else
-    info "Stopping docker services: screener-core, redis"
-    (cd "$ROOT_DIR" && docker compose stop screener-core redis || true)
-  fi
+  info "Stopping docker services: screener-core, redis"
+  (cd "$ROOT_DIR" && docker compose stop screener-core redis || true)
 }
 
 main() {

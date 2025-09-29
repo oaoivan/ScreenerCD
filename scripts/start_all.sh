@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Unified starter for Screner project: Redis + screener-core (and optional Docker stack)
 # - Default: local binary of screener-core, Redis via docker-compose if not up
-# - --docker-all: run everything via docker compose (redis + screener-core; + api-gateway if asked)
-# - --with-api only works with --docker-all
+# - --docker-all: run everything via docker compose (redis + screener-core)
 #
 # Environment overrides:
 #   REDIS_HOST (default: localhost)
@@ -23,7 +22,6 @@ REDIS_HOST="${REDIS_HOST:-localhost}"
 REDIS_PORT="${REDIS_PORT:-6379}"
 
 DOCKER_ALL=0
-WITH_API=0
 NO_BUILD=0
 CLEAN_LOG=0
 
@@ -35,8 +33,7 @@ err()  { echo "$(ts) [ERROR] $*" >&2; }
 usage() {
   cat <<USAGE
 Usage: $(basename "$0") [options]
-  --docker-all        Run full stack in Docker Compose (redis + screener-core [+ api-gateway])
-  --with-api          Also start api-gateway (only with --docker-all)
+  --docker-all        Run full stack in Docker Compose (redis + screener-core)
   --no-build          Skip go build (use existing build/screener-core)
   --clean-log         Truncate screner.log before start
   -h, --help          Show help
@@ -50,7 +47,6 @@ USAGE
 for arg in "$@"; do
   case "$arg" in
     --docker-all) DOCKER_ALL=1 ;;
-    --with-api)   WITH_API=1 ;;
     --no-build)   NO_BUILD=1 ;;
     --clean-log)  CLEAN_LOG=1 ;;
     -h|--help)    usage; exit 0 ;;
@@ -80,12 +76,15 @@ wait_redis() {
     warn "redis-cli not found; skipping PING check"
     return 0
   fi
-  for i in $(seq 1 $timeout_s); do
+  for attempt in $(seq 1 $timeout_s); do
     if redis-cli -h "$host" -p "$port" --no-auth-warning ping >/dev/null 2>&1; then
       info "Redis is up at ${host}:${port}"
       return 0
     fi
     sleep 1
+    if (( attempt % 5 == 0 )); then
+      warn "Redis not responding yet (attempt ${attempt}/${timeout_s})"
+    fi
   done
   err "Redis didn't respond to PING within ${timeout_s}s at ${host}:${port}"
   return 1
@@ -108,12 +107,8 @@ start_compose_stack() {
     err "Docker Compose plugin not available (docker compose)."
     exit 1
   fi
-  info "Starting Docker stack: redis + screener-core${WITH_API:+ + api-gateway}"
-  if [[ "$WITH_API" == "1" ]]; then
-    (cd "$ROOT_DIR" && docker compose up -d redis screener-core api-gateway)
-  else
-    (cd "$ROOT_DIR" && docker compose up -d redis screener-core)
-  fi
+  info "Starting Docker stack: redis + screener-core"
+  (cd "$ROOT_DIR" && docker compose up -d redis screener-core)
   info "Waiting Redis health..."
   wait_redis "$REDIS_HOST" "$REDIS_PORT" || true
 }
@@ -176,11 +171,7 @@ main() {
   truncate_log_if_needed
 
   if [[ "$DOCKER_ALL" == "1" ]]; then
-    if [[ "$WITH_API" == "1" ]]; then
-      info "Mode: Docker stack (redis + screener-core + api-gateway)"
-    else
-      info "Mode: Docker stack (redis + screener-core)"
-    fi
+    info "Mode: Docker stack (redis + screener-core)"
     start_compose_stack
     info "Done. Use scripts/status_all.sh to inspect status."
     exit 0
