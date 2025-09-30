@@ -90,9 +90,9 @@ func main() {
 		exConfigByName[name] = exCfg
 	}
 
-	symbolCache := make(map[string][]string)
+	baseSymbolCache := make(map[string][]string)
 	loadSymbolsFromFile := func(path string) ([]string, error) {
-		if cached, ok := symbolCache[path]; ok {
+		if cached, ok := baseSymbolCache[path]; ok {
 			return cached, nil
 		}
 		list, err := util.LoadSymbolsFromFile(path)
@@ -100,16 +100,16 @@ func main() {
 			return nil, err
 		}
 		util.Infof("Loaded %d symbols from %s", len(list), path)
-		symbolCache[path] = list
+		baseSymbolCache[path] = list
 		return list, nil
 	}
 
-	var defaultSymbols []string
+	var defaultBaseSymbols []string
 	if cfg.DefaultSymbolsFile != "" {
 		if list, err := loadSymbolsFromFile(cfg.DefaultSymbolsFile); err != nil {
 			util.Errorf("Failed to load default symbols file %s: %v", cfg.DefaultSymbolsFile, err)
 		} else {
-			defaultSymbols = list
+			defaultBaseSymbols = list
 		}
 	}
 
@@ -121,6 +121,15 @@ func main() {
 			continue
 		}
 		exCfg, ok := exConfigByName[exKey]
+		baseToQuote := func(bases []string, source string) []string {
+			pairs := util.AttachQuote(bases, "USDT")
+			if len(pairs) == 0 {
+				util.Fatalf("No symbols produced for %s from %s", exKey, source)
+			}
+			util.Infof("Exchange %s prepared %d symbols (quote=USDT) from %s", exKey, len(pairs), source)
+			return pairs
+		}
+
 		switch {
 		case ok && len(exCfg.Symbols) > 0:
 			symbolsByExchange[exKey] = append([]string(nil), exCfg.Symbols...)
@@ -130,18 +139,16 @@ func main() {
 			if err != nil {
 				util.Fatalf("Error loading symbols for %s from %s: %v", exKey, exCfg.SymbolsFile, err)
 			}
-			symbolsByExchange[exKey] = list
-			util.Infof("Exchange %s loaded %d symbols from %s", exKey, len(list), exCfg.SymbolsFile)
-		case len(defaultSymbols) > 0:
-			symbolsByExchange[exKey] = defaultSymbols
-			util.Infof("Exchange %s uses default symbols (%d)", exKey, len(defaultSymbols))
+			symbolsByExchange[exKey] = baseToQuote(list, exCfg.SymbolsFile)
+		case len(defaultBaseSymbols) > 0:
+			symbolsByExchange[exKey] = baseToQuote(defaultBaseSymbols, cfg.DefaultSymbolsFile)
+			util.Infof("Exchange %s uses default symbols (%d base)", exKey, len(defaultBaseSymbols))
 		default:
 			list, err := loadSymbolsFromFile(legacySymbolsPath)
 			if err != nil {
 				util.Fatalf("Error loading legacy symbols for %s: %v", exKey, err)
 			}
-			symbolsByExchange[exKey] = list
-			util.Infof("Exchange %s uses legacy symbols file %s (%d)", exKey, legacySymbolsPath, len(list))
+			symbolsByExchange[exKey] = baseToQuote(list, legacySymbolsPath)
 		}
 		if len(symbolsByExchange[exKey]) == 0 {
 			util.Fatalf("No symbols resolved for exchange %s", exKey)

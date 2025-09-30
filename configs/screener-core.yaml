@@ -4,17 +4,17 @@ symbol: "BTC-USDT"
 api_key: ""
 secret: ""
 
-default_symbols_file: "Temp/all_contracts_merged_reformatted.json"
+default_symbols_file: "ticker_source/geckoterminal_pools.json"
 
 exchange_configs:
   - name: "gate"
-    symbols_file: "Temp/all_contracts_merged_reformatted.json"
+    symbols_file: "ticker_source/geckoterminal_pools.json"
   - name: "bybit"
-    symbols_file: "Temp/all_contracts_merged_reformatted.json"
+    symbols_file: "ticker_source/geckoterminal_pools.json"
   - name: "bitget"
-    symbols_file: "Temp/all_contracts_merged_reformatted.json"
+    symbols_file: "ticker_source/geckoterminal_pools.json"
   - name: "okx"
-    symbols_file: "Temp/all_contracts_merged_reformatted.json"
+    symbols_file: "ticker_source/geckoterminal_pools.json"
 
 redis: 
   host: "localhost"

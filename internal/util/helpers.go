@@ -35,3 +35,31 @@ func NormalizeSpotSymbol(exchange, raw string) string {
 	s = strings.TrimSpace(s)
 	return s
 }
+
+// AttachQuote формирует пары BASE+QUOTE (например, BTC + USDT -> BTCUSDT).
+// Пустые значения отбрасываются, результат всегда в верхнем регистре.
+func AttachQuote(bases []string, quote string) []string {
+	normalizedQuote := strings.ToUpper(strings.TrimSpace(quote))
+	if normalizedQuote == "" {
+		// если котировка не указана, возвращаем копию исходного списка
+		out := make([]string, 0, len(bases))
+		for _, base := range bases {
+			trimmed := strings.ToUpper(strings.TrimSpace(base))
+			if trimmed == "" {
+				continue
+			}
+			out = append(out, trimmed)
+		}
+		return out
+	}
+
+	out := make([]string, 0, len(bases))
+	for _, base := range bases {
+		trimmed := strings.ToUpper(strings.TrimSpace(base))
+		if trimmed == "" {
+			continue
+		}
+		out = append(out, trimmed+normalizedQuote)
+	}
+	return out
+}
