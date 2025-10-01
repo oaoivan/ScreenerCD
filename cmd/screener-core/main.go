@@ -643,6 +643,13 @@ func uniswapPoolsFromConfig(dexCfg config.DexConfig) ([]uniswap.PoolConfig, erro
 			if existing.CanonicalPair == "" && pool.CanonicalPair != "" {
 				existing.CanonicalPair = pool.CanonicalPair
 			}
+			if !existing.HasStable && pool.HasStable {
+				existing.HasStable = true
+				existing.StableSymbol = pool.StableSymbol
+			}
+			if !existing.HasWETH && pool.HasWETH {
+				existing.HasWETH = true
+			}
 			poolMap[pool.Address] = existing
 			return
 		}
@@ -659,31 +666,17 @@ func uniswapPoolsFromConfig(dexCfg config.DexConfig) ([]uniswap.PoolConfig, erro
 		if token0Symbol == "" || token1Symbol == "" {
 			return nil, fmt.Errorf("uniswap v2: pool %s requires token symbols", p.PairName)
 		}
+		token0Meta := uniswap.NormalizeTokenMeta(token0Symbol, strings.TrimSpace(p.Token0Address), int(p.Token0Decimals))
+		token1Meta := uniswap.NormalizeTokenMeta(token1Symbol, strings.TrimSpace(p.Token1Address), int(p.Token1Decimals))
 		pool := uniswap.PoolConfig{
 			Address:       common.HexToAddress(addr),
 			PairName:      p.PairName,
 			BaseIsToken0:  p.BaseIsToken0,
 			CanonicalPair: strings.ToUpper(strings.TrimSpace(p.CanonicalPair)),
-			Token0: uniswap.TokenMeta{
-				Address:  common.HexToAddress(strings.TrimSpace(p.Token0Address)),
-				Symbol:   token0Symbol,
-				Decimals: p.Token0Decimals,
-			},
-			Token1: uniswap.TokenMeta{
-				Address:  common.HexToAddress(strings.TrimSpace(p.Token1Address)),
-				Symbol:   token1Symbol,
-				Decimals: p.Token1Decimals,
-			},
+			Token0:        token0Meta,
+			Token1:        token1Meta,
 		}
-		if pool.Token0.Decimals == 0 {
-			pool.Token0.Decimals = 18
-		}
-		if pool.Token1.Decimals == 0 {
-			pool.Token1.Decimals = 18
-		}
-		if pool.CanonicalPair == "" {
-			pool.CanonicalPair = uniswap.NormalizePair(pool)
-		}
+		uniswap.FinalizePool(&pool)
 		merge(pool)
 	}
 
@@ -700,6 +693,19 @@ func uniswapPoolsFromConfig(dexCfg config.DexConfig) ([]uniswap.PoolConfig, erro
 	result := make([]uniswap.PoolConfig, 0, len(poolMap))
 	for _, pool := range poolMap {
 		result = append(result, pool)
+	}
+
+	ensureCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if poolsOrdered, err := uniswap.AdjustPoolsOrdering(ensureCtx, dexCfg.HTTPURL, result); err == nil {
+		result = poolsOrdered
+	} else {
+		util.Debugf("uniswap_v2: adjust ordering failed: %v", err)
+	}
+	for _, pool := range result {
+		if strings.Contains(pool.PairName, "SPX") || strings.Contains(pool.CanonicalPair, "SPX") {
+			util.Infof("uniswap_v2: final pool %s baseIs0=%t sym0=%s/%d sym1=%s/%d", pool.PairName, pool.BaseIsToken0, pool.Token0.Symbol, pool.Token0.Decimals, pool.Token1.Symbol, pool.Token1.Decimals)
+		}
 	}
 	return result, nil
 }

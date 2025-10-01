@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"os"
 	"strconv"
@@ -15,6 +16,8 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
 )
 
@@ -35,13 +38,34 @@ type PoolConfig struct {
 	Token1        TokenMeta
 	BaseIsToken0  bool
 	CanonicalPair string
+	HasStable     bool
+	HasWETH       bool
+	StableSymbol  string
+}
+
+func FinalizePool(p *PoolConfig) {
+	p.HasStable = p.Token0.IsStable || p.Token1.IsStable
+	p.HasWETH = p.Token0.IsWETH || p.Token1.IsWETH
+	switch {
+	case p.Token0.IsStable:
+		p.StableSymbol = p.Token0.Symbol
+	case p.Token1.IsStable:
+		p.StableSymbol = p.Token1.Symbol
+	default:
+		p.StableSymbol = ""
+	}
+	if p.CanonicalPair == "" {
+		p.CanonicalPair = NormalizePair(*p)
+	}
 }
 
 // TokenMeta описывает параметры токена внутри пула.
 type TokenMeta struct {
 	Address  common.Address
 	Symbol   string
-	Decimals uint8
+	Decimals int
+	IsStable bool
+	IsWETH   bool
 }
 
 // Dialer абстрагирует создание WebSocket соединения, что упростит тестирование и переиспользование логики.
@@ -64,6 +88,9 @@ type Connector struct {
 
 	mu    sync.RWMutex
 	pools map[common.Address]*poolState
+
+	wethUSD       *big.Rat
+	wethUSDStable string
 }
 
 // NewConnector создаёт коннектор с заданной конфигурацией и транспортом.
@@ -74,6 +101,7 @@ func NewConnector(cfg Config, dialer Dialer) *Connector {
 type poolState struct {
 	meta      PoolConfig
 	lastPrice *big.Rat
+	gotFirst  bool
 }
 
 // Run запускает приём цен и публикует их в общий канал Screener Core.
@@ -89,6 +117,9 @@ func (c *Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error {
 	for _, pool := range c.cfg.Pools {
 		ps := &poolState{meta: pool}
 		c.pools[pool.Address] = ps
+		if strings.Contains(pool.PairName, "SPX") || strings.Contains(pool.CanonicalPair, "SPX") {
+			util.Infof("uniswap_v2: init pool meta=%+v", pool)
+		}
 	}
 
 	backoff := time.Second
@@ -267,14 +298,7 @@ func (c *Connector) handleRaw(raw []byte, out chan<- *pb.MarketData) error {
 		return nil
 	}
 
-	price, _ := priceRat.Float64()
-	md := &pb.MarketData{
-		Exchange:  c.exchangeName(),
-		Symbol:    NormalizePair(state.meta),
-		Price:     price,
-		Timestamp: time.Now().UnixMilli(),
-	}
-	out <- md
+	c.publish(state, priceRat, out)
 	return nil
 }
 
@@ -317,6 +341,288 @@ func shouldDrop(state *poolState, price *big.Rat) bool {
 	return false
 }
 
+const maxUSDPrice = 100000.0
+
+func (c *Connector) publish(state *poolState, price *big.Rat, out chan<- *pb.MarketData) {
+	meta := state.meta
+	c.updateWethUSD(&meta, price)
+	emitted := false
+
+	if meta.HasWETH && meta.HasStable {
+		if ratio := c.wethStablePrice(&meta, price); ratio != nil {
+			if c.emitPrice(out, fmt.Sprintf("WETH%s", meta.StableSymbol), ratio) {
+				emitted = true
+			}
+		}
+	}
+
+	if usd, stable, mode, ok := c.tokenUSD(&meta, price); ok && usd != nil {
+		if strings.Contains(tokenSymbol(&meta), "SPX") {
+			util.Infof("uniswap_v2: tokenUSD meta=%+v base=%s stable=%t stableSym=%s mode=%s", meta, baseSymbol(&meta), meta.HasStable, meta.StableSymbol, mode)
+		}
+		symBase := tokenSymbol(&meta)
+		if strings.Contains(symBase, "SPX") {
+			util.Infof("uniswap_v2: raw SPX usd=%s stable=%s mode=%s", formatRat(usd, 30), stable, mode)
+		}
+		if val, okf := ratToFloat(usd); okf {
+			if val > 0 && val <= maxUSDPrice {
+				symbol := fmt.Sprintf("%s%s", symBase, stable)
+				if c.emitFloat(out, symbol, val) {
+					emitted = true
+				}
+			} else if val > maxUSDPrice {
+				util.Debugf("uniswap_v2: skip unrealistic USD price %.2f for %s (mode=%s)", val, meta.PairName, mode)
+			}
+		}
+	}
+
+	if emitted && !state.gotFirst {
+		state.gotFirst = true
+	}
+}
+
+func (c *Connector) emitPrice(out chan<- *pb.MarketData, symbol string, value *big.Rat) bool {
+	val, ok := ratToFloat(value)
+	if !ok {
+		return false
+	}
+	return c.emitFloat(out, symbol, val)
+}
+
+func (c *Connector) emitFloat(out chan<- *pb.MarketData, symbol string, value float64) bool {
+	if value <= 0 || math.IsNaN(value) || math.IsInf(value, 0) {
+		return false
+	}
+	md := &pb.MarketData{
+		Exchange:  c.exchangeName(),
+		Symbol:    symbol,
+		Price:     value,
+		Timestamp: time.Now().UnixMilli(),
+	}
+	if strings.Contains(symbol, "SPX") {
+		util.Infof("uniswap_v2: %s price=%f", symbol, value)
+	}
+	out <- md
+	return true
+}
+
+func (c *Connector) updateWethUSD(meta *PoolConfig, price *big.Rat) {
+	if !meta.HasWETH || !meta.HasStable || meta.StableSymbol == "" {
+		return
+	}
+	var wethPerStable *big.Rat
+	if (meta.BaseIsToken0 && meta.Token0.IsWETH) || (!meta.BaseIsToken0 && meta.Token1.IsWETH) {
+		wethPerStable = price
+	} else {
+		wethPerStable = invert(price)
+	}
+	if wethPerStable == nil {
+		return
+	}
+	if !c.sanityWETHUSD(wethPerStable) {
+		util.Debugf("uniswap_v2: reject WETHUSD candidate %s %s", formatRat(wethPerStable, 6), meta.PairName)
+		return
+	}
+	if !c.shouldUpdateWETH(meta.StableSymbol) {
+		return
+	}
+	c.wethUSD = new(big.Rat).Set(wethPerStable)
+	c.wethUSDStable = meta.StableSymbol
+	util.Infof("uniswap_v2: WETHUSD=%s %s via %s", formatRat(wethPerStable, 6), meta.StableSymbol, meta.PairName)
+}
+
+func (c *Connector) wethStablePrice(meta *PoolConfig, price *big.Rat) *big.Rat {
+	if !meta.HasWETH || !meta.HasStable {
+		return nil
+	}
+	if (meta.BaseIsToken0 && meta.Token0.IsWETH) || (!meta.BaseIsToken0 && meta.Token1.IsWETH) {
+		return price
+	}
+	return invert(price)
+}
+
+func (c *Connector) tokenUSD(meta *PoolConfig, price *big.Rat) (*big.Rat, string, string, bool) {
+	if meta.HasWETH && meta.HasStable {
+		return nil, "", "", false
+	}
+	if meta.HasStable && !meta.HasWETH {
+		stable := meta.StableSymbol
+		if stable == "" {
+			return nil, "", "", false
+		}
+		if meta.Token0.IsStable && !meta.Token1.IsStable {
+			if meta.BaseIsToken0 {
+				inv := invert(price)
+				if inv == nil {
+					return nil, "", "", false
+				}
+				return inv, stable, "direct-inv", true
+			}
+			return price, stable, "direct", true
+		}
+		if meta.Token1.IsStable && !meta.Token0.IsStable {
+			if meta.BaseIsToken0 {
+				return price, stable, "direct", true
+			}
+			inv := invert(price)
+			if inv == nil {
+				return nil, "", "", false
+			}
+			return inv, stable, "direct-inv", true
+		}
+		return nil, "", "", false
+	}
+	if meta.HasWETH && !meta.HasStable {
+		if c.wethUSD == nil || c.wethUSDStable == "" {
+			return nil, "", "", false
+		}
+		if c.isTokenBase(meta) {
+			if strings.Contains(tokenSymbol(meta), "SPX") {
+				util.Infof("uniswap_v2: SPX base price=%s decimals token=%d weth=%d", formatRat(price, 10), meta.Token0.Decimals, meta.Token1.Decimals)
+			}
+			usd := new(big.Rat).Mul(price, c.wethUSD)
+			return usd, c.wethUSDStable, "derived", true
+		}
+		inv := invert(price)
+		if inv == nil {
+			return nil, "", "", false
+		}
+		usd := new(big.Rat).Mul(inv, c.wethUSD)
+		return usd, c.wethUSDStable, "derived-inv", true
+	}
+	return nil, "", "", false
+}
+
+func (c *Connector) shouldUpdateWETH(stable string) bool {
+	if stable == "" {
+		return false
+	}
+	if c.wethUSD == nil {
+		return true
+	}
+	switch c.wethUSDStable {
+	case "USDC":
+		return false
+	case "USDT":
+		if stable == "USDC" {
+			return true
+		}
+		return false
+	case "DAI":
+		if stable == "USDC" || stable == "USDT" {
+			return true
+		}
+		return false
+	}
+	if c.wethUSDStable == stable {
+		return true
+	}
+	return true
+}
+
+func (c *Connector) sanityWETHUSD(p *big.Rat) bool {
+	if p == nil || p.Sign() <= 0 {
+		return false
+	}
+	val, ok := ratToFloat(p)
+	if !ok {
+		return false
+	}
+	if val < 300 || val > 100000 {
+		return false
+	}
+	if c.wethUSD != nil {
+		cur, ok := ratToFloat(c.wethUSD)
+		if ok && cur > 0 {
+			ratio := val / cur
+			if ratio < 0.5 || ratio > 2.0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (c *Connector) isTokenBase(meta *PoolConfig) bool {
+	if meta.HasWETH && !meta.HasStable {
+		if meta.BaseIsToken0 && !meta.Token0.IsWETH {
+			return true
+		}
+		if !meta.BaseIsToken0 && !meta.Token1.IsWETH {
+			return true
+		}
+	}
+	if meta.HasStable && !meta.HasWETH {
+		if meta.BaseIsToken0 && !meta.Token0.IsStable {
+			return true
+		}
+		if !meta.BaseIsToken0 && !meta.Token1.IsStable {
+			return true
+		}
+	}
+	return false
+}
+
+func baseSymbol(meta *PoolConfig) string {
+	if meta.BaseIsToken0 {
+		return meta.Token0.Symbol
+	}
+	return meta.Token1.Symbol
+}
+
+func quoteSymbol(meta *PoolConfig) string {
+	if meta.BaseIsToken0 {
+		return meta.Token1.Symbol
+	}
+	return meta.Token0.Symbol
+}
+
+func tokenSymbol(meta *PoolConfig) string {
+	if meta.HasStable && !meta.HasWETH {
+		if meta.Token0.IsStable {
+			return meta.Token1.Symbol
+		}
+		if meta.Token1.IsStable {
+			return meta.Token0.Symbol
+		}
+	}
+	if meta.HasWETH && !meta.HasStable {
+		if meta.Token0.IsWETH {
+			return meta.Token1.Symbol
+		}
+		if meta.Token1.IsWETH {
+			return meta.Token0.Symbol
+		}
+	}
+	return baseSymbol(meta)
+}
+
+func invert(r *big.Rat) *big.Rat {
+	if r == nil || r.Sign() == 0 {
+		return nil
+	}
+	return new(big.Rat).Inv(r)
+}
+
+func ratToFloat(r *big.Rat) (float64, bool) {
+	if r == nil {
+		return 0, false
+	}
+	f, _ := new(big.Float).SetPrec(256).SetRat(r).Float64()
+	if math.IsNaN(f) || math.IsInf(f, 0) {
+		return 0, false
+	}
+	return f, true
+}
+
+func formatRat(r *big.Rat, precision int) string {
+	if r == nil {
+		return ""
+	}
+	f := new(big.Float).SetPrec(256).SetRat(r)
+	return f.Text('f', precision)
+}
+
 func computePrice(pool PoolConfig, rawData string) (*big.Rat, error) {
 	data := strings.TrimPrefix(rawData, "0x")
 	if len(data) < 64*2 {
@@ -333,9 +639,9 @@ func computePrice(pool PoolConfig, rawData string) (*big.Rat, error) {
 	}
 
 	if pool.BaseIsToken0 {
-		return ratio(r1, int(pool.Token1.Decimals), r0, int(pool.Token0.Decimals)), nil
+		return ratio(r1, pool.Token1.Decimals, r0, pool.Token0.Decimals), nil
 	}
-	return ratio(r0, int(pool.Token0.Decimals), r1, int(pool.Token1.Decimals)), nil
+	return ratio(r0, pool.Token0.Decimals, r1, pool.Token1.Decimals), nil
 }
 
 func ratio(num *big.Int, numDec int, den *big.Int, denDec int) *big.Rat {
@@ -458,6 +764,7 @@ var (
 		"TUSD":  true,
 		"FDUSD": true,
 		"USDD":  true,
+		"USD1":  true,
 	}
 	canonicalTokens = map[string]struct {
 		Symbol string
@@ -467,7 +774,16 @@ var (
 		strings.ToLower("0xdac17f958d2ee523a2206206994597c13d831ec7"): {Symbol: "USDT", Dec: 6},
 		strings.ToLower("0x6b175474e89094c44da98b954eedeac495271d0f"): {Symbol: "DAI", Dec: 18},
 		strings.ToLower("0x0000000000085d4780B73119b644AE5ecd22b376"): {Symbol: "TUSD", Dec: 18},
+		strings.ToLower("0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d"): {Symbol: "USD1", Dec: 18},
 		wethAddressLower: {Symbol: "WETH", Dec: 18},
+	}
+	hardWethStable = []struct {
+		Addr   string
+		Stable string
+	}{
+		{Addr: "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", Stable: "USDC"},
+		{Addr: "0x0d4a11d5EEaaC28EC3F61d100daf4d40471f1852", Stable: "USDT"},
+		{Addr: "0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11", Stable: "DAI"},
 	}
 )
 
@@ -545,12 +861,216 @@ func LoadPoolsFromGecko(path string) ([]PoolConfig, error) {
 			Token1:       t1,
 			BaseIsToken0: baseIsToken0,
 		}
-		pool.CanonicalPair = NormalizePair(pool)
+		FinalizePool(&pool)
 		result = append(result, pool)
 		seen[addr] = true
 	}
 
+	added := 0
+	for _, hw := range hardWethStable {
+		addr := common.HexToAddress(hw.Addr)
+		if seen[addr] {
+			continue
+		}
+		stableSymbol := strings.ToUpper(hw.Stable)
+		stableAddrHex := stableAddressForSymbol(stableSymbol)
+		if stableAddrHex == "" {
+			continue
+		}
+		stableDecimals := 18
+		if stableSymbol == "USDC" || stableSymbol == "USDT" {
+			stableDecimals = 6
+		}
+		stableMeta := NormalizeTokenMeta(stableSymbol, stableAddrHex, stableDecimals)
+		wethMeta := NormalizeTokenMeta("WETH", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", 18)
+		var pool PoolConfig
+		switch stableSymbol {
+		case "USDC":
+			pool = PoolConfig{
+				Address:      addr,
+				PairName:     "USDC / WETH (hard)",
+				Token0:       stableMeta,
+				Token1:       wethMeta,
+				BaseIsToken0: false,
+			}
+		case "USDT":
+			pool = PoolConfig{
+				Address:      addr,
+				PairName:     "WETH / USDT (hard)",
+				Token0:       wethMeta,
+				Token1:       stableMeta,
+				BaseIsToken0: true,
+			}
+		case "DAI":
+			pool = PoolConfig{
+				Address:      addr,
+				PairName:     "DAI / WETH (hard)",
+				Token0:       stableMeta,
+				Token1:       wethMeta,
+				BaseIsToken0: false,
+			}
+		default:
+			continue
+		}
+		FinalizePool(&pool)
+		result = append(result, pool)
+		seen[addr] = true
+		added++
+	}
+	if added > 0 {
+		util.Infof("uniswap_v2: added %d hard reference pools", added)
+	}
+
 	return result, nil
+}
+
+// AdjustPoolsOrdering проверяет фактический порядок token0/token1 через RPC и при необходимости переставляет метаданные.
+func AdjustPoolsOrdering(ctx context.Context, httpURL string, pools []PoolConfig) ([]PoolConfig, error) {
+	trimmed := strings.TrimSpace(httpURL)
+	if trimmed == "" {
+		return pools, nil
+	}
+	client, err := rpc.DialContext(ctx, trimmed)
+	if err != nil {
+		return nil, err
+	}
+	defer client.Close()
+
+	decimalsCache := make(map[common.Address]int)
+
+	for i := range pools {
+		pool := &pools[i]
+		if err := ensurePoolOrder(ctx, client, pool); err != nil {
+			util.Debugf("uniswap_v2: ensurePoolOrder failed for %s (%s): %v", pool.PairName, pool.Address.Hex(), err)
+		}
+		updateTokenDecimals(ctx, client, pool, decimalsCache)
+	}
+	return pools, nil
+}
+
+func ensurePoolOrder(ctx context.Context, client *rpc.Client, pool *PoolConfig) error {
+	t0, t1, err := fetchPairTokens(ctx, client, pool.Address)
+	if err != nil {
+		return err
+	}
+	if t0 == pool.Token0.Address && t1 == pool.Token1.Address {
+		return nil
+	}
+	if t0 == pool.Token1.Address && t1 == pool.Token0.Address {
+		swapPoolTokens(pool)
+		FinalizePool(pool)
+		return nil
+	}
+	return fmt.Errorf("token mismatch pool=%s meta0=%s meta1=%s actual0=%s actual1=%s", pool.PairName, pool.Token0.Address.Hex(), pool.Token1.Address.Hex(), t0.Hex(), t1.Hex())
+}
+
+func fetchPairTokens(ctx context.Context, client *rpc.Client, pair common.Address) (common.Address, common.Address, error) {
+	t0, err := callAddress(ctx, client, pair, "0x0dfe1681")
+	if err != nil {
+		return common.Address{}, common.Address{}, err
+	}
+	t1, err := callAddress(ctx, client, pair, "0xd21220a7")
+	if err != nil {
+		return common.Address{}, common.Address{}, err
+	}
+	return t0, t1, nil
+}
+
+func callAddress(ctx context.Context, client *rpc.Client, pair common.Address, data string) (common.Address, error) {
+	var result string
+	call := map[string]string{"to": pair.Hex(), "data": data}
+	ctx, cancel := context.WithTimeout(ctx, 4*time.Second)
+	defer cancel()
+	if err := client.CallContext(ctx, &result, "eth_call", call, "latest"); err != nil {
+		return common.Address{}, err
+	}
+	return parseAddressResult(result)
+}
+
+func parseAddressResult(res string) (common.Address, error) {
+	res = strings.TrimSpace(res)
+	if !strings.HasPrefix(res, "0x") {
+		return common.Address{}, fmt.Errorf("unexpected eth_call result %s", res)
+	}
+	b, err := hex.DecodeString(strings.TrimPrefix(res, "0x"))
+	if err != nil {
+		return common.Address{}, err
+	}
+	if len(b) < 32 {
+		return common.Address{}, fmt.Errorf("eth_call result too short: %d", len(b))
+	}
+	return common.BytesToAddress(b[12:]), nil
+}
+
+func swapPoolTokens(pool *PoolConfig) {
+	pool.Token0, pool.Token1 = pool.Token1, pool.Token0
+	pool.BaseIsToken0 = !pool.BaseIsToken0
+}
+
+func updateTokenDecimals(ctx context.Context, client *rpc.Client, pool *PoolConfig, cache map[common.Address]int) {
+	updateMetaDecimals := func(meta *TokenMeta) {
+		if meta.IsStable || meta.IsWETH {
+			return
+		}
+		if meta.Decimals > 0 && meta.Decimals <= 18 && meta.Decimals >= 10 {
+			return
+		}
+		if cached, ok := cache[meta.Address]; ok {
+			meta.Decimals = cached
+			return
+		}
+		if dec, err := fetchTokenDecimals(ctx, client, meta.Address); err == nil && dec > 0 {
+			meta.Decimals = dec
+			cache[meta.Address] = dec
+			util.Infof("uniswap_v2: updated decimals addr=%s symbol=%s decimals=%d", meta.Address.Hex(), meta.Symbol, dec)
+		} else if err != nil {
+			util.Debugf("uniswap_v2: fetch decimals failed addr=%s: %v", meta.Address.Hex(), err)
+		}
+	}
+	updateMetaDecimals(&pool.Token0)
+	updateMetaDecimals(&pool.Token1)
+	FinalizePool(pool)
+}
+
+func fetchTokenDecimals(ctx context.Context, client *rpc.Client, addr common.Address) (int, error) {
+	ctx, cancel := context.WithTimeout(ctx, 4*time.Second)
+	defer cancel()
+	var result string
+	call := map[string]string{"to": addr.Hex(), "data": "0x313ce567"}
+	if err := client.CallContext(ctx, &result, "eth_call", call, "latest"); err != nil {
+		return 0, err
+	}
+	res := strings.TrimPrefix(strings.TrimSpace(result), "0x")
+	if res == "" {
+		return 0, errors.New("empty decimals result")
+	}
+	data, err := hex.DecodeString(res)
+	if err != nil {
+		return 0, err
+	}
+	if len(data) == 0 {
+		return 0, errors.New("no data for decimals")
+	}
+	dec := int(new(big.Int).SetBytes(data).Int64())
+	if dec <= 0 {
+		return 0, fmt.Errorf("invalid decimals %d", dec)
+	}
+	return dec, nil
+}
+
+func stableAddressForSymbol(sym string) string {
+	switch strings.ToUpper(sym) {
+	case "USDC":
+		return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+	case "USDT":
+		return "0xdac17f958d2ee523a2206206994597c13d831ec7"
+	case "DAI":
+		return "0x6b175474e89094c44da98b954eedeac495271d0f"
+	case "TUSD":
+		return "0x0000000000085d4780B73119b644AE5ecd22b376"
+	default:
+		return ""
+	}
 }
 
 func normalizeToken(token geckoToken) TokenMeta {
@@ -559,7 +1079,7 @@ func normalizeToken(token geckoToken) TokenMeta {
 	meta := TokenMeta{Address: common.HexToAddress(addrTrim)}
 	if alias, ok := canonicalTokens[addrLower]; ok {
 		meta.Symbol = alias.Symbol
-		meta.Decimals = alias.Dec
+		meta.Decimals = int(alias.Dec)
 	} else {
 		symbol := strings.ToUpper(strings.TrimSpace(token.Symbol))
 		if symbol == "" {
@@ -581,7 +1101,22 @@ func normalizeToken(token geckoToken) TokenMeta {
 		if dec > 255 {
 			dec = 18
 		}
-		meta.Decimals = uint8(dec)
+		meta.Decimals = dec
+	}
+	meta.IsStable = stableSymbols[meta.Symbol]
+	meta.IsWETH = addrLower == wethAddressLower
+	return meta
+}
+
+// NormalizeTokenMeta формирует TokenMeta из произвольных входных данных (для конфигурации).
+func NormalizeTokenMeta(symbol, address string, decimals int) TokenMeta {
+	meta := normalizeToken(geckoToken{
+		Address:  address,
+		Symbol:   symbol,
+		Decimals: intOrString(decimals),
+	})
+	if strings.EqualFold(meta.Symbol, "SPX") {
+		util.Infof("uniswap_v2: NormalizeTokenMeta SPX addr=%s decimals=%d stable=%t", meta.Address.Hex(), meta.Decimals, meta.IsStable)
 	}
 	return meta
 }
