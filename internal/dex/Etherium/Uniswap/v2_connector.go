@@ -117,9 +117,6 @@ func (c *Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error {
 	for _, pool := range c.cfg.Pools {
 		ps := &poolState{meta: pool}
 		c.pools[pool.Address] = ps
-		if strings.Contains(pool.PairName, "SPX") || strings.Contains(pool.CanonicalPair, "SPX") {
-			util.Infof("uniswap_v2: init pool meta=%+v", pool)
-		}
 	}
 
 	backoff := time.Second
@@ -357,13 +354,7 @@ func (c *Connector) publish(state *poolState, price *big.Rat, out chan<- *pb.Mar
 	}
 
 	if usd, stable, mode, ok := c.tokenUSD(&meta, price); ok && usd != nil {
-		if strings.Contains(tokenSymbol(&meta), "SPX") {
-			util.Infof("uniswap_v2: tokenUSD meta=%+v base=%s stable=%t stableSym=%s mode=%s", meta, baseSymbol(&meta), meta.HasStable, meta.StableSymbol, mode)
-		}
 		symBase := tokenSymbol(&meta)
-		if strings.Contains(symBase, "SPX") {
-			util.Infof("uniswap_v2: raw SPX usd=%s stable=%s mode=%s", formatRat(usd, 30), stable, mode)
-		}
 		if val, okf := ratToFloat(usd); okf {
 			if val > 0 && val <= maxUSDPrice {
 				symbol := fmt.Sprintf("%s%s", symBase, stable)
@@ -398,9 +389,6 @@ func (c *Connector) emitFloat(out chan<- *pb.MarketData, symbol string, value fl
 		Symbol:    symbol,
 		Price:     value,
 		Timestamp: time.Now().UnixMilli(),
-	}
-	if strings.Contains(symbol, "SPX") {
-		util.Infof("uniswap_v2: %s price=%f", symbol, value)
 	}
 	out <- md
 	return true
@@ -477,9 +465,6 @@ func (c *Connector) tokenUSD(meta *PoolConfig, price *big.Rat) (*big.Rat, string
 			return nil, "", "", false
 		}
 		if c.isTokenBase(meta) {
-			if strings.Contains(tokenSymbol(meta), "SPX") {
-				util.Infof("uniswap_v2: SPX base price=%s decimals token=%d weth=%d", formatRat(price, 10), meta.Token0.Decimals, meta.Token1.Decimals)
-			}
 			usd := new(big.Rat).Mul(price, c.wethUSD)
 			return usd, c.wethUSDStable, "derived", true
 		}
@@ -1115,9 +1100,6 @@ func NormalizeTokenMeta(symbol, address string, decimals int) TokenMeta {
 		Symbol:   symbol,
 		Decimals: intOrString(decimals),
 	})
-	if strings.EqualFold(meta.Symbol, "SPX") {
-		util.Infof("uniswap_v2: NormalizeTokenMeta SPX addr=%s decimals=%d stable=%t", meta.Address.Hex(), meta.Decimals, meta.IsStable)
-	}
 	return meta
 }
 

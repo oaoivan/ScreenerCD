@@ -1076,3 +1076,103 @@
 2025/10/01 17:01:25 main.go:575: 2025-10-01T17:01:25+03:00 [INFO] metrics: msgs/s~147, redisOps/s~288, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:122829 Bybit:31523 Gate:19002 OKX:62402 uniswap_v2:ethereum:60]
 2025/10/01 17:01:28 bitget.go:31: 2025-10-01T17:01:28+03:00 [INFO] connecting to Bitget WS wss://ws.bitget.com/v2/ws/public
 2025/10/01 17:01:28 bitget.go:31: 2025-10-01T17:01:28+03:00 [INFO] connecting to Bitget WS wss://ws.bitget.com/v2/ws/public
+2025/10/01 17:01:29 bitget.go:37: 2025-10-01T17:01:29+03:00 [INFO] Bitget connected
+2025/10/01 17:01:29 bitget.go:37: 2025-10-01T17:01:29+03:00 [INFO] Bitget connected
+2025/10/01 17:01:29 main.go:281: 2025-10-01T17:01:29+03:00 [INFO] Bitget using symbols list: 151
+2025/10/01 17:01:29 main.go:281: 2025-10-01T17:01:29+03:00 [INFO] Bitget using symbols list: 151
+2025/10/01 17:01:29 main.go:300: 2025-10-01T17:01:29+03:00 [INFO] Bitget subscribed 30 symbols (batch), pausing 700ms
+2025/10/01 17:01:29 main.go:300: 2025-10-01T17:01:29+03:00 [INFO] Bitget subscribed 30 symbols (batch), pausing 700ms
+2025/10/01 17:01:30 main.go:300: 2025-10-01T17:01:30+03:00 [INFO] Bitget subscribed 60 symbols (batch), pausing 700ms
+2025/10/01 17:01:30 main.go:300: 2025-10-01T17:01:30+03:00 [INFO] Bitget subscribed 60 symbols (batch), pausing 700ms
+2025/10/01 17:01:30 main.go:575: 2025-10-01T17:01:30+03:00 [INFO] metrics: msgs/s~152, redisOps/s~310, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:122829 Bybit:31722 Gate:19113 OKX:62849 uniswap_v2:ethereum:63]
+2025/10/01 17:01:30 main.go:575: 2025-10-01T17:01:30+03:00 [INFO] metrics: msgs/s~152, redisOps/s~310, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:122829 Bybit:31722 Gate:19113 OKX:62849 uniswap_v2:ethereum:63]
+2025/10/01 17:01:31 main.go:300: 2025-10-01T17:01:31+03:00 [INFO] Bitget subscribed 90 symbols (batch), pausing 700ms
+2025/10/01 17:01:31 main.go:300: 2025-10-01T17:01:31+03:00 [INFO] Bitget subscribed 90 symbols (batch), pausing 700ms
+2025/10/01 17:01:31 main.go:300: 2025-10-01T17:01:31+03:00 [INFO] Bitget subscribed 120 symbols (batch), pausing 700ms
+2025/10/01 17:01:31 main.go:300: 2025-10-01T17:01:31+03:00 [INFO] Bitget subscribed 120 symbols (batch), pausing 700ms
+2025/10/01 17:01:32 main.go:300: 2025-10-01T17:01:32+03:00 [INFO] Bitget subscribed 150 symbols (batch), pausing 700ms
+2025/10/01 17:01:32 main.go:300: 2025-10-01T17:01:32+03:00 [INFO] Bitget subscribed 150 symbols (batch), pausing 700ms
+2025/10/01 17:01:33 main.go:300: 2025-10-01T17:01:33+03:00 [INFO] Bitget subscribed 151 symbols (batch), pausing 700ms
+2025/10/01 17:01:33 main.go:300: 2025-10-01T17:01:33+03:00 [INFO] Bitget subscribed 151 symbols (batch), pausing 700ms
+2025/10/01 17:01:35 main.go:575: 2025-10-01T17:01:35+03:00 [INFO] metrics: msgs/s~245, redisOps/s~487, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:123349 Bybit:31934 Gate:19229 OKX:63225 uniswap_v2:ethereum:63]
+2025/10/01 17:01:35 main.go:575: 2025-10-01T17:01:35+03:00 [INFO] metrics: msgs/s~245, redisOps/s~487, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:123349 Bybit:31934 Gate:19229 OKX:63225 uniswap_v2:ethereum:63]
+2025/10/01 17:01:37 v2_connector.go:481: 2025-10-01T17:01:37+03:00 [INFO] uniswap_v2: SPX base price=0.0002475391 decimals token=18 weth=8
+2025/10/01 17:01:37 v2_connector.go:481: 2025-10-01T17:01:37+03:00 [INFO] uniswap_v2: SPX base price=0.0002475391 decimals token=18 weth=8
+2025/10/01 17:01:37 v2_connector.go:361: 2025-10-01T17:01:37+03:00 [INFO] uniswap_v2: tokenUSD meta={Address:0x52c77b0CB827aFbAD022E6d6CAF2C44452eDbc39 PairName:SPX / WETH Token0:{Address:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 Symbol:WETH Decimals:18 IsStable:false IsWETH:true} Token1:{Address:0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C Symbol:SPX Decimals:8 IsStable:false IsWETH:false} BaseIsToken0:false CanonicalPair:SPXWETH HasStable:false HasWETH:true StableSymbol:} base=SPX stable=false stableSym= mode=derived
+2025/10/01 17:01:37 v2_connector.go:361: 2025-10-01T17:01:37+03:00 [INFO] uniswap_v2: tokenUSD meta={Address:0x52c77b0CB827aFbAD022E6d6CAF2C44452eDbc39 PairName:SPX / WETH Token0:{Address:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 Symbol:WETH Decimals:18 IsStable:false IsWETH:true} Token1:{Address:0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C Symbol:SPX Decimals:8 IsStable:false IsWETH:false} BaseIsToken0:false CanonicalPair:SPXWETH HasStable:false HasWETH:true StableSymbol:} base=SPX stable=false stableSym= mode=derived
+2025/10/01 17:01:37 v2_connector.go:365: 2025-10-01T17:01:37+03:00 [INFO] uniswap_v2: raw SPX usd=1.062434581119959622192332132970 stable=USDC mode=derived
+2025/10/01 17:01:37 v2_connector.go:365: 2025-10-01T17:01:37+03:00 [INFO] uniswap_v2: raw SPX usd=1.062434581119959622192332132970 stable=USDC mode=derived
+2025/10/01 17:01:37 v2_connector.go:403: 2025-10-01T17:01:37+03:00 [INFO] uniswap_v2: SPXUSDC price=1.062435
+2025/10/01 17:01:37 v2_connector.go:403: 2025-10-01T17:01:37+03:00 [INFO] uniswap_v2: SPXUSDC price=1.062435
+2025/10/01 17:01:38 bitget.go:126: 2025-10-01T17:01:38+03:00 [INFO] [WARN] Bitget errors aggregated last 5s: 30006=0, 30001=20
+2025/10/01 17:01:38 bitget.go:126: 2025-10-01T17:01:38+03:00 [INFO] [WARN] Bitget errors aggregated last 5s: 30006=0, 30001=20
+2025/10/01 17:01:40 main.go:575: 2025-10-01T17:01:40+03:00 [INFO] metrics: msgs/s~284, redisOps/s~571, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:124101 Bybit:32098 Gate:19334 OKX:63619 uniswap_v2:ethereum:67]
+2025/10/01 17:01:40 main.go:575: 2025-10-01T17:01:40+03:00 [INFO] metrics: msgs/s~284, redisOps/s~571, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:124101 Bybit:32098 Gate:19334 OKX:63619 uniswap_v2:ethereum:67]
+2025/10/01 17:01:45 main.go:575: 2025-10-01T17:01:45+03:00 [INFO] metrics: msgs/s~310, redisOps/s~618, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:124873 Bybit:32321 Gate:19438 OKX:64069 uniswap_v2:ethereum:67]
+2025/10/01 17:01:45 main.go:575: 2025-10-01T17:01:45+03:00 [INFO] metrics: msgs/s~310, redisOps/s~618, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:124873 Bybit:32321 Gate:19438 OKX:64069 uniswap_v2:ethereum:67]
+2025/10/01 17:01:49 v2_connector.go:481: 2025-10-01T17:01:49+03:00 [INFO] uniswap_v2: SPX base price=0.0002474331 decimals token=18 weth=8
+2025/10/01 17:01:49 v2_connector.go:481: 2025-10-01T17:01:49+03:00 [INFO] uniswap_v2: SPX base price=0.0002474331 decimals token=18 weth=8
+2025/10/01 17:01:49 v2_connector.go:361: 2025-10-01T17:01:49+03:00 [INFO] uniswap_v2: tokenUSD meta={Address:0x52c77b0CB827aFbAD022E6d6CAF2C44452eDbc39 PairName:SPX / WETH Token0:{Address:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 Symbol:WETH Decimals:18 IsStable:false IsWETH:true} Token1:{Address:0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C Symbol:SPX Decimals:8 IsStable:false IsWETH:false} BaseIsToken0:false CanonicalPair:SPXWETH HasStable:false HasWETH:true StableSymbol:} base=SPX stable=false stableSym= mode=derived
+2025/10/01 17:01:49 v2_connector.go:361: 2025-10-01T17:01:49+03:00 [INFO] uniswap_v2: tokenUSD meta={Address:0x52c77b0CB827aFbAD022E6d6CAF2C44452eDbc39 PairName:SPX / WETH Token0:{Address:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 Symbol:WETH Decimals:18 IsStable:false IsWETH:true} Token1:{Address:0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C Symbol:SPX Decimals:8 IsStable:false IsWETH:false} BaseIsToken0:false CanonicalPair:SPXWETH HasStable:false HasWETH:true StableSymbol:} base=SPX stable=false stableSym= mode=derived
+2025/10/01 17:01:49 v2_connector.go:365: 2025-10-01T17:01:49+03:00 [INFO] uniswap_v2: raw SPX usd=1.061979428425853941303681114856 stable=USDC mode=derived
+2025/10/01 17:01:49 v2_connector.go:365: 2025-10-01T17:01:49+03:00 [INFO] uniswap_v2: raw SPX usd=1.061979428425853941303681114856 stable=USDC mode=derived
+2025/10/01 17:01:49 v2_connector.go:403: 2025-10-01T17:01:49+03:00 [INFO] uniswap_v2: SPXUSDC price=1.061979
+2025/10/01 17:01:49 v2_connector.go:403: 2025-10-01T17:01:49+03:00 [INFO] uniswap_v2: SPXUSDC price=1.061979
+2025/10/01 17:01:50 main.go:575: 2025-10-01T17:01:50+03:00 [INFO] metrics: msgs/s~319, redisOps/s~630, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:125681 Bybit:32534 Gate:19595 OKX:64483 uniswap_v2:ethereum:69]
+2025/10/01 17:01:50 main.go:575: 2025-10-01T17:01:50+03:00 [INFO] metrics: msgs/s~319, redisOps/s~630, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:125681 Bybit:32534 Gate:19595 OKX:64483 uniswap_v2:ethereum:69]
+2025/10/01 17:01:55 main.go:575: 2025-10-01T17:01:55+03:00 [INFO] metrics: msgs/s~274, redisOps/s~555, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:126455 Bybit:32699 Gate:19700 OKX:64807 uniswap_v2:ethereum:69]
+2025/10/01 17:01:55 main.go:575: 2025-10-01T17:01:55+03:00 [INFO] metrics: msgs/s~274, redisOps/s~555, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:126455 Bybit:32699 Gate:19700 OKX:64807 uniswap_v2:ethereum:69]
+2025/10/01 17:02:00 main.go:575: 2025-10-01T17:02:00+03:00 [INFO] metrics: msgs/s~305, redisOps/s~581, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:127266 Bybit:32940 Gate:19800 OKX:65180 uniswap_v2:ethereum:69]
+2025/10/01 17:02:00 main.go:575: 2025-10-01T17:02:00+03:00 [INFO] metrics: msgs/s~305, redisOps/s~581, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:127266 Bybit:32940 Gate:19800 OKX:65180 uniswap_v2:ethereum:69]
+2025/10/01 17:02:05 main.go:575: 2025-10-01T17:02:05+03:00 [INFO] metrics: msgs/s~303, redisOps/s~634, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:127977 Bybit:33136 Gate:19955 OKX:65631 uniswap_v2:ethereum:69]
+2025/10/01 17:02:05 main.go:575: 2025-10-01T17:02:05+03:00 [INFO] metrics: msgs/s~303, redisOps/s~634, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:127977 Bybit:33136 Gate:19955 OKX:65631 uniswap_v2:ethereum:69]
+2025/10/01 17:02:10 main.go:575: 2025-10-01T17:02:10+03:00 [INFO] metrics: msgs/s~208, redisOps/s~412, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:128579 Bybit:33282 Gate:20023 OKX:65856 uniswap_v2:ethereum:69]
+2025/10/01 17:02:10 main.go:575: 2025-10-01T17:02:10+03:00 [INFO] metrics: msgs/s~208, redisOps/s~412, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:128579 Bybit:33282 Gate:20023 OKX:65856 uniswap_v2:ethereum:69]
+2025/10/01 17:02:15 main.go:575: 2025-10-01T17:02:15+03:00 [INFO] metrics: msgs/s~215, redisOps/s~435, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:129160 Bybit:33437 Gate:20106 OKX:66113 uniswap_v2:ethereum:69]
+2025/10/01 17:02:15 main.go:575: 2025-10-01T17:02:15+03:00 [INFO] metrics: msgs/s~215, redisOps/s~435, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:129160 Bybit:33437 Gate:20106 OKX:66113 uniswap_v2:ethereum:69]
+2025/10/01 17:02:20 main.go:575: 2025-10-01T17:02:20+03:00 [INFO] metrics: msgs/s~221, redisOps/s~429, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:129747 Bybit:33594 Gate:20195 OKX:66383 uniswap_v2:ethereum:69]
+2025/10/01 17:02:20 main.go:575: 2025-10-01T17:02:20+03:00 [INFO] metrics: msgs/s~221, redisOps/s~429, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:129747 Bybit:33594 Gate:20195 OKX:66383 uniswap_v2:ethereum:69]
+2025/10/01 17:02:25 main.go:575: 2025-10-01T17:02:25+03:00 [INFO] metrics: msgs/s~202, redisOps/s~416, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:130326 Bybit:33712 Gate:20254 OKX:66637 uniswap_v2:ethereum:70]
+2025/10/01 17:02:25 main.go:575: 2025-10-01T17:02:25+03:00 [INFO] metrics: msgs/s~202, redisOps/s~416, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:130326 Bybit:33712 Gate:20254 OKX:66637 uniswap_v2:ethereum:70]
+2025/10/01 17:02:30 main.go:575: 2025-10-01T17:02:30+03:00 [INFO] metrics: msgs/s~239, redisOps/s~472, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:130948 Bybit:33884 Gate:20343 OKX:66949 uniswap_v2:ethereum:70]
+2025/10/01 17:02:30 main.go:575: 2025-10-01T17:02:30+03:00 [INFO] metrics: msgs/s~239, redisOps/s~472, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:130948 Bybit:33884 Gate:20343 OKX:66949 uniswap_v2:ethereum:70]
+2025/10/01 17:02:35 main.go:575: 2025-10-01T17:02:35+03:00 [INFO] metrics: msgs/s~205, redisOps/s~417, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:131493 Bybit:34036 Gate:20401 OKX:67218 uniswap_v2:ethereum:70]
+2025/10/01 17:02:35 main.go:575: 2025-10-01T17:02:35+03:00 [INFO] metrics: msgs/s~205, redisOps/s~417, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:131493 Bybit:34036 Gate:20401 OKX:67218 uniswap_v2:ethereum:70]
+2025/10/01 17:02:40 main.go:575: 2025-10-01T17:02:40+03:00 [INFO] metrics: msgs/s~216, redisOps/s~420, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:132001 Bybit:34187 Gate:20497 OKX:67545 uniswap_v2:ethereum:70]
+2025/10/01 17:02:40 main.go:575: 2025-10-01T17:02:40+03:00 [INFO] metrics: msgs/s~216, redisOps/s~420, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:132001 Bybit:34187 Gate:20497 OKX:67545 uniswap_v2:ethereum:70]
+2025/10/01 17:02:45 main.go:575: 2025-10-01T17:02:45+03:00 [INFO] metrics: msgs/s~249, redisOps/s~511, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:132569 Bybit:34344 Gate:20593 OKX:67969 uniswap_v2:ethereum:70]
+2025/10/01 17:02:45 main.go:575: 2025-10-01T17:02:45+03:00 [INFO] metrics: msgs/s~249, redisOps/s~511, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:132569 Bybit:34344 Gate:20593 OKX:67969 uniswap_v2:ethereum:70]
+2025/10/01 17:02:50 main.go:575: 2025-10-01T17:02:50+03:00 [INFO] metrics: msgs/s~245, redisOps/s~487, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:133198 Bybit:34494 Gate:20696 OKX:68312 uniswap_v2:ethereum:70]
+2025/10/01 17:02:50 main.go:575: 2025-10-01T17:02:50+03:00 [INFO] metrics: msgs/s~245, redisOps/s~487, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:133198 Bybit:34494 Gate:20696 OKX:68312 uniswap_v2:ethereum:70]
+2025/10/01 17:02:55 main.go:575: 2025-10-01T17:02:55+03:00 [INFO] metrics: msgs/s~260, redisOps/s~522, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:133823 Bybit:34681 Gate:20790 OKX:68708 uniswap_v2:ethereum:70]
+2025/10/01 17:02:55 main.go:575: 2025-10-01T17:02:55+03:00 [INFO] metrics: msgs/s~260, redisOps/s~522, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:133823 Bybit:34681 Gate:20790 OKX:68708 uniswap_v2:ethereum:70]
+2025/10/01 17:03:00 main.go:575: 2025-10-01T17:03:00+03:00 [INFO] metrics: msgs/s~280, redisOps/s~560, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:134436 Bybit:34902 Gate:20933 OKX:69131 uniswap_v2:ethereum:70]
+2025/10/01 17:03:00 main.go:575: 2025-10-01T17:03:00+03:00 [INFO] metrics: msgs/s~280, redisOps/s~560, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:134436 Bybit:34902 Gate:20933 OKX:69131 uniswap_v2:ethereum:70]
+2025/10/01 17:03:05 main.go:575: 2025-10-01T17:03:05+03:00 [INFO] metrics: msgs/s~258, redisOps/s~512, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:134995 Bybit:35092 Gate:21048 OKX:69554 uniswap_v2:ethereum:71]
+2025/10/01 17:03:05 main.go:575: 2025-10-01T17:03:05+03:00 [INFO] metrics: msgs/s~258, redisOps/s~512, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:134995 Bybit:35092 Gate:21048 OKX:69554 uniswap_v2:ethereum:71]
+2025/10/01 17:03:10 main.go:575: 2025-10-01T17:03:10+03:00 [INFO] metrics: msgs/s~255, redisOps/s~514, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:135608 Bybit:35264 Gate:21156 OKX:69936 uniswap_v2:ethereum:71]
+2025/10/01 17:03:10 main.go:575: 2025-10-01T17:03:10+03:00 [INFO] metrics: msgs/s~255, redisOps/s~514, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:135608 Bybit:35264 Gate:21156 OKX:69936 uniswap_v2:ethereum:71]
+2025/10/01 17:03:15 main.go:575: 2025-10-01T17:03:15+03:00 [INFO] metrics: msgs/s~283, redisOps/s~562, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:136254 Bybit:35478 Gate:21286 OKX:70359 uniswap_v2:ethereum:72]
+2025/10/01 17:03:15 main.go:575: 2025-10-01T17:03:15+03:00 [INFO] metrics: msgs/s~283, redisOps/s~562, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:136254 Bybit:35478 Gate:21286 OKX:70359 uniswap_v2:ethereum:72]
+2025/10/01 17:03:20 main.go:575: 2025-10-01T17:03:20+03:00 [INFO] metrics: msgs/s~246, redisOps/s~491, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:136875 Bybit:35651 Gate:21379 OKX:70701 uniswap_v2:ethereum:72]
+2025/10/01 17:03:20 main.go:575: 2025-10-01T17:03:20+03:00 [INFO] metrics: msgs/s~246, redisOps/s~491, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:136875 Bybit:35651 Gate:21379 OKX:70701 uniswap_v2:ethereum:72]
+2025/10/01 17:03:25 main.go:575: 2025-10-01T17:03:25+03:00 [INFO] metrics: msgs/s~228, redisOps/s~461, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:137505 Bybit:35810 Gate:21462 OKX:70965 uniswap_v2:ethereum:74]
+2025/10/01 17:03:25 main.go:575: 2025-10-01T17:03:25+03:00 [INFO] metrics: msgs/s~228, redisOps/s~461, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:137505 Bybit:35810 Gate:21462 OKX:70965 uniswap_v2:ethereum:74]
+2025/10/01 17:03:30 main.go:575: 2025-10-01T17:03:30+03:00 [INFO] metrics: msgs/s~231, redisOps/s~457, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:138098 Bybit:35977 Gate:21537 OKX:71286 uniswap_v2:ethereum:74]
+2025/10/01 17:03:30 main.go:575: 2025-10-01T17:03:30+03:00 [INFO] metrics: msgs/s~231, redisOps/s~457, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:138098 Bybit:35977 Gate:21537 OKX:71286 uniswap_v2:ethereum:74]
+2025/10/01 17:03:35 main.go:575: 2025-10-01T17:03:35+03:00 [INFO] metrics: msgs/s~242, redisOps/s~487, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:138727 Bybit:36132 Gate:21634 OKX:71614 uniswap_v2:ethereum:74]
+2025/10/01 17:03:35 main.go:575: 2025-10-01T17:03:35+03:00 [INFO] metrics: msgs/s~242, redisOps/s~487, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[Bitget:138727 Bybit:36132 Gate:21634 OKX:71614 uniswap_v2:ethereum:74]
+2025/10/01 17:03:38 main.go:589: 2025-10-01T17:03:38+03:00 [INFO] Shutting down...
+2025/10/01 17:03:38 main.go:589: 2025-10-01T17:03:38+03:00 [INFO] Shutting down...
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] Bybit stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] Bybit stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] Bitget stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] Bitget stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] UniswapV2-ETHEREUM stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] UniswapV2-ETHEREUM stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] OKX stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] OKX stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] Gate stop requested
+2025/10/01 17:03:38 main.go:46: 2025-10-01T17:03:38+03:00 [INFO] Gate stop requested
+2025/10/01 17:03:38 main.go:38: 2025-10-01T17:03:38+03:00 [ERROR] UniswapV2-ETHEREUM exited with error: context canceled
+2025/10/01 17:03:38 main.go:38: 2025-10-01T17:03:38+03:00 [ERROR] UniswapV2-ETHEREUM exited with error: context canceled
