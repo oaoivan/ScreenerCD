@@ -293,15 +293,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SKL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
@@ -327,15 +327,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x00f3c42833c3170159af4e92dbb451fb3f708917",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ICP",
+        "decimals": 8,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x00f3c42833c3170159af4e92dbb451fb3f708917",
@@ -361,15 +361,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x0b010000b7624eb9b3dfbc279673c76e9d29d5f7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "OBOL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x0b010000b7624eb9b3dfbc279673c76e9d29d5f7",
@@ -394,15 +394,15 @@
       "liquidity_usd": 1413633.769,
       "token0": {
         "address": "0x0b38210ea11411557c13457d4da7dc6ea731b88a",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "API3",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x0b38210ea11411557c13457d4da7dc6ea731b88a",
@@ -427,15 +427,15 @@
       "liquidity_usd": 305841.5977,
       "token0": {
         "address": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "YFI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
@@ -461,15 +461,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x0d37af9d8ae74f35f3a38bd2a08fcb29890ca6d2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AIXBT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x0d37af9d8ae74f35f3a38bd2a08fcb29890ca6d2",
@@ -495,15 +495,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BAT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
@@ -528,15 +528,15 @@
       "liquidity_usd": 227902.8768,
       "token0": {
         "address": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MANA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
@@ -562,15 +562,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "DOLO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
@@ -597,13 +597,13 @@
         "address": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
         "symbol": "DOLO",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "symbol": "USD1",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea",
       "pool_key": {
@@ -631,7 +631,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -664,15 +664,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x0fc2a55d5bd13033f1ee0cdd11f60f7efe66f467",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x0fc2a55d5bd13033f1ee0cdd11f60f7efe66f467",
@@ -698,15 +698,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x10dea67478c5f8c5e2d90e5e9b26dbe60c54d800",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "TAIKO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x10dea67478c5f8c5e2d90e5e9b26dbe60c54d800",
@@ -732,15 +732,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x111111111117dc0aa78b770fa6a738034120c302",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "1INCH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x111111111117dc0aa78b770fa6a738034120c302",
@@ -767,13 +767,13 @@
         "address": "0x111111111117dc0aa78b770fa6a738034120c302",
         "symbol": "1INCH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x1ff1224be14c0e69c9e0a3da1c986fcbf48abe5365227700624bc39e9fdde81d",
       "pool_key": {
@@ -800,15 +800,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x111111111117dc0aa78b770fa6a738034120c302",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "1INCH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x111111111117dc0aa78b770fa6a738034120c302",
@@ -835,7 +835,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -868,15 +868,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x111111111117dc0aa78b770fa6a738034120c302",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "1INCH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x111111111117dc0aa78b770fa6a738034120c302",
@@ -902,15 +902,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x111111111117dc0aa78b770fa6a738034120c302",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "1INCH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x111111111117dc0aa78b770fa6a738034120c302",
@@ -935,15 +935,15 @@
       "liquidity_usd": 1949064.4221,
       "token0": {
         "address": "0x12970e6868f88f6557b76120662c1b3e50a646bf",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LADYS",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x12970e6868f88f6557b76120662c1b3e50a646bf",
@@ -969,15 +969,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x163f8c2467924be0ae7b5347228cabf260318753",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WLD",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x163f8c2467924be0ae7b5347228cabf260318753",
@@ -1003,15 +1003,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x1776e1f26f98b1a5df9cd347953a26dd3cb46671",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "NMR",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x1776e1f26f98b1a5df9cd347953a26dd3cb46671",
@@ -1037,15 +1037,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x1789e0043623282d5dcc7f213d703c6d8bafbb04",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINEA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x1789e0043623282d5dcc7f213d703c6d8bafbb04",
@@ -1070,15 +1070,15 @@
       "liquidity_usd": 1923604.7242,
       "token0": {
         "address": "0x18aaa7115705e8be94bffebde57af9bfc265b998",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AUDIO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x18aaa7115705e8be94bffebde57af9bfc265b998",
@@ -1105,7 +1105,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -1138,15 +1138,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x111111111117dc0aa78b770fa6a738034120c302",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "1INCH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x111111111117dc0aa78b770fa6a738034120c302",
@@ -1172,15 +1172,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
@@ -1206,15 +1206,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
@@ -1240,15 +1240,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
@@ -1274,15 +1274,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -1308,15 +1308,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -1342,15 +1342,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WBTC",
+        "decimals": 8,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
@@ -1377,13 +1377,13 @@
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
         "symbol": "UNI",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x9a5c1d2f4a7a7962a63259de6fcc1afb1d0aa1abdf5d19c23d22fd78953c5167",
       "pool_key": {
@@ -1411,13 +1411,13 @@
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
         "symbol": "UNI",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "symbol": "USDT",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xa20defd792341526615afff100c79c27a635e8693d0cb13c8864a3e04180175a",
       "pool_key": {
@@ -1444,15 +1444,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
@@ -1477,15 +1477,15 @@
       "liquidity_usd": 5173272.9778,
       "token0": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
@@ -1511,15 +1511,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x25931894a86d47441213199621f1f2994e1c39aa",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CGPT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x25931894a86d47441213199621f1f2994e1c39aa",
@@ -1545,15 +1545,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x259338656198ec7a76c729514d3cb45dfbf768a1",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "RESOLV",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x66a1e37c9b0eaddca17d3662d6c05f4decf3e110",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USR",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x259338656198ec7a76c729514d3cb45dfbf768a1",
@@ -1579,15 +1579,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x28d38df637db75533bd3f71426f3410a82041544",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PROMPT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x28d38df637db75533bd3f71426f3410a82041544",
@@ -1613,15 +1613,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x2a79324c19ef2b89ea98b23bc669b7e7c9f8a517",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WAXP",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x2a79324c19ef2b89ea98b23bc669b7e7c9f8a517",
@@ -1647,15 +1647,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x2dff88a56767223a5529ea5960da7a3f5f766406",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ID",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x2dff88a56767223a5529ea5960da7a3f5f766406",
@@ -1680,15 +1680,15 @@
       "liquidity_usd": 2949390.9139,
       "token0": {
         "address": "0x31c8eacbffdd875c74b94b077895bd78cf1e64a3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "RAD",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x31c8eacbffdd875c74b94b077895bd78cf1e64a3",
@@ -1714,15 +1714,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x320623b8e4ff03373931769a31fc52a4e78b5d70",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "RSR",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x320623b8e4ff03373931769a31fc52a4e78b5d70",
@@ -1747,15 +1747,15 @@
       "liquidity_usd": 490934.8487,
       "token0": {
         "address": "0x3472a5a71965499acd81997a54bba8d852c6e53d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BADGER",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WBTC",
+        "decimals": 8,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x3472a5a71965499acd81997a54bba8d852c6e53d",
@@ -1781,15 +1781,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x3472a5a71965499acd81997a54bba8d852c6e53d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BADGER",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WBTC",
+        "decimals": 8,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x3472a5a71965499acd81997a54bba8d852c6e53d",
@@ -1814,15 +1814,15 @@
       "liquidity_usd": 1194766.1975,
       "token0": {
         "address": "0x3593d125a4f7849a1b059e64f4517a86dd60c95d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "OM",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x3593d125a4f7849a1b059e64f4517a86dd60c95d",
@@ -1847,15 +1847,15 @@
       "liquidity_usd": 1089973.2161,
       "token0": {
         "address": "0x3845badade8e6dff049820680d1f14bd3903a5d0",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SAND",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x3845badade8e6dff049820680d1f14bd3903a5d0",
@@ -1880,15 +1880,15 @@
       "liquidity_usd": 7641770.1693,
       "token0": {
         "address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BANANA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
@@ -1915,13 +1915,13 @@
         "address": "0x3b50805453023a91a8bf641e279401a0b23fa6f9",
         "symbol": "REZ",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xe7e64a776c0c57da08b21758e556a6704857c0a6f566f60f583ffe261b13baef",
       "pool_key": {
@@ -1948,15 +1948,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x3c3a81e81dc49a522a592e7622a7e711c06bf354",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MNT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDe",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x3c3a81e81dc49a522a592e7622a7e711c06bf354",
@@ -1981,15 +1981,15 @@
       "liquidity_usd": 1660741.5889,
       "token0": {
         "address": "0x3ffeea07a27fab7ad1df5297fa75e77a43cb5790",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PEIPEI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x3ffeea07a27fab7ad1df5297fa75e77a43cb5790",
@@ -2016,7 +2016,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -2049,15 +2049,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x44108f0223a3c3028f5fe7aec7f9bb2e66bef82f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ACX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x44108f0223a3c3028f5fe7aec7f9bb2e66bef82f",
@@ -2082,15 +2082,15 @@
       "liquidity_usd": 282038.97,
       "token0": {
         "address": "0xea87148a703adc0de89db2ac2b6b381093ae8ee0",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "IRIS",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x44ff8620b8ca30902395a7bd3f2407e1a091bf73",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "VIRTUAL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xea87148a703adc0de89db2ac2b6b381093ae8ee0",
@@ -2116,15 +2116,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x44ff8620b8ca30902395a7bd3f2407e1a091bf73",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "VIRTUAL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x44ff8620b8ca30902395a7bd3f2407e1a091bf73",
@@ -2149,15 +2149,15 @@
       "liquidity_usd": 3029549.775,
       "token0": {
         "address": "0x4507cef57c46789ef8d1a19ea45f4216bae2b528",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "TOKEN",
+        "decimals": 9,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4507cef57c46789ef8d1a19ea45f4216bae2b528",
@@ -2183,15 +2183,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PAXG",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
@@ -2218,13 +2218,13 @@
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "symbol": "PAXG",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
         "symbol": "DAI",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x6924d7319b4d74d2ce3a52e732ba1ba03d0100f848ce819a21be25b3085e39be",
       "pool_key": {
@@ -2250,15 +2250,15 @@
       "liquidity_usd": 18223421.94,
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PAXG",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
@@ -2284,15 +2284,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PAXG",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
@@ -2319,13 +2319,13 @@
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "symbol": "PAXG",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xcc708109490fc52a42a73adc891367b617255164f35eb575fb428b6cd27c2663",
       "pool_key": {
@@ -2352,15 +2352,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PAXG",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "XAUt",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
@@ -2386,15 +2386,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PAXG",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "XAUt",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
@@ -2420,15 +2420,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x467719ad09025fcc6cf6f8311755809d45a5e5f3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AXL",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x467719ad09025fcc6cf6f8311755809d45a5e5f3",
@@ -2453,15 +2453,15 @@
       "liquidity_usd": 1763506.9385,
       "token0": {
         "address": "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WOO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
@@ -2488,7 +2488,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -2521,15 +2521,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x4a220e6096b25eadb88358cb44068a3248254675",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "QNT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4a220e6096b25eadb88358cb44068a3248254675",
@@ -2556,13 +2556,13 @@
         "address": "0x4b9278b94a1112cad404048903b8d343a810b07e",
         "symbol": "HIFI",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xf2f4ae6a300b38373c35e7610189e0638b8ba29cc09299838027c7a319962796",
       "pool_key": {
@@ -2589,15 +2589,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x4c1746a800d224393fe2470c70a35717ed4ea5f1",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PLUME",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4c1746a800d224393fe2470c70a35717ed4ea5f1",
@@ -2624,13 +2624,13 @@
         "address": "0x4c1746a800d224393fe2470c70a35717ed4ea5f1",
         "symbol": "PLUME",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xf0cd01da66753629340436cee3b26dc4a7d63cbee01e2f2d7c8230a8210526cc",
       "pool_key": {
@@ -2658,13 +2658,13 @@
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "symbol": "USDe",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "symbol": "USDT",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x2bcfb83929d023f4fb608b8d71e881b7ce68c2894b3ccf4fe6ba4f8e5f286333",
       "pool_key": {
@@ -2691,15 +2691,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDe",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
@@ -2725,15 +2725,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x3c3a81e81dc49a522a592e7622a7e711c06bf354",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MNT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDe",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x3c3a81e81dc49a522a592e7622a7e711c06bf354",
@@ -2760,13 +2760,13 @@
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "symbol": "USDe",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "symbol": "USDT",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xaae9da4a878406eb1de54efac30e239fd56d54fb8051e59f6fee529bc9609b3b",
       "pool_key": {
@@ -2794,13 +2794,13 @@
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "symbol": "USDe",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "symbol": "USDT",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xce93ea3914c62e0008348cf39fd006e130e7c503935fb01d154b971c8663f4fb",
       "pool_key": {
@@ -2827,15 +2827,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDe",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
@@ -2862,7 +2862,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -2895,15 +2895,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x4d1c297d39c5c1277964d0e3f8aa901493664530",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PUFFER",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4d1c297d39c5c1277964d0e3f8aa901493664530",
@@ -2929,15 +2929,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x4dc26fc5854e7648a064a4abd590bbe71724c277",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ANIME",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4dc26fc5854e7648a064a4abd590bbe71724c277",
@@ -2963,15 +2963,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CVX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
@@ -2998,13 +2998,13 @@
         "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
         "symbol": "CVX",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
         "symbol": "CRV",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3",
       "pool_key": {
@@ -3031,15 +3031,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CVX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CRV",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
@@ -3065,15 +3065,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -3099,15 +3099,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -3134,13 +3134,13 @@
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
         "symbol": "LINK",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x50ae33c238824aa1937d5d9f1766c487bca39b548f8d957994e8357eeeca3280",
       "pool_key": {
@@ -3167,15 +3167,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xa95c5ebb86e0de73b4fb8c47a45b792cfea28c23",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SDL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa95c5ebb86e0de73b4fb8c47a45b792cfea28c23",
@@ -3201,15 +3201,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x514910771af9ca656af840dff83e8264ecf986ca",
@@ -3236,7 +3236,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -3268,15 +3268,15 @@
       "liquidity_usd": 2475965.9333,
       "token0": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x514910771af9ca656af840dff83e8264ecf986ca",
@@ -3302,15 +3302,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x514910771af9ca656af840dff83e8264ecf986ca",
@@ -3337,7 +3337,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -3370,15 +3370,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x514910771af9ca656af840dff83e8264ecf986ca",
@@ -3404,15 +3404,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x553f4cb7256d8fc038e91d36cb63fa7c13b624ab",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "TANSSI",
+        "decimals": 12,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x553f4cb7256d8fc038e91d36cb63fa7c13b624ab",
@@ -3437,15 +3437,15 @@
       "liquidity_usd": 8230810.844,
       "token0": {
         "address": "0xdc035d45d973e3ec169d2276ddab16f1e407384f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDS",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x56072c95faa701256059aa122697b133aded9279",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SKY",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xdc035d45d973e3ec169d2276ddab16f1e407384f",
@@ -3471,15 +3471,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x56072c95faa701256059aa122697b133aded9279",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SKY",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x56072c95faa701256059aa122697b133aded9279",
@@ -3505,15 +3505,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x56072c95faa701256059aa122697b133aded9279",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SKY",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MKR",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x56072c95faa701256059aa122697b133aded9279",
@@ -3540,7 +3540,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -3574,13 +3574,13 @@
         "address": "0x56072c95faa701256059aa122697b133aded9279",
         "symbol": "SKY",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xda7fd1810454613a322e91b654cf310d088065fd51be69baea962bec92dfb901",
       "pool_key": {
@@ -3607,15 +3607,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x57e114b691db790c35207b2e685d4a43181e6061",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ENA",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0x8be3460a480c80728a8c4d7a5d5303c85ba7b3b9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "sENA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x57e114b691db790c35207b2e685d4a43181e6061",
@@ -3642,7 +3642,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "coingecko"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -3675,15 +3675,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x57e114b691db790c35207b2e685d4a43181e6061",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ENA",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0x8be3460a480c80728a8c4d7a5d5303c85ba7b3b9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "sENA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x57e114b691db790c35207b2e685d4a43181e6061",
@@ -3709,15 +3709,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x57e114b691db790c35207b2e685d4a43181e6061",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ENA",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x57e114b691db790c35207b2e685d4a43181e6061",
@@ -3743,15 +3743,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x582d872a1b094fc48f5de31d3b73f2d9be47def1",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "TONCOIN",
+        "decimals": 9,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x582d872a1b094fc48f5de31d3b73f2d9be47def1",
@@ -3777,15 +3777,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MORPHO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
@@ -3812,7 +3812,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -3845,15 +3845,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x595832f8fc6bf59c85c527fec3740a1b7a361269",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "POWR",
+        "decimals": 6,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x595832f8fc6bf59c85c527fec3740a1b7a361269",
@@ -3880,13 +3880,13 @@
         "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
         "symbol": "LDO",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x808507121b80c02388fad14726482e061b8da827",
         "symbol": "PENDLE",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1",
       "pool_key": {
@@ -3913,15 +3913,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LDO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
@@ -3947,15 +3947,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x5afe3855358e112b5647b952709e6165e1c1eeee",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SAFE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x5afe3855358e112b5647b952709e6165e1c1eeee",
@@ -3982,7 +3982,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -4015,15 +4015,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x6055dc6ff1077eebe5e6d2ba1a1f53d7ef8430de",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ES",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6055dc6ff1077eebe5e6d2ba1a1f53d7ef8430de",
@@ -4049,15 +4049,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x607f4c5bb672230e8672085532f7e901544a7375",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "RLC",
+        "decimals": 9,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x607f4c5bb672230e8672085532f7e901544a7375",
@@ -4083,15 +4083,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x626e8036deb333b408be468f951bdb42433cbf18",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AIOZ",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x626e8036deb333b408be468f951bdb42433cbf18",
@@ -4116,15 +4116,15 @@
       "liquidity_usd": 9649710.5272,
       "token0": {
         "address": "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BEAM",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce",
@@ -4150,15 +4150,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x643c4e15d7d62ad0abec4a9bd4b001aa3ef52d66",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SYRUP",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x643c4e15d7d62ad0abec4a9bd4b001aa3ef52d66",
@@ -4185,7 +4185,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -4218,15 +4218,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x66761fa41377003622aee3c7675fc7b5c1c2fac5",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CPOOL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x66761fa41377003622aee3c7675fc7b5c1c2fac5",
@@ -4252,15 +4252,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x6810e776880c02933d47db1b9fc05908e5386b96",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "GNO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6810e776880c02933d47db1b9fc05908e5386b96",
@@ -4287,13 +4287,13 @@
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
         "symbol": "XAUt",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "symbol": "USDT",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x1169c8b8f6871acd6dd7a402faaa9b0827aa64067b01353a14c0cd337448f46f",
       "pool_key": {
@@ -4320,14 +4320,14 @@
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "symbol": "PAXG",
-        "decimals": "18",
-        "source": "subgraph"
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
         "symbol": "XAUt",
-        "decimals": "6",
-        "source": "subgraph"
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_id": "0x4bb2f1067164203bb9007338c523fa7c2fc69bc458c277d285a19650e8ef2239",
       "pool_key": {
@@ -4354,14 +4354,14 @@
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "symbol": "PAXG",
-        "decimals": "18",
-        "source": "subgraph"
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
         "symbol": "XAUt",
-        "decimals": "6",
-        "source": "subgraph"
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_id": "0x5c1a9a7329913354597817638e615e0ecb38ae13679125eb1a3b5953ed4612d4",
       "pool_key": {
@@ -4388,15 +4388,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "XAUt",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x68749665ff8d2d112fa859aa293f07a622782f38",
@@ -4422,15 +4422,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "XAUt",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x68749665ff8d2d112fa859aa293f07a622782f38",
@@ -4456,15 +4456,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PAXG",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "XAUt",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
@@ -4490,15 +4490,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "XAUt",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WBTC",
+        "decimals": 8,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x68749665ff8d2d112fa859aa293f07a622782f38",
@@ -4524,15 +4524,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PAXG",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "XAUt",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
@@ -4558,15 +4558,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PEPE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
@@ -4593,7 +4593,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -4625,15 +4625,15 @@
       "liquidity_usd": 54441132.0893,
       "token0": {
         "address": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PEPE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
@@ -4659,15 +4659,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x6985884c4392d348587b19cb9eaaf157f13271cd",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ZRO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6985884c4392d348587b19cb9eaaf157f13271cd",
@@ -4692,15 +4692,15 @@
       "liquidity_usd": 871040.3453,
       "token0": {
         "address": "0x69af81e73a73b40adf4f3d4223cd9b1ece623074",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MASK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x69af81e73a73b40adf4f3d4223cd9b1ece623074",
@@ -4726,15 +4726,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xaa7b2e79a88beb7dfba9c78b989bd7dab01cfd3f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CHAMP",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SUSHI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xaa7b2e79a88beb7dfba9c78b989bd7dab01cfd3f",
@@ -4759,15 +4759,15 @@
       "liquidity_usd": 297937.7207,
       "token0": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SUSHI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -4793,15 +4793,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x6b7774cb12ed7573a7586e7d0e62a2a563ddd3f0",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SOPH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6b7774cb12ed7573a7586e7d0e62a2a563ddd3f0",
@@ -4826,15 +4826,15 @@
       "liquidity_usd": 345098.8163,
       "token0": {
         "address": "0x6c5ba91642f10282b576d91922ae6448c9d52f4e",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PHA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6c5ba91642f10282b576d91922ae6448c9d52f4e",
@@ -4860,15 +4860,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x6de037ef9ad2725eb40118bb1702ebb27e4aeb24",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "RNDR",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6de037ef9ad2725eb40118bb1702ebb27e4aeb24",
@@ -4893,15 +4893,15 @@
       "liquidity_usd": 628117.1421,
       "token0": {
         "address": "0x6de037ef9ad2725eb40118bb1702ebb27e4aeb24",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "RNDR",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6de037ef9ad2725eb40118bb1702ebb27e4aeb24",
@@ -4927,15 +4927,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x6de037ef9ad2725eb40118bb1702ebb27e4aeb24",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "RNDR",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6de037ef9ad2725eb40118bb1702ebb27e4aeb24",
@@ -4961,15 +4961,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LQTY",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d",
@@ -4995,15 +4995,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "IOTX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69",
@@ -5029,15 +5029,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "IOTX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x9f90b457dea25ef802e38d470dda7343691d8fe1",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CIOTX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69",
@@ -5063,15 +5063,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BITCOIN",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
@@ -5097,15 +5097,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BITCOIN",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
@@ -5130,15 +5130,15 @@
       "liquidity_usd": 854174.5013,
       "token0": {
         "address": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BITCOIN",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xe0f63a424a4439cbe457d80e4f4b51ad25b2c56c",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SPX",
+        "decimals": 8,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
@@ -5164,15 +5164,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x7420b4b9a0110cdc71fb720908340c03f9bc03ec",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "JASMY",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7420b4b9a0110cdc71fb720908340c03f9bc03ec",
@@ -5198,15 +5198,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SNT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
@@ -5232,15 +5232,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x75231f58b43240c9718dd58b4967c5114342a86c",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "OKB",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x75231f58b43240c9718dd58b4967c5114342a86c",
@@ -5266,15 +5266,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ELON",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
@@ -5300,15 +5300,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ELON",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
@@ -5333,15 +5333,15 @@
       "liquidity_usd": 11344019.267,
       "token0": {
         "address": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ELON",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
@@ -5367,15 +5367,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ELON",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
@@ -5401,15 +5401,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ELON",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "DAI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
@@ -5435,15 +5435,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ELON",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
@@ -5470,13 +5470,13 @@
         "address": "0x77146784315ba81904d654466968e3a7c196d1f3",
         "symbol": "TREE",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x63f5342442628ded4f084f6ba32bcec4f6ae3bf45c43c5834704b4beb903eea2",
       "pool_key": {
@@ -5503,15 +5503,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x77fba179c79de5b7653f68b5039af940ada60ce0",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "FORTH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x77fba179c79de5b7653f68b5039af940ada60ce0",
@@ -5537,15 +5537,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x7a58c0be72be218b41c608b7fe7c5bb630736c71",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PEOPLE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7a58c0be72be218b41c608b7fe7c5bb630736c71",
@@ -5571,15 +5571,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x7dd9c5cba05e151c895fde1cf355c9a1d5da6429",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "GLM",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7dd9c5cba05e151c895fde1cf355c9a1d5da6429",
@@ -5605,15 +5605,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -5640,7 +5640,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -5674,13 +5674,13 @@
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
         "symbol": "AAVE",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x2187d779d9b173dd7202b38b54dca6eb04d1b32ca261980869195b5b9fa97ef8",
       "pool_key": {
@@ -5707,15 +5707,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "LINK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -5741,15 +5741,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -5775,15 +5775,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -5809,15 +5809,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "UNI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -5843,15 +5843,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x111111111117dc0aa78b770fa6a738034120c302",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "1INCH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x111111111117dc0aa78b770fa6a738034120c302",
@@ -5877,15 +5877,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
@@ -5911,15 +5911,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x808507121b80c02388fad14726482e061b8da827",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PENDLE",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x808507121b80c02388fad14726482e061b8da827",
@@ -5946,13 +5946,13 @@
         "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
         "symbol": "LDO",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x808507121b80c02388fad14726482e061b8da827",
         "symbol": "PENDLE",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1",
       "pool_key": {
@@ -5979,15 +5979,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x8207c1ffc5b6804f6024322ccf34f29c3541ae26",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "OGN",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "OETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8207c1ffc5b6804f6024322ccf34f29c3541ae26",
@@ -6013,15 +6013,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "NEAR",
+        "decimals": 24,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4",
@@ -6047,15 +6047,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x89a8c847f41c0dfa6c8b88638bacca8a0b777da7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ELX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x89a8c847f41c0dfa6c8b88638bacca8a0b777da7",
@@ -6081,15 +6081,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USD1",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
@@ -6115,15 +6115,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USD1",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
@@ -6149,15 +6149,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USD1",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WLFI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
@@ -6184,13 +6184,13 @@
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "symbol": "USD1",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
         "symbol": "WLFI",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056",
       "pool_key": {
@@ -6217,15 +6217,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USD1",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xfa2b947eec368f42195f24f36d2af29f7c24cec2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDf",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
@@ -6250,15 +6250,15 @@
       "liquidity_usd": 338421.9905,
       "token0": {
         "address": "0x203240c141dd80dcefc43f782a1321bbdf8dc89f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "B",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USD1",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x203240c141dd80dcefc43f782a1321bbdf8dc89f",
@@ -6283,15 +6283,15 @@
       "liquidity_usd": 1603615.4489,
       "token0": {
         "address": "0xcab84bc21f9092167fcfe0ea60f5ce053ab39a1e",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "Block",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USD1",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xcab84bc21f9092167fcfe0ea60f5ce053ab39a1e",
@@ -6317,15 +6317,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USD1",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
@@ -6350,15 +6350,15 @@
       "liquidity_usd": 1265260.5955,
       "token0": {
         "address": "0x8de5b80a0c1b02fe4976851d030b36122dbb8624",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "VANRY",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8de5b80a0c1b02fe4976851d030b36122dbb8624",
@@ -6384,15 +6384,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x8f8221afbb33998d8584a2b05749ba73c37a938a",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "REQ",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8f8221afbb33998d8584a2b05749ba73c37a938a",
@@ -6419,7 +6419,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -6452,15 +6452,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SHIB",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
@@ -6486,15 +6486,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SHIB",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
@@ -6519,15 +6519,15 @@
       "liquidity_usd": 1151021.2229,
       "token0": {
         "address": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SHIB",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
@@ -6553,15 +6553,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x9c7beba8f6ef6643abd725e45a4e8387ef260649",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "G",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x9c7beba8f6ef6643abd725e45a4e8387ef260649",
@@ -6587,15 +6587,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x9d65ff81a3c488d585bbfb0bfe3c7707c7917f54",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SSV",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x9d65ff81a3c488d585bbfb0bfe3c7707c7917f54",
@@ -6621,15 +6621,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "METIS",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
@@ -6655,8 +6655,8 @@
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
-        "decimals": "18",
-        "source": "subgraph"
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -6689,15 +6689,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CRO",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b",
@@ -6723,15 +6723,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -6758,13 +6758,13 @@
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "symbol": "USDT",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x3b1bd35a555160a9b60c7524db56029c2025ab93b69d97d33ca3f1c23b6494ad",
       "pool_key": {
@@ -6791,15 +6791,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "DAI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x6b175474e89094c44da98b954eedeac495271d0f",
@@ -6825,15 +6825,15 @@
       "fee_percent": "0.05%",
       "token0": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -6860,13 +6860,13 @@
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "symbol": "USDT",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47",
       "pool_key": {
@@ -6893,15 +6893,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -6927,15 +6927,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xfa2b947eec368f42195f24f36d2af29f7c24cec2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDf",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -6961,15 +6961,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0x437cc33344a0b27a429f795ff6b469c72698b291",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "wM",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x437cc33344a0b27a429f795ff6b469c72698b291",
@@ -6995,15 +6995,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WBTC",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
@@ -7030,13 +7030,13 @@
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "symbol": "USDT",
         "decimals": "6",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0xe018f09af38956affdfeab72c2cefbcd4e6fee44d09df7525ec9dba3e51356a5",
       "pool_key": {
@@ -7063,15 +7063,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -7096,15 +7096,15 @@
       "liquidity_usd": 3185056.145,
       "token0": {
         "address": "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "XCN",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18",
@@ -7130,15 +7130,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xa6c0c097741d55ecd9a3a7def3a8253fd022ceb9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AVA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa6c0c097741d55ecd9a3a7def3a8253fd022ceb9",
@@ -7163,15 +7163,15 @@
       "liquidity_usd": 837128.6902,
       "token0": {
         "address": "0xa849eaae994fb86afa73382e9bd88c2b6b18dc71",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MVL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa849eaae994fb86afa73382e9bd88c2b6b18dc71",
@@ -7196,15 +7196,15 @@
       "liquidity_usd": 15622427.3598,
       "token0": {
         "address": "0xaaee1a9723aadb7afa2810263653a34ba2c21c7a",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MOG",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xaaee1a9723aadb7afa2810263653a34ba2c21c7a",
@@ -7230,15 +7230,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xac57de9c1a09fec648e93eb98875b212db0d460b",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BabyDoge",
+        "decimals": 9,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xac57de9c1a09fec648e93eb98875b212db0d460b",
@@ -7264,15 +7264,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "STG",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6",
@@ -7299,7 +7299,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -7332,15 +7332,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xb0ffa8000886e57f86dd5264b9582b2ad87b2b91",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "W",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xb0ffa8000886e57f86dd5264b9582b2ad87b2b91",
@@ -7366,15 +7366,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xb23d80f5fefcddaa212212f028021b41ded428cf",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PRIME",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xb23d80f5fefcddaa212212f028021b41ded428cf",
@@ -7400,15 +7400,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xb23d80f5fefcddaa212212f028021b41ded428cf",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PRIME",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xb23d80f5fefcddaa212212f028021b41ded428cf",
@@ -7434,15 +7434,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xb4b9dc1c77bdbb135ea907fd5a08094d98883a35",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SWEAT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xb4b9dc1c77bdbb135ea907fd5a08094d98883a35",
@@ -7468,15 +7468,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xb50721bcf8d664c30412cfbc6cf7a15145234ad1",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ARB",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xb50721bcf8d664c30412cfbc6cf7a15145234ad1",
@@ -7502,15 +7502,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xb528edbef013aff855ac3c50b381f253af13b997",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AEVO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -7535,15 +7535,15 @@
       "liquidity_usd": 246693.4673,
       "token0": {
         "address": "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "STORJ",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac",
@@ -7570,7 +7570,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -7603,15 +7603,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xbc396689893d065f41bc2c6ecbee5e0085233447",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "PERP",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xbc396689893d065f41bc2c6ecbee5e0085233447",
@@ -7637,15 +7637,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xbe0ed4138121ecfc5c0e56b40517da27e6c5226b",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ATH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xbe0ed4138121ecfc5c0e56b40517da27e6c5226b",
@@ -7671,15 +7671,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "COMP",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc00e94cb662c3520282e6f5717214004a7f26888",
@@ -7705,15 +7705,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "COMP",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc00e94cb662c3520282e6f5717214004a7f26888",
@@ -7738,15 +7738,15 @@
       "liquidity_usd": 251628.9434,
       "token0": {
         "address": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SNX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
@@ -7772,15 +7772,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "sUSD",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SNX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
@@ -7806,15 +7806,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ENS",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
@@ -7840,15 +7840,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ENS",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
@@ -7875,7 +7875,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -7908,15 +7908,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ENS",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
@@ -7942,15 +7942,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ENS",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
@@ -7977,7 +7977,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -8010,15 +8010,15 @@
       "fee_percent": "0.01%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc20059e0317de91738d13af027dfc4a50781b066",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SPK",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -8044,14 +8044,14 @@
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
-        "decimals": "6",
-        "source": "subgraph"
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc20059e0317de91738d13af027dfc4a50781b066",
         "symbol": "SPK",
-        "decimals": "18",
-        "source": "subgraph"
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_id": "0xcba24593d3978b5052ed11585161eb053d76329da9eb8143b20f55f38b3e5720",
       "pool_key": {
@@ -8079,7 +8079,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "coingecko"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -8112,15 +8112,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xc4441c2be5d8fa8126822b9929ca0b81ea0de38e",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USUAL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc4441c2be5d8fa8126822b9929ca0b81ea0de38e",
@@ -8146,15 +8146,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "GRT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
@@ -8179,15 +8179,15 @@
       "liquidity_usd": 354938.2902,
       "token0": {
         "address": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "GRT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
@@ -8213,15 +8213,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BIO",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
@@ -8247,15 +8247,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x81f8f0bb1cb2a06649e51913a151f0e7ef6fa321",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "VITA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BIO",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "pool_key": {
         "currency0": "0x81f8f0bb1cb2a06649e51913a151f0e7ef6fa321",
@@ -8281,15 +8281,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xab814ce69e15f6b9660a3b184c0b0c97b9394a6b",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "NEURON",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BIO",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "pool_key": {
         "currency0": "0xab814ce69e15f6b9660a3b184c0b0c97b9394a6b",
@@ -8316,13 +8316,13 @@
         "address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
         "symbol": "BIO",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xf4308b0263723b121056938c2172868e408079d0",
         "symbol": "CRYO",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "coingecko"
       },
       "pool_id": "0x4d83b92449ef7bf2054b09840b78498530b0a9e5a1f9f632c47f7866c29a7711",
       "pool_key": {
@@ -8349,15 +8349,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x9ce115f0341ae5dabc8b477b74e83db2018a6f42",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "HAIR",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BIO",
+        "decimals": 18,
+        "source": "coingecko"
       },
       "pool_key": {
         "currency0": "0x9ce115f0341ae5dabc8b477b74e83db2018a6f42",
@@ -8384,13 +8384,13 @@
         "address": "0x3e6a1b21bd267677fa49be6425aebe2fc0f89bde",
         "symbol": "QBIO",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
         "symbol": "BIO",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "coingecko"
       },
       "pool_id": "0xbaf08f27fcef85bdc00ff005c08981d06f01e35aa5c5cb4631a0bcb2484ae3e3",
       "pool_key": {
@@ -8418,7 +8418,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "coingecko"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -8452,13 +8452,13 @@
         "address": "0x2196b84eace74867b73fb003aff93c11fce1d47a",
         "symbol": "PSY",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
         "symbol": "BIO",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "coingecko"
       },
       "pool_id": "0xf612b59da31ffddf3a99e7773abd35ef6a031578f0e7c93e0ee5386e66969b09",
       "pool_key": {
@@ -8484,15 +8484,15 @@
       "liquidity_usd": 16744914.6514,
       "token0": {
         "address": "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "FLOKI",
+        "decimals": 9,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e",
@@ -8518,14 +8518,14 @@
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
-        "decimals": "6",
-        "source": "subgraph"
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xd0ec028a3d21533fdd200838f39c85b03679285d",
         "symbol": "NEWT",
-        "decimals": "18",
-        "source": "subgraph"
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_id": "0xb75c64e5f402d2073d9bab8fb1d4b958146ffa8958a1775ab7f6f402ec321129",
       "pool_key": {
@@ -8552,15 +8552,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xd1d2eb1b1e90b638588728b4130137d262c87cae",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "GALA",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xd1d2eb1b1e90b638588728b4130137d262c87cae",
@@ -8586,15 +8586,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xd33526068d116ce69f19a9ee46f0bd304f21a51f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "RPL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xd33526068d116ce69f19a9ee46f0bd304f21a51f",
@@ -8620,15 +8620,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CRV",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xd533a949740bb3306d119cc777fa900ba034cd52",
@@ -8653,15 +8653,15 @@
       "liquidity_usd": 344697.3474,
       "token0": {
         "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CRV",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xd533a949740bb3306d119cc777fa900ba034cd52",
@@ -8688,7 +8688,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -8722,13 +8722,13 @@
         "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
         "symbol": "CVX",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
         "symbol": "CRV",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3",
       "pool_key": {
@@ -8755,15 +8755,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CVX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CRV",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
@@ -8789,15 +8789,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CRV",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xd533a949740bb3306d119cc777fa900ba034cd52",
@@ -8823,15 +8823,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "CRV",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xd533a949740bb3306d119cc777fa900ba034cd52",
@@ -8857,15 +8857,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WLFI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
@@ -8891,14 +8891,14 @@
       "token0": {
         "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
         "symbol": "WBTC",
-        "decimals": "8",
-        "source": "subgraph"
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
         "symbol": "WLFI",
-        "decimals": "18",
-        "source": "subgraph"
+        "decimals": 8,
+        "source": "rpc"
       },
       "pool_id": "0x32f7d6ba6aa4e3d889e7e0bd4a9eca60a7e0929ead4b65e202019e8245b3aede",
       "pool_key": {
@@ -8925,15 +8925,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USD1",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WLFI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
@@ -8959,15 +8959,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WLFI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -8993,14 +8993,14 @@
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
-        "decimals": "6",
-        "source": "subgraph"
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
         "symbol": "WLFI",
-        "decimals": "18",
-        "source": "subgraph"
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_id": "0x766890448e12eeae7af683ce04cbc4b12d2c3e6ef73536ab84da85f501a8484e",
       "pool_key": {
@@ -9028,7 +9028,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -9061,15 +9061,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WLFI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
@@ -9096,13 +9096,13 @@
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "symbol": "USD1",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
         "symbol": "WLFI",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "pool_id": "0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056",
       "pool_key": {
@@ -9129,15 +9129,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WLFI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
@@ -9162,15 +9162,15 @@
       "liquidity_usd": 625480.8147,
       "token0": {
         "address": "0xdbb7a34bf10169d6d2d0d02a6cbb436cf4381bfa",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ZENT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xdbb7a34bf10169d6d2d0d02a6cbb436cf4381bfa",
@@ -9195,15 +9195,15 @@
       "liquidity_usd": 360547.4087,
       "token0": {
         "address": "0xddb3422497e61e13543bea06989c0789117555c5",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "COTI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xddb3422497e61e13543bea06989c0789117555c5",
@@ -9229,15 +9229,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "GTC",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
@@ -9264,7 +9264,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -9297,15 +9297,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "COW",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
@@ -9330,15 +9330,15 @@
       "liquidity_usd": 20678774.9978,
       "token0": {
         "address": "0xe0f63a424a4439cbe457d80e4f4b51ad25b2c56c",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SPX",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xe0f63a424a4439cbe457d80e4f4b51ad25b2c56c",
@@ -9363,15 +9363,15 @@
       "liquidity_usd": 854977.5532,
       "token0": {
         "address": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BITCOIN",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xe0f63a424a4439cbe457d80e4f4b51ad25b2c56c",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SPX",
+        "decimals": 8,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
@@ -9397,15 +9397,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xe0f63a424a4439cbe457d80e4f4b51ad25b2c56c",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SPX",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xe0f63a424a4439cbe457d80e4f4b51ad25b2c56c",
@@ -9431,8 +9431,8 @@
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
-        "decimals": "18",
-        "source": "subgraph"
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -9465,15 +9465,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "INJ",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
@@ -9500,7 +9500,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -9533,15 +9533,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xe2ad0bf751834f2fbdc62a41014f84d67ca1de2a",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ERA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -9567,15 +9567,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xe41d2489571d322189246dafa5ebde1f4699f498",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ZRX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xe41d2489571d322189246dafa5ebde1f4699f498",
@@ -9600,15 +9600,15 @@
       "liquidity_usd": 6958187.1888,
       "token0": {
         "address": "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SUPER",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55",
@@ -9634,15 +9634,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xe6bfd33f52d82ccb5b37e16d3dd81f9ffdabb195",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "SXT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -9668,15 +9668,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "EIGEN",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
@@ -9702,15 +9702,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "EIGEN",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -9736,15 +9736,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xd4fcde9bb1d746dd7e5463b01dd819ee06af25db",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ezEIGEN",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "EIGEN",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xd4fcde9bb1d746dd7e5463b01dd819ee06af25db",
@@ -9769,15 +9769,15 @@
       "liquidity_usd": 244432.1293,
       "token0": {
         "address": "0xec67005c4e498ec7f55e092bd1d35cbc47c91892",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MLN",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xec67005c4e498ec7f55e092bd1d35cbc47c91892",
@@ -9803,15 +9803,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xed04915c23f00a313a544955524eb7dbd823143d",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ACH",
+        "decimals": 8,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xed04915c23f00a313a544955524eb7dbd823143d",
@@ -9837,15 +9837,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xeeb4d8400aeefafc1b2953e0094134a887c76bd8",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "AVAIL",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -9871,15 +9871,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xef4461891dfb3ac8572ccf7c794664a8dd927945",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WCT",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xef4461891dfb3ac8572ccf7c794664a8dd927945",
@@ -9905,15 +9905,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xf17e65822b568b3903685a7c9f496cf7656cc6c2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "BICO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xf17e65822b568b3903685a7c9f496cf7656cc6c2",
@@ -9939,15 +9939,15 @@
       "fee_percent": "1%",
       "token0": {
         "address": "0xf57e7e7c23978c3caec3c3548e3d615c346e79ff",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "IMX",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xf57e7e7c23978c3caec3c3548e3d615c346e79ff",
@@ -9972,15 +9972,15 @@
       "liquidity_usd": 1921094.8565,
       "token0": {
         "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "USDT",
+        "decimals": 6,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xf944e35f95e819e752f3ccb5faf40957d311e8c5",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "MOCA",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -10007,7 +10007,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -10040,15 +10040,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ONDO",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3",
@@ -10074,15 +10074,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xfd418e42783382e86ae91e445406600ba144d162",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ZRC",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xfd418e42783382e86ae91e445406600ba144d162",
@@ -10108,15 +10108,15 @@
       "fee_percent": "0.3%",
       "token0": {
         "address": "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ETHFI",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
@@ -10143,7 +10143,7 @@
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
         "decimals": "18",
-        "source": "subgraph"
+        "source": "rpc"
       },
       "token1": {
         "address": "0x0000000000000000000000000000000000000000",
@@ -10175,15 +10175,15 @@
       "liquidity_usd": 527111.6711,
       "token0": {
         "address": "0xff56cc6b1e6ded347aa0b7676c85ab0b3d08b0fa",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "ORBS",
+        "decimals": 18,
+        "source": "rpc"
       },
       "token1": {
         "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "symbol": null,
-        "decimals": null,
-        "source": "rpc_incomplete"
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
       },
       "pool_key": {
         "currency0": "0xff56cc6b1e6ded347aa0b7676c85ab0b3d08b0fa",

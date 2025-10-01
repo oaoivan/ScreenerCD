@@ -20,6 +20,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/gorilla/websocket"
 )
 
@@ -30,6 +31,7 @@ const (
 	v2GeckoDefaultPath       = "Temp/geckoterminal_pools.json"
 	v2BatchSize              = 150 // адресов на одну подписку (безопасный лимит)
 	v2WETHAddress            = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+	v2DefaultHTTPTemplate    = "https://eth-mainnet.g.alchemy.com/v2/%s"
 )
 
 // --- Структуры входного JSON ---
@@ -360,6 +362,14 @@ func v2LoadPools() error {
 	if err := json.Unmarshal(b, &f); err != nil {
 		return err
 	}
+	rpcClient, err := v2DialRPC()
+	if err != nil {
+		log.Printf("[WARN] skip pair introspection rpc=%v", err)
+	}
+	if rpcClient != nil {
+		defer rpcClient.Close()
+	}
+
 	loaded := 0
 	for _, e := range f.Entries {
 		if !strings.EqualFold(e.Dex, "uniswap_v2") {
@@ -441,46 +451,45 @@ func v2LoadPools() error {
 				d1 = 18
 			}
 		}
-		stable0 := v2Stable[s0]
-		stable1 := v2Stable[s1]
-		hasWETH0 := strings.EqualFold(e.Token0.Address, v2WETHAddress)
-		hasWETH1 := strings.EqualFold(e.Token1.Address, v2WETHAddress)
+		addr := common.HexToAddress(addrHex)
+		pm := &v2PoolMeta{Addr: addr, PairName: e.PairName, Symbol0: s0, Symbol1: s1, Address0: common.HexToAddress(e.Token0.Address), Address1: common.HexToAddress(e.Token1.Address), Decimals0: d0, Decimals1: d1}
+		if rpcClient != nil {
+			if err := v2EnsurePoolOrder(pm, rpcClient); err != nil {
+				log.Printf("[WARN] pool order pair=%s addr=%s err=%v", e.PairName, addr.Hex(), err)
+			}
+		}
+		stable0 := v2Stable[pm.Symbol0]
+		stable1 := v2Stable[pm.Symbol1]
+		hasWETH0 := strings.EqualFold(pm.Address0.Hex(), v2WETHAddress)
+		hasWETH1 := strings.EqualFold(pm.Address1.Hex(), v2WETHAddress)
 		if stable0 && stable1 {
 			continue
 		}
 		if !stable0 && !stable1 && !hasWETH0 && !hasWETH1 {
 			continue
 		}
-		addr := common.HexToAddress(addrHex)
-		pm := &v2PoolMeta{Addr: addr, PairName: e.PairName, Symbol0: s0, Symbol1: s1, Address0: common.HexToAddress(e.Token0.Address), Address1: common.HexToAddress(e.Token1.Address), Decimals0: d0, Decimals1: d1}
 		pm.HasStable = stable0 || stable1
 		pm.HasWETH = hasWETH0 || hasWETH1
+		pm.StableSym = ""
 		if stable0 {
-			pm.StableSym = s0
+			pm.StableSym = pm.Symbol0
 		} else if stable1 {
-			pm.StableSym = s1
+			pm.StableSym = pm.Symbol1
 		}
-		// base определяем
 		if pm.HasWETH && pm.HasStable { // WETH/Stable -> base=WETH
 			if hasWETH0 && stable1 {
 				pm.BaseIs0 = true
 			} else if stable0 && hasWETH1 {
 				pm.BaseIs0 = false
-			} else {
+			} else if hasWETH0 {
 				pm.BaseIs0 = true
+			} else {
+				pm.BaseIs0 = false
 			}
 		} else if pm.HasStable && !pm.HasWETH { // Token/Stable -> base=Token
-			if stable0 {
-				pm.BaseIs0 = false
-			} else {
-				pm.BaseIs0 = true
-			}
+			pm.BaseIs0 = !stable0
 		} else if pm.HasWETH && !pm.HasStable { // Token/WETH -> base=Token
-			if hasWETH0 {
-				pm.BaseIs0 = false
-			} else {
-				pm.BaseIs0 = true
-			}
+			pm.BaseIs0 = !hasWETH0
 		} else {
 			pm.BaseIs0 = true
 		}
@@ -547,6 +556,96 @@ func v2ResolveWS() (string, error) {
 		return "", fmt.Errorf("set ALCHEMY_WS_URL or ALCHEMY_API_KEY")
 	}
 	return fmt.Sprintf(v2DefaultMainnetTemplate, key), nil
+}
+
+func v2ResolveHTTP() (string, error) {
+	if direct := strings.TrimSpace(os.Getenv("ALCHEMY_HTTP_URL")); direct != "" {
+		return direct, nil
+	}
+	key := strings.TrimSpace(os.Getenv("ALCHEMY_API_KEY"))
+	if key != "" {
+		return fmt.Sprintf(v2DefaultHTTPTemplate, key), nil
+	}
+	if ws := strings.TrimSpace(os.Getenv("ALCHEMY_WS_URL")); ws != "" {
+		if strings.HasPrefix(ws, "wss://") {
+			return "https://" + ws[len("wss://"):], nil
+		}
+		if strings.HasPrefix(ws, "ws://") {
+			return "http://" + ws[len("ws://"):], nil
+		}
+	}
+	return "", fmt.Errorf("set ALCHEMY_HTTP_URL or ALCHEMY_API_KEY")
+}
+
+func v2DialRPC() (*rpc.Client, error) {
+	url, err := v2ResolveHTTP()
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	return rpc.DialContext(ctx, url)
+}
+
+func v2EnsurePoolOrder(pm *v2PoolMeta, client *rpc.Client) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	defer cancel()
+	actual0, actual1, err := v2FetchPairTokens(ctx, client, pm.Addr)
+	if err != nil {
+		return err
+	}
+	if actual0 == pm.Address0 && actual1 == pm.Address1 {
+		return nil
+	}
+	if actual0 == pm.Address1 && actual1 == pm.Address0 {
+		v2SwapPoolMeta(pm)
+		log.Printf("[INFO] adjust order pair=%s addr=%s token0=%s token1=%s", pm.PairName, pm.Addr.Hex(), pm.Symbol0, pm.Symbol1)
+		return nil
+	}
+	return fmt.Errorf("tokens mismatch meta0=%s meta1=%s actual0=%s actual1=%s", pm.Address0.Hex(), pm.Address1.Hex(), actual0.Hex(), actual1.Hex())
+}
+
+func v2FetchPairTokens(ctx context.Context, client *rpc.Client, pair common.Address) (common.Address, common.Address, error) {
+	t0, err := v2CallAddress(ctx, client, pair, "0x0dfe1681")
+	if err != nil {
+		return common.Address{}, common.Address{}, err
+	}
+	t1, err := v2CallAddress(ctx, client, pair, "0xd21220a7")
+	if err != nil {
+		return common.Address{}, common.Address{}, err
+	}
+	return t0, t1, nil
+}
+
+func v2CallAddress(ctx context.Context, client *rpc.Client, pair common.Address, data string) (common.Address, error) {
+	var result string
+	call := map[string]string{"to": pair.Hex(), "data": data}
+	if err := client.CallContext(ctx, &result, "eth_call", call, "latest"); err != nil {
+		return common.Address{}, err
+	}
+	return v2ParseAddressResult(result)
+}
+
+func v2ParseAddressResult(res string) (common.Address, error) {
+	res = strings.TrimSpace(res)
+	if !strings.HasPrefix(res, "0x") {
+		return common.Address{}, fmt.Errorf("unexpected call result=%s", res)
+	}
+	b, err := hex.DecodeString(strings.TrimPrefix(res, "0x"))
+	if err != nil {
+		return common.Address{}, err
+	}
+	if len(b) < 32 {
+		return common.Address{}, fmt.Errorf("result length=%d", len(b))
+	}
+	return common.BytesToAddress(b[12:]), nil
+}
+
+func v2SwapPoolMeta(pm *v2PoolMeta) {
+	pm.Address0, pm.Address1 = pm.Address1, pm.Address0
+	pm.Symbol0, pm.Symbol1 = pm.Symbol1, pm.Symbol0
+	pm.Decimals0, pm.Decimals1 = pm.Decimals1, pm.Decimals0
+	pm.LastPrice = nil
 }
 
 func v2Reader(c *websocket.Conn, out chan<- []byte, errs chan<- error) {
@@ -711,6 +810,9 @@ func v2Publish(meta *v2PoolMeta, price *big.Rat, l v2LogItem, r0, r1 *big.Int) {
 			decToken, decWeth = meta.Decimals0, meta.Decimals1
 		} else {
 			return // защита — нет WETH фактически
+		}
+		if tokenDebug := strings.EqualFold(tokenSymbol, "SPX") || strings.EqualFold(tokenSymbol, "SUPER"); tokenDebug {
+			log.Printf("[DBG ] token=%s raw_reserve_token=%s raw_reserve_weth=%s dec_token=%d dec_weth=%d", tokenSymbol, reserveToken.String(), reserveWeth.String(), decToken, decWeth)
 		}
 		if reserveToken.Sign() == 0 || reserveWeth.Sign() == 0 {
 			return
