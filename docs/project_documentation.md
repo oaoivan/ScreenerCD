@@ -16,7 +16,8 @@
 - **Gate.io**: Targets the v4 `spot.tickers` channel, converts Bybit symbols to Gate format, tolerates numeric or string payloads, and streams normalized quotes.【F:cmd/screener-core/main.go†L223-L265】【F:internal/exchange/gateio.go†L13-L142】
 - **Bitget**: Supports batched subscriptions to respect the 10 msg/s cap, aggregates rate-limit error codes, and parses ticker payloads into canonical instrument identifiers.【F:cmd/screener-core/main.go†L267-L325】【F:internal/exchange/bitget.go†L15-L215】
 - **OKX**: Uses batched `tickers` subscriptions, transforms symbols to OKX `instId` format, and handles error frames before forwarding parsed prices.【F:cmd/screener-core/main.go†L326-L388】【F:internal/exchange/okx.go†L13-L151】
-- **Uniswap (experimental)**: `internal/exchange/uniswap.go` provides a minimal WS wrapper; practical on-chain tooling resides under `test_scripts/uniswap`, which can be used for custom pool monitoring outside the core pipeline.【F:internal/exchange/uniswap.go†L13-L52】
+- **Uniswap V2 (Ethereum)**: `internal/dex/Etherium/Uniswap/v2_connector.go` загружает перечень пулов из `ticker_source/geckoterminal_pools.json`, при необходимости корректирует `token0/token1` через RPC, подписывается на `Sync` события и публикует цены в USD в общий поток так же, как CEX коннекторы.【F:internal/dex/Etherium/Uniswap/v2_connector.go†L41-L533】
+- **DEX конфигурация**: Блок `dex_configs` в `configs/screener-core.yaml` описывает сеть, RPC/WS endpoints и перечень пулов; core автоматически подхватывает эти настройки и запускает коннектор вместе с CEX биржами.【F:configs/screener-core.yaml†L28-L63】【F:cmd/screener-core/main.go†L389-L526】
 
 ## 4. Symbol Management
 - **Loader**: `internal/util/symbol_loader.go` ingests GeckoTerminal-style JSON or legacy maps, drops stable-coin bases, and returns sorted uppercase tickers for further processing.【F:internal/util/symbol_loader.go†L11-L118】
