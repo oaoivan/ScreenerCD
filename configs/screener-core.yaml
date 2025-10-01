@@ -24,6 +24,37 @@ logging:
   level: "info"
   file: "logs/screener.log"
 
+# DEX connectors configuration
+dex_configs:
+  - name: "uniswap_v2"
+    network: "ethereum"
+    ws_url: "wss://eth-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    http_url: "https://eth-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    subscribe_batch: 120
+    ping_interval: 25
+    pools_file: "ticker_source/geckoterminal_pools.json"
+    pools:
+      - address: "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc"
+        pair_name: "USDC/WETH"
+        token0_symbol: "USDC"
+        token1_symbol: "WETH"
+        token0_address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        token1_address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        token0_decimals: 6
+        token1_decimals: 18
+        base_is_token0: false
+        canonical_pair: "WETHUSDC"
+      - address: "0x0d4a11d5EEaaC28EC3F61d100daf4d40471f1852"
+        pair_name: "WETH/USDT"
+        token0_symbol: "WETH"
+        token1_symbol: "USDT"
+        token0_address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        token1_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        token0_decimals: 18
+        token1_decimals: 6
+        base_is_token0: true
+        canonical_pair: "WETHUSDT"
+
 # Performance tuning
 data_channel_buffer: 8192         # 8k–32k в зависимости от нагрузки
 redis_workers: 8                  # 8–16 воркеров

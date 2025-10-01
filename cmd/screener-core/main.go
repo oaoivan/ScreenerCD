@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -11,7 +12,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/gorilla/websocket"
 	"github.com/yourusername/screner/internal/config"
+	"github.com/yourusername/screner/internal/dex/Etherium/Uniswap"
 	"github.com/yourusername/screner/internal/exchange"
 	"github.com/yourusername/screner/internal/redisclient"
 	"github.com/yourusername/screner/internal/util"
@@ -392,6 +396,58 @@ func main() {
 		}
 	}
 
+	// Start DEX connectors configured in dex_configs
+	dexSummaries := make([]string, 0, len(cfg.DexConfigs))
+	for _, dexCfg := range cfg.DexConfigs {
+		dexName := strings.ToLower(strings.TrimSpace(dexCfg.Name))
+		network := strings.ToLower(strings.TrimSpace(dexCfg.Network))
+		switch dexName {
+		case "uniswap_v2":
+			uCfg, err := buildUniswapV2ConnectorConfig(dexCfg)
+			if err != nil {
+				util.Errorf("Uniswap V2 config error: %v", err)
+				continue
+			}
+			label := uCfg.Exchange
+			dexSummaries = append(dexSummaries, fmt.Sprintf("%s:%d", label, len(uCfg.Pools)))
+
+			go supervisor(fmt.Sprintf("UniswapV2-%s", strings.ToUpper(network)), func() error {
+				ctx, cancel := context.WithCancel(context.Background())
+				defer cancel()
+				go func() {
+					select {
+					case <-stop:
+						cancel()
+					case <-ctx.Done():
+					}
+				}()
+
+				forward := make(chan *pb.MarketData, cfg.DataChannelBuffer)
+				forwardDone := make(chan struct{})
+				go func() {
+					defer close(forwardDone)
+					for md := range forward {
+						select {
+						case dataChannel <- md:
+						default:
+							util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
+							atomic.AddInt64(&totalDrops, 1)
+						}
+					}
+				}()
+
+				dialer := &gorillaDialer{}
+				connector := uniswap.NewConnector(uCfg, dialer)
+				err := connector.Run(ctx, forward)
+				close(forward)
+				<-forwardDone
+				return err
+			}, stop)
+		default:
+			util.Infof("Unsupported DEX connector: %s", dexCfg.Name)
+		}
+	}
+
 	// Consumers: worker pool with Redis pipelining
 	numWorkers := cfg.RedisWorkers
 	if numWorkers <= 0 {
@@ -460,12 +516,13 @@ func main() {
 		}(i)
 	}
 
-	summary := make([]string, 0, len(exchanges))
+	summary := make([]string, 0, len(exchanges)+len(dexSummaries))
 	for _, ex := range exchanges {
 		exKey := strings.ToLower(strings.TrimSpace(ex))
 		count := len(symbolsByExchange[exKey])
 		summary = append(summary, fmt.Sprintf("%s:%d", exKey, count))
 	}
+	summary = append(summary, dexSummaries...)
 	util.Infof("Screener Core running with exchanges %s", strings.Join(summary, ", "))
 
 	// Redis health checker (updates redisUp flag)
@@ -533,6 +590,137 @@ func main() {
 	close(stop)
 	// allow some time for goroutines to exit
 	time.Sleep(2 * time.Second)
+}
+
+func buildUniswapV2ConnectorConfig(dexCfg config.DexConfig) (uniswap.Config, error) {
+	wsURL := strings.TrimSpace(os.ExpandEnv(dexCfg.WSURL))
+	if wsURL == "" {
+		return uniswap.Config{}, fmt.Errorf("uniswap v2: ws_url is required")
+	}
+
+	pools, err := uniswapPoolsFromConfig(dexCfg)
+	if err != nil {
+		return uniswap.Config{}, err
+	}
+	if len(pools) == 0 {
+		return uniswap.Config{}, fmt.Errorf("uniswap v2: no pools configured for %s", dexCfg.Name)
+	}
+
+	batch := dexCfg.SubscribeBatch
+	if batch <= 0 {
+		batch = 150
+	}
+	ping := time.Duration(dexCfg.PingInterval) * time.Second
+	if ping <= 0 {
+		ping = 30 * time.Second
+	}
+	name := strings.ToLower(strings.TrimSpace(dexCfg.Name))
+	if name == "" {
+		name = "uniswap_v2"
+	}
+	network := strings.ToLower(strings.TrimSpace(dexCfg.Network))
+	if network != "" {
+		name = fmt.Sprintf("%s:%s", name, network)
+	}
+
+	return uniswap.Config{
+		WSURL:              wsURL,
+		Exchange:           name,
+		Pools:              pools,
+		SubscribeBatchSize: batch,
+		PingInterval:       ping,
+	}, nil
+}
+
+func uniswapPoolsFromConfig(dexCfg config.DexConfig) ([]uniswap.PoolConfig, error) {
+	poolMap := make(map[common.Address]uniswap.PoolConfig)
+	merge := func(pool uniswap.PoolConfig) {
+		if (pool.Address == common.Address{}) {
+			return
+		}
+		existing, ok := poolMap[pool.Address]
+		if ok {
+			if existing.CanonicalPair == "" && pool.CanonicalPair != "" {
+				existing.CanonicalPair = pool.CanonicalPair
+			}
+			poolMap[pool.Address] = existing
+			return
+		}
+		poolMap[pool.Address] = pool
+	}
+
+	for _, p := range dexCfg.Pools {
+		addr := strings.TrimSpace(p.Address)
+		if addr == "" {
+			continue
+		}
+		token0Symbol := strings.ToUpper(strings.TrimSpace(p.Token0Symbol))
+		token1Symbol := strings.ToUpper(strings.TrimSpace(p.Token1Symbol))
+		if token0Symbol == "" || token1Symbol == "" {
+			return nil, fmt.Errorf("uniswap v2: pool %s requires token symbols", p.PairName)
+		}
+		pool := uniswap.PoolConfig{
+			Address:       common.HexToAddress(addr),
+			PairName:      p.PairName,
+			BaseIsToken0:  p.BaseIsToken0,
+			CanonicalPair: strings.ToUpper(strings.TrimSpace(p.CanonicalPair)),
+			Token0: uniswap.TokenMeta{
+				Address:  common.HexToAddress(strings.TrimSpace(p.Token0Address)),
+				Symbol:   token0Symbol,
+				Decimals: p.Token0Decimals,
+			},
+			Token1: uniswap.TokenMeta{
+				Address:  common.HexToAddress(strings.TrimSpace(p.Token1Address)),
+				Symbol:   token1Symbol,
+				Decimals: p.Token1Decimals,
+			},
+		}
+		if pool.Token0.Decimals == 0 {
+			pool.Token0.Decimals = 18
+		}
+		if pool.Token1.Decimals == 0 {
+			pool.Token1.Decimals = 18
+		}
+		if pool.CanonicalPair == "" {
+			pool.CanonicalPair = uniswap.NormalizePair(pool)
+		}
+		merge(pool)
+	}
+
+	if path := strings.TrimSpace(dexCfg.PoolsFile); path != "" {
+		filePools, err := uniswap.LoadPoolsFromGecko(path)
+		if err != nil {
+			return nil, err
+		}
+		for _, pool := range filePools {
+			merge(pool)
+		}
+	}
+
+	result := make([]uniswap.PoolConfig, 0, len(poolMap))
+	for _, pool := range poolMap {
+		result = append(result, pool)
+	}
+	return result, nil
+}
+
+type gorillaDialer struct{}
+
+func (d *gorillaDialer) Dial(ctx context.Context, endpoint string) (uniswap.WSConnection, error) {
+	dialer := *websocket.DefaultDialer
+	conn, _, err := dialer.DialContext(ctx, endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &gorillaConn{Conn: conn}, nil
+}
+
+type gorillaConn struct {
+	*websocket.Conn
+}
+
+func (c *gorillaConn) ReadMessage() (int, []byte, error) {
+	return c.Conn.ReadMessage()
 }
 
 // loadLinesFile reads non-empty, trimmed lines from a text file; returns empty slice on error.

@@ -39,6 +39,35 @@ type Config struct {
 	BitgetSubscribeBatchSize int `yaml:"bitget_subscribe_batch_size"` // default 30
 	BitgetSubscribePauseMs   int `yaml:"bitget_subscribe_pause_ms"`   // default 700
 	BitgetPingIntervalSec    int `yaml:"bitget_ping_interval_sec"`    // default 25
+
+	// DEX connectors
+	DexConfigs []DexConfig `yaml:"dex_configs"`
+}
+
+// DexConfig описывает настройки DEX коннектора для конкретной сети.
+type DexConfig struct {
+	Name           string          `yaml:"name"`
+	Network        string          `yaml:"network"`
+	WSURL          string          `yaml:"ws_url"`
+	HTTPURL        string          `yaml:"http_url"`
+	SubscribeBatch int             `yaml:"subscribe_batch"`
+	PingInterval   int             `yaml:"ping_interval"`
+	Pools          []DexPoolConfig `yaml:"pools"`
+	PoolsFile      string          `yaml:"pools_file"`
+}
+
+// DexPoolConfig описывает минимальную информацию по пулу.
+type DexPoolConfig struct {
+	Address        string `yaml:"address"`
+	PairName       string `yaml:"pair_name"`
+	Token0Symbol   string `yaml:"token0_symbol"`
+	Token1Symbol   string `yaml:"token1_symbol"`
+	Token0Address  string `yaml:"token0_address"`
+	Token1Address  string `yaml:"token1_address"`
+	Token0Decimals uint8  `yaml:"token0_decimals"`
+	Token1Decimals uint8  `yaml:"token1_decimals"`
+	BaseIsToken0   bool   `yaml:"base_is_token0"`
+	CanonicalPair  string `yaml:"canonical_pair"`
 }
 
 // ExchangeConfig describes how to load symbols for a specific exchange
