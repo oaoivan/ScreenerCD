@@ -483,6 +483,11 @@ func main() {
 						flush()
 						return
 					}
+					exLower := strings.ToLower(strings.TrimSpace(md.Exchange))
+					if exLower == "" {
+						exLower = "unknown"
+					}
+					md.Exchange = exLower
 					// Raw key (как было)
 					keyRaw := fmt.Sprintf("price:%s:%s", md.Exchange, md.Symbol)
 					entryRaw := []interface{}{keyRaw, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol}
