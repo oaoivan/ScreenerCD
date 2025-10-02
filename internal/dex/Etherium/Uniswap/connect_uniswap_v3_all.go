@@ -184,6 +184,7 @@ type v3PoolMeta struct {
 	LoadErr     error
 	HasJSONMeta bool
 	Registered  bool
+	Verified    bool
 }
 
 // Глобальные
@@ -683,15 +684,14 @@ func v3HandleSwap(pm *v3PoolMeta, l v3LogItem) {
 		return
 	}
 	// Ensure metadata (token addresses, symbols, decimals) — лениво.
-	if !pm.Loaded && !pm.HasJSONMeta {
-		if v3TryAcquireMetaSlot() { // не блокируем если лимит
+	if !pm.Verified {
+		if v3TryAcquireMetaSlot() {
 			if err := v3EnsurePoolMeta(pm); err != nil {
 				pm.LoadErr = err
-				pm.Loaded = false
-				pm.Loading = false
 				util.Errorf("uniswap_v3 meta pool=%s err=%v", pm.Addr.Hex(), err)
 			} else {
 				pm.Loaded = true
+				pm.Verified = true
 			}
 			v3ReleaseMetaSlot()
 		}
@@ -704,9 +704,9 @@ func v3HandleSwap(pm *v3PoolMeta, l v3LogItem) {
 
 	var price1Per0, price0Per1 *big.Rat
 	var priceNote string
-	if (pm.Loaded || pm.HasJSONMeta) && pm.Token0.Dec > 0 && pm.Token1.Dec > 0 { // нормализуем
+	if (pm.Loaded || pm.HasJSONMeta) && pm.Token0.Dec > 0 && pm.Token1.Dec > 0 {
 		adj := v3DecimalAdjust(pm.Token0.Dec, pm.Token1.Dec)
-		price1Per0 = new(big.Rat).Mul(rawPrice, adj) // 1 token0 -> token1
+		price1Per0 = new(big.Rat).Mul(rawPrice, adj)
 		price0Per1 = v3Invert(price1Per0)
 		priceNote = "norm"
 	} else {
@@ -722,8 +722,8 @@ func v3HandleSwap(pm *v3PoolMeta, l v3LogItem) {
 		util.Infof("uniswap_v3 swap pool=%s addr=%s sqrtP=%s mode=%s p1per0=%s p0per1=%s amt0=%s amt1=%s blk=%s tx=%s %s", pm.PairName, pm.Addr.Hex(), sqrtPriceX96.String(), priceNote, v3Format(price1Per0, 8), v3Format(price0Per1, 8), amount0.String(), amount1.String(), l.BlockNumber, l.TransactionHash, usdLines)
 	}
 
-	v3EmitPair(pm.Token1.Symbol, pm.Token0.Symbol, price1Per0)
-	v3EmitPair(pm.Token0.Symbol, pm.Token1.Symbol, price0Per1)
+	v3EmitPair(pm.Token0.Symbol, pm.Token1.Symbol, price1Per0)
+	v3EmitPair(pm.Token1.Symbol, pm.Token0.Symbol, price0Per1)
 	v3UpdatePricing(pm, price1Per0, price0Per1, amount0, amount1)
 }
 
@@ -939,7 +939,7 @@ func v3EnsurePoolMeta(pm *v3PoolMeta) error {
 	if pm == nil {
 		return fmt.Errorf("nil pool meta")
 	}
-	if pm.Loaded || pm.Loading {
+	if pm.Loading {
 		return nil
 	}
 	pm.Loading = true
@@ -993,6 +993,10 @@ func v3CallAddress(contract common.Address, selector string) (common.Address, er
 
 func v3FetchTokenMeta(addr common.Address, hint v3TokenMeta) (v3TokenMeta, error) {
 	meta := v3TokenMeta{Address: addr, Symbol: strings.ToUpper(strings.TrimSpace(hint.Symbol)), Dec: hint.Dec}
+	if hint.Address != addr {
+		meta.Symbol = ""
+		meta.Dec = 0
+	}
 	v3TokenMu.RLock()
 	if cached, ok := v3TokenCache[addr]; ok {
 		if meta.Symbol == "" {
