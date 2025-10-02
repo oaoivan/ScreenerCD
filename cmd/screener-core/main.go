@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -12,11 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/gorilla/websocket"
 	"github.com/yourusername/screner/internal/config"
-	uniswap "github.com/yourusername/screner/internal/dex/Etherium/Uniswap"
-	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/exchange"
 	"github.com/yourusername/screner/internal/redisclient"
 	"github.com/yourusername/screner/internal/util"
@@ -70,11 +65,14 @@ func main() {
 	if err != nil {
 		util.Fatalf("Error loading config: %v", err)
 	}
+	sharedPoolsPath := strings.TrimSpace(cfg.ResolveSharedPoolsPath())
+	if sharedPoolsPath == "" {
+		util.Fatalf("shared pools file is not configured; set shared_pools.file or env")
+	}
 
 	// Init Redis
 	redisClient := redisclient.NewRedisClient(cfg.Redis.RedisAddress(), cfg.Redis.Password, 0)
 	util.Infof("Redis client initialized: %s", cfg.Redis.RedisAddress())
-	redisClient.NormalizeExchangeKeys()
 
 	// Build list of exchanges (preserve legacy fallbacks)
 	exchanges := cfg.Exchanges
@@ -111,12 +109,11 @@ func main() {
 	}
 
 	var defaultBaseSymbols []string
-	if cfg.DefaultSymbolsFile != "" {
-		if list, err := loadSymbolsFromFile(cfg.DefaultSymbolsFile); err != nil {
-			util.Errorf("Failed to load default symbols file %s: %v", cfg.DefaultSymbolsFile, err)
-		} else {
-			defaultBaseSymbols = list
-		}
+	defaultSymbolsSource := sharedPoolsPath
+	if list, err := loadSymbolsFromFile(sharedPoolsPath); err != nil {
+		util.Fatalf("Failed to load shared pools file %s: %v", sharedPoolsPath, err)
+	} else {
+		defaultBaseSymbols = list
 	}
 
 	const legacySymbolsPath = "Temp/all_contracts_merged_reformatted.json"
@@ -147,8 +144,8 @@ func main() {
 			}
 			symbolsByExchange[exKey] = baseToQuote(list, exCfg.SymbolsFile)
 		case len(defaultBaseSymbols) > 0:
-			symbolsByExchange[exKey] = baseToQuote(defaultBaseSymbols, cfg.DefaultSymbolsFile)
-			util.Infof("Exchange %s uses default symbols (%d base)", exKey, len(defaultBaseSymbols))
+			symbolsByExchange[exKey] = baseToQuote(defaultBaseSymbols, defaultSymbolsSource)
+			util.Infof("Exchange %s uses shared pools source (%d base)", exKey, len(defaultBaseSymbols))
 		default:
 			list, err := loadSymbolsFromFile(legacySymbolsPath)
 			if err != nil {
@@ -160,15 +157,6 @@ func main() {
 			util.Fatalf("No symbols resolved for exchange %s", exKey)
 		}
 	}
-
-	stableAnchors := []pricing.TokenInfo{
-		{Address: common.HexToAddress("0xA0b86991c6218b36c1d19d4a2e9Eb0cE3606eB48"), Symbol: "USDC", Decimals: 6},
-		{Address: common.HexToAddress("0xdAC17F958D2ee523a2206206994597C13D831ec7"), Symbol: "USDT", Decimals: 6},
-		{Address: common.HexToAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F"), Symbol: "DAI", Decimals: 18},
-		{Address: common.HexToAddress("0x0000000000085d4780B73119b644AE5ecd22B376"), Symbol: "TUSD", Decimals: 18},
-		{Address: common.HexToAddress("0x8d0d000Ee44948FC98C9b98A4Fa4921476f08b0d"), Symbol: "FDUSD", Decimals: 18},
-	}
-	usdPricer := pricing.NewGraphPricer(stableAnchors)
 
 	// Shared buffered channel (configurable)
 	dataChannel := make(chan *pb.MarketData, cfg.DataChannelBuffer)
@@ -407,102 +395,6 @@ func main() {
 		}
 	}
 
-	// Start DEX connectors configured in dex_configs
-	dexSummaries := make([]string, 0, len(cfg.DexConfigs))
-	for _, dexCfg := range cfg.DexConfigs {
-		dexName := strings.ToLower(strings.TrimSpace(dexCfg.Name))
-		network := strings.ToLower(strings.TrimSpace(dexCfg.Network))
-		switch dexName {
-		case "uniswap_v2":
-			uCfg, err := buildUniswapV2ConnectorConfig(dexCfg)
-			if err != nil {
-				util.Errorf("Uniswap V2 config error: %v", err)
-				continue
-			}
-			label := uCfg.Exchange
-			dexSummaries = append(dexSummaries, fmt.Sprintf("%s:%d", label, len(uCfg.Pools)))
-
-			go supervisor(fmt.Sprintf("UniswapV2-%s", strings.ToUpper(network)), func() error {
-				ctx, cancel := context.WithCancel(context.Background())
-				defer cancel()
-				go func() {
-					select {
-					case <-stop:
-						cancel()
-					case <-ctx.Done():
-					}
-				}()
-
-				forward := make(chan *pb.MarketData, cfg.DataChannelBuffer)
-				forwardDone := make(chan struct{})
-				go func() {
-					defer close(forwardDone)
-					for md := range forward {
-						select {
-						case dataChannel <- md:
-						default:
-							util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
-							atomic.AddInt64(&totalDrops, 1)
-						}
-					}
-				}()
-
-				dialer := &gorillaDialer{}
-				connector := uniswap.NewConnector(uCfg, dialer, usdPricer)
-				err := connector.Run(ctx, forward)
-				close(forward)
-				<-forwardDone
-				return err
-			}, stop)
-		case "uniswap_v3":
-			v3Cfg, err := buildUniswapV3ConnectorConfig(dexCfg)
-			if err != nil {
-				util.Errorf("Uniswap V3 config error: %v", err)
-				continue
-			}
-			label := v3Cfg.Exchange
-			if label == "" {
-				label = "uniswap_v3"
-			}
-			dexSummaries = append(dexSummaries, label)
-			util.Infof("Uniswap V3 connector %s using pools=%s batch=%d", label, v3Cfg.PoolsPath, v3Cfg.BatchSize)
-
-			go supervisor(fmt.Sprintf("UniswapV3-%s", strings.ToUpper(network)), func() error {
-				ctx, cancel := context.WithCancel(context.Background())
-				defer cancel()
-				go func() {
-					select {
-					case <-stop:
-						cancel()
-					case <-ctx.Done():
-					}
-				}()
-
-				forward := make(chan *pb.MarketData, cfg.DataChannelBuffer)
-				forwardDone := make(chan struct{})
-				go func() {
-					defer close(forwardDone)
-					for md := range forward {
-						select {
-						case dataChannel <- md:
-						default:
-							util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
-							atomic.AddInt64(&totalDrops, 1)
-						}
-					}
-				}()
-
-				connector := uniswap.NewV3Connector(v3Cfg, usdPricer)
-				err := connector.Run(ctx, forward)
-				close(forward)
-				<-forwardDone
-				return err
-			}, stop)
-		default:
-			util.Infof("Unsupported DEX connector: %s", dexCfg.Name)
-		}
-	}
-
 	// Consumers: worker pool with Redis pipelining
 	numWorkers := cfg.RedisWorkers
 	if numWorkers <= 0 {
@@ -538,11 +430,6 @@ func main() {
 						flush()
 						return
 					}
-					exLower := util.NormalizeExchangeName(md.Exchange)
-					if exLower == "" {
-						exLower = "unknown"
-					}
-					md.Exchange = exLower
 					// Raw key (как было)
 					keyRaw := fmt.Sprintf("price:%s:%s", md.Exchange, md.Symbol)
 					entryRaw := []interface{}{keyRaw, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol}
@@ -576,30 +463,19 @@ func main() {
 		}(i)
 	}
 
-	summary := make([]string, 0, len(exchanges)+len(dexSummaries))
-	for _, ex := range exchanges {
-		exKey := strings.ToLower(strings.TrimSpace(ex))
-		count := len(symbolsByExchange[exKey])
-		summary = append(summary, fmt.Sprintf("%s:%d", exKey, count))
-	}
-	summary = append(summary, dexSummaries...)
-	util.Infof("Screener Core running with exchanges %s", strings.Join(summary, ", "))
-
-	// Redis health checker (updates redisUp flag)
+	// Redis health monitor
 	go func() {
-		period := time.Duration(cfg.MetricsPeriodSec) * time.Second
-		if period <= 0 {
-			period = 5 * time.Second
-		}
-		ticker := time.NewTicker(period)
+		ticker := time.NewTicker(3 * time.Second)
 		defer ticker.Stop()
 		for {
 			select {
 			case <-ticker.C:
 				if err := redisClient.Ping(); err != nil {
 					atomic.StoreInt32(&redisUp, 0)
+					util.Errorf("redis ping failed: %v", err)
 				} else {
 					atomic.StoreInt32(&redisUp, 1)
+					util.Debugf("redis ping ok")
 				}
 			case <-stop:
 				return
@@ -652,205 +528,7 @@ func main() {
 	time.Sleep(2 * time.Second)
 }
 
-func buildUniswapV2ConnectorConfig(dexCfg config.DexConfig) (uniswap.Config, error) {
-	wsURL := strings.TrimSpace(os.ExpandEnv(dexCfg.WSURL))
-	if wsURL == "" {
-		return uniswap.Config{}, fmt.Errorf("uniswap v2: ws_url is required")
-	}
-
-	pools, err := uniswapPoolsFromConfig(dexCfg)
-	if err != nil {
-		return uniswap.Config{}, err
-	}
-	if len(pools) == 0 {
-		return uniswap.Config{}, fmt.Errorf("uniswap v2: no pools configured for %s", dexCfg.Name)
-	}
-
-	batch := dexCfg.SubscribeBatch
-	if batch <= 0 {
-		batch = 150
-	}
-	ping := time.Duration(dexCfg.PingInterval) * time.Second
-	if ping <= 0 {
-		ping = 30 * time.Second
-	}
-	name := strings.ToLower(strings.TrimSpace(dexCfg.Name))
-	if name == "" {
-		name = "uniswap_v2"
-	}
-	network := strings.ToLower(strings.TrimSpace(dexCfg.Network))
-	if network != "" {
-		name = fmt.Sprintf("%s:%s", name, network)
-	}
-
-	return uniswap.Config{
-		WSURL:              wsURL,
-		Exchange:           name,
-		Pools:              pools,
-		SubscribeBatchSize: batch,
-		PingInterval:       ping,
-	}, nil
-}
-
-func buildUniswapV3ConnectorConfig(dexCfg config.DexConfig) (uniswap.V3Config, error) {
-	wsURL := strings.TrimSpace(os.ExpandEnv(dexCfg.WSURL))
-	httpURL := strings.TrimSpace(os.ExpandEnv(dexCfg.HTTPURL))
-	batch := dexCfg.SubscribeBatch
-	if batch <= 0 {
-		batch = 150
-	}
-	ping := time.Duration(dexCfg.PingInterval) * time.Second
-	if ping <= 0 {
-		ping = 25 * time.Second
-	}
-	poolsPath := strings.TrimSpace(os.ExpandEnv(dexCfg.PoolsSource.Resolve()))
-	if poolsPath == "" {
-		poolsPath = strings.TrimSpace(os.ExpandEnv(dexCfg.PoolsFile))
-	}
-	dexFilter := strings.TrimSpace(dexCfg.PoolsSource.GeckoDex)
-	if dexFilter == "" {
-		dexFilter = strings.TrimSpace(dexCfg.Name)
-	}
-	networkFilter := strings.TrimSpace(dexCfg.PoolsSource.GeckoNetwork)
-	if networkFilter == "" {
-		networkFilter = strings.TrimSpace(dexCfg.Network)
-	}
-
-	exchangeName := strings.ToLower(strings.TrimSpace(dexCfg.Name))
-	if exchangeName == "" {
-		exchangeName = "uniswap_v3"
-	}
-	network := strings.ToLower(strings.TrimSpace(dexCfg.Network))
-	if network != "" {
-		exchangeName = fmt.Sprintf("%s:%s", exchangeName, network)
-	}
-
-	decodeSwap := dexCfg.SwapOnly
-	if !dexCfg.SwapOnly {
-		decodeSwap = true
-	}
-
-	maxMeta := dexCfg.MaxMetaWorkers
-	if maxMeta < 0 {
-		maxMeta = 0
-	}
-
-	return uniswap.V3Config{
-		Exchange:       exchangeName,
-		WSURL:          wsURL,
-		HTTPURL:        httpURL,
-		PoolsPath:      poolsPath,
-		DexFilter:      dexFilter,
-		NetworkFilter:  networkFilter,
-		BatchSize:      batch,
-		PingInterval:   ping,
-		StopOnAckError: dexCfg.StopOnAckError,
-		LogAllEvents:   dexCfg.LogAllEvents,
-		DecodeSwapOnly: decodeSwap,
-		MaxMetaWorkers: maxMeta,
-	}, nil
-}
-
-func uniswapPoolsFromConfig(dexCfg config.DexConfig) ([]uniswap.PoolConfig, error) {
-	poolMap := make(map[common.Address]uniswap.PoolConfig)
-	merge := func(pool uniswap.PoolConfig) {
-		if (pool.Address == common.Address{}) {
-			return
-		}
-		existing, ok := poolMap[pool.Address]
-		if ok {
-			if existing.CanonicalPair == "" && pool.CanonicalPair != "" {
-				existing.CanonicalPair = pool.CanonicalPair
-			}
-			if !existing.HasStable && pool.HasStable {
-				existing.HasStable = true
-				existing.StableSymbol = pool.StableSymbol
-			}
-			if !existing.HasWETH && pool.HasWETH {
-				existing.HasWETH = true
-			}
-			poolMap[pool.Address] = existing
-			return
-		}
-		poolMap[pool.Address] = pool
-	}
-
-	for _, p := range dexCfg.Pools {
-		addr := strings.TrimSpace(p.Address)
-		if addr == "" {
-			continue
-		}
-		token0Symbol := strings.ToUpper(strings.TrimSpace(p.Token0Symbol))
-		token1Symbol := strings.ToUpper(strings.TrimSpace(p.Token1Symbol))
-		if token0Symbol == "" || token1Symbol == "" {
-			return nil, fmt.Errorf("uniswap v2: pool %s requires token symbols", p.PairName)
-		}
-		token0Meta := uniswap.NormalizeTokenMeta(token0Symbol, strings.TrimSpace(p.Token0Address), int(p.Token0Decimals))
-		token1Meta := uniswap.NormalizeTokenMeta(token1Symbol, strings.TrimSpace(p.Token1Address), int(p.Token1Decimals))
-		pool := uniswap.PoolConfig{
-			Address:       common.HexToAddress(addr),
-			PairName:      p.PairName,
-			BaseIsToken0:  p.BaseIsToken0,
-			CanonicalPair: strings.ToUpper(strings.TrimSpace(p.CanonicalPair)),
-			Token0:        token0Meta,
-			Token1:        token1Meta,
-		}
-		uniswap.FinalizePool(&pool)
-		merge(pool)
-	}
-
-	if path := strings.TrimSpace(dexCfg.PoolsFile); path != "" {
-		filePools, err := uniswap.LoadPoolsFromGecko(path)
-		if err != nil {
-			return nil, err
-		}
-		for _, pool := range filePools {
-			merge(pool)
-		}
-	}
-
-	result := make([]uniswap.PoolConfig, 0, len(poolMap))
-	for _, pool := range poolMap {
-		result = append(result, pool)
-	}
-
-	ensureCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if poolsOrdered, err := uniswap.AdjustPoolsOrdering(ensureCtx, dexCfg.HTTPURL, result); err == nil {
-		result = poolsOrdered
-	} else {
-		util.Debugf("uniswap_v2: adjust ordering failed: %v", err)
-	}
-	for _, pool := range result {
-		if strings.Contains(pool.PairName, "SPX") || strings.Contains(pool.CanonicalPair, "SPX") {
-			util.Infof("uniswap_v2: final pool %s baseIs0=%t sym0=%s/%d sym1=%s/%d", pool.PairName, pool.BaseIsToken0, pool.Token0.Symbol, pool.Token0.Decimals, pool.Token1.Symbol, pool.Token1.Decimals)
-		}
-	}
-	return result, nil
-}
-
-type gorillaDialer struct{}
-
-func (d *gorillaDialer) Dial(ctx context.Context, endpoint string) (uniswap.WSConnection, error) {
-	dialer := *websocket.DefaultDialer
-	conn, _, err := dialer.DialContext(ctx, endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	return &gorillaConn{Conn: conn}, nil
-}
-
-type gorillaConn struct {
-	*websocket.Conn
-}
-
-func (c *gorillaConn) ReadMessage() (int, []byte, error) {
-	return c.Conn.ReadMessage()
-}
-
 // loadLinesFile reads non-empty, trimmed lines from a text file; returns empty slice on error.
-//
-//lint:ignore U1000 helper preserved for manual symbol imports
 func loadLinesFile(path string) []string {
 	f, err := os.Open(path)
 	if err != nil {

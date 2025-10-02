@@ -25,6 +25,8 @@ type Config struct {
 	Secret    string   `yaml:"secret"`
 	// DefaultSymbolsFile allows pointing to a shared JSON with tickers
 	DefaultSymbolsFile string `yaml:"default_symbols_file"`
+	// SharedPools describes global pools/tickers source reused by all connectors
+	SharedPools PoolsSource `yaml:"shared_pools"`
 	// ExchangeConfigs describe per-exchange symbol sources
 	ExchangeConfigs []ExchangeConfig `yaml:"exchange_configs"`
 	Redis           RedisConfig      `yaml:"redis"`
@@ -63,6 +65,17 @@ type DexConfig struct {
 	StopOnAckError bool            `yaml:"stop_on_ack_error"`
 }
 
+// ResolvePoolsPath возвращает путь для конкретного DEX коннектора с учётом shared fallback.
+func (d DexConfig) ResolvePoolsPath(shared string) string {
+	if path := strings.TrimSpace(d.PoolsSource.Resolve()); path != "" {
+		return path
+	}
+	if path := strings.TrimSpace(os.ExpandEnv(d.PoolsFile)); path != "" {
+		return path
+	}
+	return strings.TrimSpace(shared)
+}
+
 // DexPoolConfig описывает минимальную информацию по пулу.
 type DexPoolConfig struct {
 	Address        string `yaml:"address"`
@@ -97,6 +110,26 @@ func (ps PoolsSource) Resolve() string {
 		return ""
 	}
 	return strings.TrimSpace(os.ExpandEnv(ps.File))
+}
+
+// ResolveSharedPoolsPath возвращает путь к общему JSON со списком пулов/тикеров для всех коннекторов.
+// Приоритет: shared_pools, default_symbols_file, затем первые указанные пути в dex_configs.
+func (c *Config) ResolveSharedPoolsPath() string {
+	if path := strings.TrimSpace(c.SharedPools.Resolve()); path != "" {
+		return path
+	}
+	if path := strings.TrimSpace(os.ExpandEnv(c.DefaultSymbolsFile)); path != "" {
+		return path
+	}
+	for _, dex := range c.DexConfigs {
+		if path := strings.TrimSpace(dex.PoolsSource.Resolve()); path != "" {
+			return path
+		}
+		if path := strings.TrimSpace(os.ExpandEnv(dex.PoolsFile)); path != "" {
+			return path
+		}
+	}
+	return ""
 }
 
 // ExchangeConfig describes how to load symbols for a specific exchange

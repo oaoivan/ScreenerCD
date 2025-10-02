@@ -35,7 +35,7 @@ import (
 // --- Константы ---
 const (
 	v3DefaultMainnetTemplate = "wss://eth-mainnet.g.alchemy.com/v2/%s"
-	v3GeckoDefaultPath       = "Temp/geckoterminal_pools.json"
+	v3GeckoDefaultPath       = ""
 	v3BatchSizeDefault       = 150
 	v3PingIntervalDefault    = 25 * time.Second
 	v3ReconnectBase          = 2 * time.Second
@@ -102,6 +102,35 @@ type v3GeckoFile struct {
 	Entries []v3GeckoPool `json:"entries"`
 }
 
+func v3TokenMetaFromJSON(address, symbol string, decimals v3IntOrString) v3TokenMeta {
+	meta := v3TokenMeta{}
+	addr := strings.TrimSpace(address)
+	if common.IsHexAddress(addr) {
+		meta.Address = common.HexToAddress(addr)
+	}
+	sym := strings.TrimSpace(symbol)
+	if sym != "" {
+		meta.Symbol = strings.ToUpper(sym)
+	}
+	dec := int(decimals)
+	if dec < 0 {
+		dec = 0
+	}
+	if dec > 255 {
+		dec = 255
+	}
+	meta.Dec = uint8(dec)
+	return meta
+}
+
+func v3DefaultSymbol(addr common.Address) string {
+	hex := strings.ToUpper(strings.TrimPrefix(addr.Hex(), "0x"))
+	if len(hex) <= 6 {
+		return hex
+	}
+	return hex[:3] + hex[len(hex)-3:]
+}
+
 // --- Подписка / RPC ---
 type v3RPCRequest struct {
 	JSONRPC string        `json:"jsonrpc"`
@@ -146,13 +175,15 @@ type v3TokenMeta struct {
 }
 
 type v3PoolMeta struct {
-	Addr     common.Address
-	PairName string
-	Token0   v3TokenMeta
-	Token1   v3TokenMeta
-	Loaded   bool // метаданные токенов загружены
-	Loading  bool
-	LoadErr  error
+	Addr        common.Address
+	PairName    string
+	Token0      v3TokenMeta
+	Token1      v3TokenMeta
+	Loaded      bool // метаданные токенов загружены
+	Loading     bool
+	LoadErr     error
+	HasJSONMeta bool
+	Registered  bool
 }
 
 // Глобальные
@@ -358,6 +389,9 @@ func v3LoadPools(cfg V3Config) error {
 	if path == "" {
 		path = v3GeckoDefaultPath
 	}
+	if path == "" {
+		return fmt.Errorf("uniswap_v3: pools path not provided")
+	}
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return err
@@ -392,7 +426,29 @@ func v3LoadPools(cfg V3Config) error {
 		if _, exists := v3Pools[addr]; exists {
 			continue
 		}
-		v3Pools[addr] = &v3PoolMeta{Addr: addr, PairName: e.PairName}
+		token0 := v3TokenMetaFromJSON(e.Token0.Address, e.Token0.Symbol, e.Token0.Decimals)
+		token1 := v3TokenMetaFromJSON(e.Token1.Address, e.Token1.Symbol, e.Token1.Decimals)
+		if (token0.Address == common.Address{}) || (token1.Address == common.Address{}) {
+			util.Debugf("uniswap_v3 skip pool=%s reason=missing token address", e.PairName)
+			continue
+		}
+		if token0.Symbol == "" {
+			token0.Symbol = v3DefaultSymbol(token0.Address)
+		}
+		if token1.Symbol == "" {
+			token1.Symbol = v3DefaultSymbol(token1.Address)
+		}
+		hasJSONMeta := token0.Dec > 0 && token1.Dec > 0
+		v3Pools[addr] = &v3PoolMeta{
+			Addr:        addr,
+			PairName:    e.PairName,
+			Token0:      token0,
+			Token1:      token1,
+			HasJSONMeta: hasJSONMeta,
+		}
+		if hasJSONMeta {
+			util.Debugf("uniswap_v3 pool=%s decimals json token0=%d token1=%d", e.PairName, token0.Dec, token1.Dec)
+		}
 		added++
 		if added <= 20 {
 			util.Infof("uniswap_v3 add pool %s addr=%s", e.PairName, addr.Hex())
@@ -627,7 +683,7 @@ func v3HandleSwap(pm *v3PoolMeta, l v3LogItem) {
 		return
 	}
 	// Ensure metadata (token addresses, symbols, decimals) — лениво.
-	if !pm.Loaded {
+	if !pm.Loaded && !pm.HasJSONMeta {
 		if v3TryAcquireMetaSlot() { // не блокируем если лимит
 			if err := v3EnsurePoolMeta(pm); err != nil {
 				pm.LoadErr = err
@@ -640,10 +696,15 @@ func v3HandleSwap(pm *v3PoolMeta, l v3LogItem) {
 			v3ReleaseMetaSlot()
 		}
 	}
+	if (pm.HasJSONMeta || pm.Loaded) && !pm.Registered {
+		v3RegisterToken(pm.Token0)
+		v3RegisterToken(pm.Token1)
+		pm.Registered = true
+	}
 
 	var price1Per0, price0Per1 *big.Rat
 	var priceNote string
-	if pm.Loaded && pm.Token0.Dec > 0 && pm.Token1.Dec > 0 { // нормализуем
+	if (pm.Loaded || pm.HasJSONMeta) && pm.Token0.Dec > 0 && pm.Token1.Dec > 0 { // нормализуем
 		adj := v3DecimalAdjust(pm.Token0.Dec, pm.Token1.Dec)
 		price1Per0 = new(big.Rat).Mul(rawPrice, adj) // 1 token0 -> token1
 		price0Per1 = v3Invert(price1Per0)
@@ -776,7 +837,7 @@ func v3RegisterToken(meta v3TokenMeta) {
 }
 
 func v3UpdatePricing(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat, amount0, amount1 *big.Int) {
-	if pm == nil || !pm.Loaded {
+	if pm == nil || (!pm.Loaded && !pm.HasJSONMeta) {
 		return
 	}
 	pricer := v3CurrentPricer()
@@ -892,16 +953,19 @@ func v3EnsurePoolMeta(pm *v3PoolMeta) error {
 	if err != nil {
 		return err
 	}
-	tm0, err := v3FetchTokenMeta(t0)
+	tm0, err := v3FetchTokenMeta(t0, pm.Token0)
 	if err != nil {
 		return err
 	}
-	tm1, err := v3FetchTokenMeta(t1)
+	tm1, err := v3FetchTokenMeta(t1, pm.Token1)
 	if err != nil {
 		return err
 	}
 	pm.Token0 = tm0
 	pm.Token1 = tm1
+	if tm0.Dec > 0 && tm1.Dec > 0 {
+		pm.HasJSONMeta = true
+	}
 	v3RegisterToken(tm0)
 	v3RegisterToken(tm1)
 	return nil
@@ -927,20 +991,35 @@ func v3CallAddress(contract common.Address, selector string) (common.Address, er
 	return common.BytesToAddress(b[12:32]), nil
 }
 
-func v3FetchTokenMeta(addr common.Address) (v3TokenMeta, error) {
+func v3FetchTokenMeta(addr common.Address, hint v3TokenMeta) (v3TokenMeta, error) {
+	meta := v3TokenMeta{Address: addr, Symbol: strings.ToUpper(strings.TrimSpace(hint.Symbol)), Dec: hint.Dec}
 	v3TokenMu.RLock()
-	if m, ok := v3TokenCache[addr]; ok {
-		v3TokenMu.RUnlock()
-		return m, nil
+	if cached, ok := v3TokenCache[addr]; ok {
+		if meta.Symbol == "" {
+			meta.Symbol = cached.Symbol
+		}
+		if meta.Dec == 0 {
+			meta.Dec = cached.Dec
+		}
 	}
 	v3TokenMu.RUnlock()
-	dec, _ := v3CallUint8(addr, "313ce567") // decimals()
-	sym, _ := v3CallSymbol(addr)
-	tm := v3TokenMeta{Address: addr, Symbol: sym, Dec: dec}
+	if meta.Dec == 0 {
+		if dec, err := v3CallUint8(addr, "313ce567"); err == nil {
+			meta.Dec = dec
+		}
+	}
+	if meta.Symbol == "" {
+		if sym, err := v3CallSymbol(addr); err == nil {
+			meta.Symbol = strings.ToUpper(strings.TrimSpace(sym))
+		}
+	}
+	if meta.Symbol == "" {
+		meta.Symbol = v3DefaultSymbol(addr)
+	}
 	v3TokenMu.Lock()
-	v3TokenCache[addr] = tm
+	v3TokenCache[addr] = meta
 	v3TokenMu.Unlock()
-	return tm, nil
+	return meta, nil
 }
 
 func v3CallUint8(contract common.Address, selector string) (uint8, error) {
@@ -1061,7 +1140,7 @@ func v3Pow10(dec uint8) *big.Int {
 }
 
 func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
-	if !pm.Loaded {
+	if !pm.Loaded && !pm.HasJSONMeta {
 		return ""
 	}
 	sym0 := strings.ToUpper(pm.Token0.Symbol)

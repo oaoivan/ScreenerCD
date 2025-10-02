@@ -4,17 +4,15 @@ symbol: "BTC-USDT"
 api_key: ""
 secret: ""
 
-default_symbols_file: "ticker_source/geckoterminal_pools.json"
+shared_pools:
+  file: "ticker_source/geckoterminal_pools.json"
+  env: "GECKO_POOLS_JSON"
 
 exchange_configs:
   - name: "gate"
-    symbols_file: "ticker_source/geckoterminal_pools.json"
   - name: "bybit"
-    symbols_file: "ticker_source/geckoterminal_pools.json"
   - name: "bitget"
-    symbols_file: "ticker_source/geckoterminal_pools.json"
   - name: "okx"
-    symbols_file: "ticker_source/geckoterminal_pools.json"
 
 redis: 
   host: "localhost"
@@ -32,7 +30,6 @@ dex_configs:
     http_url: "https://eth-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
     subscribe_batch: 120
     ping_interval: 25
-    pools_file: "ticker_source/geckoterminal_pools.json"
     pools:
       - address: "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc"
         pair_name: "USDC/WETH"
@@ -66,7 +63,7 @@ dex_configs:
     log_all_events: false
     stop_on_ack_error: false
     pools_source:
-      file: "Temp/geckoterminal_pools.json"
+      file: "ticker_source/geckoterminal_pools.json"
       env: "GECKO_POOLS_JSON"
       gecko_dex: "uniswap_v3"
       gecko_network: "ethereum"

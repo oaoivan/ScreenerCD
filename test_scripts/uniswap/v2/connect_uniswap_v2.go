@@ -28,7 +28,7 @@ import (
 const (
 	v2DefaultMainnetTemplate = "wss://eth-mainnet.g.alchemy.com/v2/%s"
 	v2Timeout                = 8 * time.Minute
-	v2GeckoDefaultPath       = "Temp/geckoterminal_pools.json"
+	v2GeckoDefaultPath       = ""
 	v2BatchSize              = 150 // адресов на одну подписку (безопасный лимит)
 	v2WETHAddress            = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 	v2DefaultHTTPTemplate    = "https://eth-mainnet.g.alchemy.com/v2/%s"
@@ -353,6 +353,9 @@ func v2LoadPools() error {
 	path := os.Getenv("GECKO_POOLS_JSON")
 	if path == "" {
 		path = v2GeckoDefaultPath
+	}
+	if path == "" {
+		return fmt.Errorf("pools json path not provided (set GECKO_POOLS_JSON)")
 	}
 	b, err := os.ReadFile(path)
 	if err != nil {
