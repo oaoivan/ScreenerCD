@@ -25,6 +25,7 @@ import (
 // Config описывает минимальный набор настроек для подписки на Uniswap V2 пулы.
 type Config struct {
 	WSURL              string
+	HTTPURL            string
 	Exchange           string
 	Pools              []PoolConfig
 	SubscribeBatchSize int
@@ -138,8 +139,16 @@ func (c *Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error {
 		return errors.New("uniswap v2: dialer is nil")
 	}
 
-	c.pools = make(map[common.Address]*poolState, len(c.cfg.Pools))
-	for _, pool := range c.cfg.Pools {
+	pools := c.cfg.Pools
+	if adjusted, err := AdjustPoolsOrdering(ctx, c.cfg.HTTPURL, pools); err != nil {
+		util.Errorf("uniswap_v2: adjust pool order failed: %v", err)
+	} else {
+		pools = adjusted
+		c.cfg.Pools = adjusted
+	}
+
+	c.pools = make(map[common.Address]*poolState, len(pools))
+	for _, pool := range pools {
 		ps := &poolState{meta: pool}
 		c.pools[pool.Address] = ps
 		c.registerPoolTokens(pool)

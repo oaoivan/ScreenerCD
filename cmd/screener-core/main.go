@@ -11,8 +11,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/yourusername/screner/internal/config"
-	"github.com/yourusername/screner/internal/exchange"
+	"github.com/yourusername/screner/internal/dex/pricing"
+	"github.com/yourusername/screner/internal/launcher"
 	"github.com/yourusername/screner/internal/redisclient"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
@@ -173,225 +175,52 @@ func main() {
 	var mu sync.Mutex
 	perExchange := map[string]int64{}
 
-	// Start connectors per exchange
+	var pricer pricing.Pricer
+	if len(cfg.DexConfigs) > 0 {
+		anchors := []pricing.TokenInfo{
+			{Address: common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"), Symbol: "USDC", Decimals: 6},
+			{Address: common.HexToAddress("0xdac17f958d2ee523a2206206994597c13d831ec7"), Symbol: "USDT", Decimals: 6},
+			{Address: common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f"), Symbol: "DAI", Decimals: 18},
+		}
+		pricer = pricing.NewGraphPricer(anchors)
+	}
+
+	launchCtx := launcher.LaunchContext{
+		Config:      cfg,
+		DataChannel: dataChannel,
+		Stop:        stop,
+		Pricer:      pricer,
+		Supervisor: func(name string, fn func() error) {
+			go supervisor(name, fn, stop)
+		},
+	}
+
 	for _, ex := range exchanges {
 		exLower := strings.ToLower(strings.TrimSpace(ex))
+		builder := launcher.Get(exLower)
+		if builder == nil {
+			util.Errorf("unknown exchange in config: %s", ex)
+			continue
+		}
 		symbols := symbolsByExchange[exLower]
-		switch exLower {
-		case "bybit":
-			exName := "Bybit"
-			url := "wss://stream.bybit.com/v5/public/spot"
-			// run supervisor concurrently per exchange
-			go supervisor(exName, func() error {
-				client := exchange.NewBybitClient(url)
-				if err := client.Connect(); err != nil {
-					return err
-				}
-				// subscribe in batches
-				batchSize := cfg.SubscribeBatchSize
-				if batchSize <= 0 {
-					batchSize = 100
-				}
-				batchPause := time.Duration(cfg.SubscribeBatchPauseMs) * time.Millisecond
-				smallDelay := 5 * time.Millisecond
-				for i, s := range symbols {
-					util.Infof("%s subscribe %d/%d: %s", exName, i+1, len(symbols), s)
-					if err := client.Subscribe(s); err != nil {
-						util.Errorf("%s subscribe error for %s: %v", exName, s, err)
-					}
-					// light pacing inside batch
-					time.Sleep(smallDelay)
-					// pause between batches
-					if (i+1)%batchSize == 0 {
-						util.Infof("%s subscribed %d symbols, pausing %dms", exName, i+1, cfg.SubscribeBatchPauseMs)
-						time.Sleep(batchPause)
-					}
-				}
-				// readers
-				go client.ReadLoop(exName, "MULTIPLE_SYMBOLS")
-				go client.KeepAlive()
-				// forward to shared channel
-				for md := range client.Out() {
-					select {
-					case dataChannel <- md:
-					default:
-						util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
-						atomic.AddInt64(&totalDrops, 1)
-					}
-				}
-				client.Close()
-				return fmt.Errorf("%s out channel closed", exName)
-			}, stop)
+		if err := builder(launchCtx, ex, symbols, nil); err != nil {
+			util.Errorf("launch %s error: %v", ex, err)
+		}
+	}
 
-		case "gate", "gateio":
-			exName := "Gate"
-			url := "wss://api.gateio.ws/ws/v4/"
-			// run supervisor concurrently per exchange
-			go supervisor(exName, func() error {
-				client := exchange.NewGateClient(url)
-				if err := client.Connect(); err != nil {
-					return err
-				}
-				// subscribe in batches (convert symbol format)
-				batchSize := cfg.SubscribeBatchSize
-				if batchSize <= 0 {
-					batchSize = 100
-				}
-				batchPause := time.Duration(cfg.SubscribeBatchPauseMs) * time.Millisecond
-				smallDelay := 10 * time.Millisecond
-				for i, s := range symbols {
-					gateSym := util.BybitToGateSymbol(s)
-					util.Debugf("%s subscribe %d/%d: %s -> %s", exName, i+1, len(symbols), s, gateSym)
-					if err := client.Subscribe(gateSym); err != nil {
-						util.Errorf("%s subscribe error for %s: %v", exName, gateSym, err)
-					}
-					time.Sleep(smallDelay)
-					if (i+1)%batchSize == 0 {
-						util.Infof("%s subscribed %d symbols, pausing %dms", exName, i+1, cfg.SubscribeBatchPauseMs)
-						time.Sleep(batchPause)
-					}
-				}
-				// readers
-				go client.ReadLoop(exName)
-				go client.KeepAlive()
-				// forward to shared channel
-				for md := range client.Out() {
-					select {
-					case dataChannel <- md:
-					default:
-						util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
-						atomic.AddInt64(&totalDrops, 1)
-					}
-				}
-				client.Close()
-				return fmt.Errorf("%s out channel closed", exName)
-			}, stop)
-
-		case "bitget":
-			exName := "Bitget"
-			url := "wss://ws.bitget.com/v2/ws/public"
-			go supervisor(exName, func() error {
-				client := exchange.NewBitgetClient(url)
-				if err := client.Connect(); err != nil {
-					return err
-				}
-
-				bitgetSymbols := symbols
-				util.Infof("%s using symbols list: %d", exName, len(bitgetSymbols))
-				// Bitget строгие лимиты: 10 сообщений/сек. Делаем батч-подписку + паузы.
-				batchSize := cfg.BitgetSubscribeBatchSize
-				if batchSize <= 0 {
-					batchSize = 30
-				}
-				batchPause := time.Duration(cfg.BitgetSubscribePauseMs) * time.Millisecond
-				if batchPause <= 0 {
-					batchPause = 700 * time.Millisecond
-				}
-				// формируем батчи instId и шлём одним сообщением
-				batch := make([]string, 0, batchSize)
-				pushBatch := func(count int) {
-					if len(batch) == 0 {
-						return
-					}
-					if err := client.SubscribeBatch(batch); err != nil {
-						util.Errorf("%s subscribe batch error (size=%d): %v", exName, len(batch), err)
-					}
-					util.Infof("%s subscribed %d symbols (batch), pausing %dms", exName, count, cfg.BitgetSubscribePauseMs)
-					batch = batch[:0]
-					time.Sleep(batchPause)
-				}
-				total := 0
-				for _, s := range bitgetSymbols {
-					instId := strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(s, "-", ""), "_", ""))
-					batch = append(batch, instId)
-					total++
-					if len(batch) >= batchSize {
-						pushBatch(total)
-					}
-				}
-				// остаток
-				pushBatch(total)
-				go client.ReadLoop(exName)
-				// параметризованный ping interval
-				pingInterval := time.Duration(cfg.BitgetPingIntervalSec) * time.Second
-				go client.KeepAlive(pingInterval)
-				for md := range client.Out() {
-					select {
-					case dataChannel <- md:
-					default:
-						util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
-						atomic.AddInt64(&totalDrops, 1)
-					}
-				}
-				client.Close()
-				return fmt.Errorf("%s out channel closed", exName)
-			}, stop)
-		default:
-			// OKX integration
-			if exLower == "okx" {
-				exName := "OKX"
-				url := "wss://ws.okx.com:8443/ws/v5/public"
-				go supervisor(exName, func() error {
-					client := exchange.NewOkxClient(url)
-					if err := client.Connect(); err != nil {
-						return err
-					}
-					// батч-подписка
-					batchSize := cfg.SubscribeBatchSize
-					if batchSize <= 0 {
-						batchSize = 100
-					}
-					batchPause := time.Duration(cfg.SubscribeBatchPauseMs) * time.Millisecond
-					if batchPause <= 0 {
-						batchPause = 200 * time.Millisecond
-					}
-					batch := make([]string, 0, batchSize)
-					push := func(count int) {
-						if len(batch) == 0 {
-							return
-						}
-						if err := client.SubscribeBatch(batch); err != nil {
-							util.Errorf("%s subscribe batch error (size=%d): %v", exName, len(batch), err)
-						}
-						util.Infof("%s subscribed %d symbols (batch), pausing %dms", exName, count, cfg.SubscribeBatchPauseMs)
-						batch = batch[:0]
-						time.Sleep(batchPause)
-					}
-					total := 0
-					for _, s := range symbols {
-						// OKX instId формат: BASE-QUOTE (например, BTC-USDT)
-						instId := strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(s, "_", "-"), "/", "-"))
-						// если уже в виде BTCUSDT, вставим дефис перед 4-символьным суффиксом
-						if !strings.Contains(instId, "-") && len(instId) > 4 {
-							instId = instId[:len(instId)-4] + "-" + instId[len(instId)-4:]
-						}
-						batch = append(batch, instId)
-						total++
-						if len(batch) >= batchSize {
-							push(total)
-						}
-					}
-					push(total)
-					go client.ReadLoop(exName)
-					pingInterval := time.Duration(cfg.MetricsPeriodSec) * time.Second // используем период метрик как безопасный пинг, либо 30с
-					if pingInterval <= 0 {
-						pingInterval = 25 * time.Second
-					}
-					go client.KeepAlive(pingInterval)
-					for md := range client.Out() {
-						select {
-						case dataChannel <- md:
-						default:
-							util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
-							atomic.AddInt64(&totalDrops, 1)
-						}
-					}
-					client.Close()
-					return fmt.Errorf("%s out channel closed", exName)
-				}, stop)
-			} else {
-				util.Errorf("unknown exchange in config: %s", ex)
-			}
+	for i := range cfg.DexConfigs {
+		dexCfg := &cfg.DexConfigs[i]
+		name := strings.ToLower(strings.TrimSpace(dexCfg.Name))
+		if name == "" {
+			continue
+		}
+		builder := launcher.Get(name)
+		if builder == nil {
+			util.Errorf("dex %s not supported yet", dexCfg.Name)
+			continue
+		}
+		if err := builder(launchCtx, dexCfg.Name, nil, dexCfg); err != nil {
+			util.Errorf("launch %s error: %v", dexCfg.Name, err)
 		}
 	}
 
