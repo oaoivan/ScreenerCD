@@ -382,7 +382,7 @@
     },
     {
       "symbol": "API3",
-      "dex": "uniswap_v2",
+      "dex": "uniswap_b",
       "network": "ethereum",
       "token_address": "0x0b38210ea11411557c13457d4da7dc6ea731b88a",
       "pool_address": "0x4dd26482738be6c06c31467a19dcda9ad781e8c4",

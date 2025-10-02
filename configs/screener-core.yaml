@@ -55,6 +55,22 @@ dex_configs:
         base_is_token0: true
         canonical_pair: "WETHUSDT"
 
+  - name: "uniswap_v3"
+    network: "ethereum"
+    ws_url: "wss://eth-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    http_url: "https://eth-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    subscribe_batch: 150
+    ping_interval: 25
+    max_meta_workers: 8
+    swap_only: true
+    log_all_events: false
+    stop_on_ack_error: false
+    pools_source:
+      file: "Temp/geckoterminal_pools.json"
+      env: "GECKO_POOLS_JSON"
+      gecko_dex: "uniswap_v3"
+      gecko_network: "ethereum"
+
 # Performance tuning
 data_channel_buffer: 8192         # 8k–32k в зависимости от нагрузки
 redis_workers: 8                  # 8–16 воркеров

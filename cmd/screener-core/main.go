@@ -15,7 +15,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/websocket"
 	"github.com/yourusername/screner/internal/config"
-	"github.com/yourusername/screner/internal/dex/Etherium/Uniswap"
+	uniswap "github.com/yourusername/screner/internal/dex/Etherium/Uniswap"
+	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/exchange"
 	"github.com/yourusername/screner/internal/redisclient"
 	"github.com/yourusername/screner/internal/util"
@@ -73,6 +74,7 @@ func main() {
 	// Init Redis
 	redisClient := redisclient.NewRedisClient(cfg.Redis.RedisAddress(), cfg.Redis.Password, 0)
 	util.Infof("Redis client initialized: %s", cfg.Redis.RedisAddress())
+	redisClient.NormalizeExchangeKeys()
 
 	// Build list of exchanges (preserve legacy fallbacks)
 	exchanges := cfg.Exchanges
@@ -158,6 +160,15 @@ func main() {
 			util.Fatalf("No symbols resolved for exchange %s", exKey)
 		}
 	}
+
+	stableAnchors := []pricing.TokenInfo{
+		{Address: common.HexToAddress("0xA0b86991c6218b36c1d19d4a2e9Eb0cE3606eB48"), Symbol: "USDC", Decimals: 6},
+		{Address: common.HexToAddress("0xdAC17F958D2ee523a2206206994597C13D831ec7"), Symbol: "USDT", Decimals: 6},
+		{Address: common.HexToAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F"), Symbol: "DAI", Decimals: 18},
+		{Address: common.HexToAddress("0x0000000000085d4780B73119b644AE5ecd22B376"), Symbol: "TUSD", Decimals: 18},
+		{Address: common.HexToAddress("0x8d0d000Ee44948FC98C9b98A4Fa4921476f08b0d"), Symbol: "FDUSD", Decimals: 18},
+	}
+	usdPricer := pricing.NewGraphPricer(stableAnchors)
 
 	// Shared buffered channel (configurable)
 	dataChannel := make(chan *pb.MarketData, cfg.DataChannelBuffer)
@@ -437,7 +448,51 @@ func main() {
 				}()
 
 				dialer := &gorillaDialer{}
-				connector := uniswap.NewConnector(uCfg, dialer)
+				connector := uniswap.NewConnector(uCfg, dialer, usdPricer)
+				err := connector.Run(ctx, forward)
+				close(forward)
+				<-forwardDone
+				return err
+			}, stop)
+		case "uniswap_v3":
+			v3Cfg, err := buildUniswapV3ConnectorConfig(dexCfg)
+			if err != nil {
+				util.Errorf("Uniswap V3 config error: %v", err)
+				continue
+			}
+			label := v3Cfg.Exchange
+			if label == "" {
+				label = "uniswap_v3"
+			}
+			dexSummaries = append(dexSummaries, label)
+			util.Infof("Uniswap V3 connector %s using pools=%s batch=%d", label, v3Cfg.PoolsPath, v3Cfg.BatchSize)
+
+			go supervisor(fmt.Sprintf("UniswapV3-%s", strings.ToUpper(network)), func() error {
+				ctx, cancel := context.WithCancel(context.Background())
+				defer cancel()
+				go func() {
+					select {
+					case <-stop:
+						cancel()
+					case <-ctx.Done():
+					}
+				}()
+
+				forward := make(chan *pb.MarketData, cfg.DataChannelBuffer)
+				forwardDone := make(chan struct{})
+				go func() {
+					defer close(forwardDone)
+					for md := range forward {
+						select {
+						case dataChannel <- md:
+						default:
+							util.Errorf("dataChannel full, dropping message %s:%s", md.Exchange, md.Symbol)
+							atomic.AddInt64(&totalDrops, 1)
+						}
+					}
+				}()
+
+				connector := uniswap.NewV3Connector(v3Cfg, usdPricer)
 				err := connector.Run(ctx, forward)
 				close(forward)
 				<-forwardDone
@@ -483,7 +538,7 @@ func main() {
 						flush()
 						return
 					}
-					exLower := strings.ToLower(strings.TrimSpace(md.Exchange))
+					exLower := util.NormalizeExchangeName(md.Exchange)
 					if exLower == "" {
 						exLower = "unknown"
 					}
@@ -637,6 +692,65 @@ func buildUniswapV2ConnectorConfig(dexCfg config.DexConfig) (uniswap.Config, err
 	}, nil
 }
 
+func buildUniswapV3ConnectorConfig(dexCfg config.DexConfig) (uniswap.V3Config, error) {
+	wsURL := strings.TrimSpace(os.ExpandEnv(dexCfg.WSURL))
+	httpURL := strings.TrimSpace(os.ExpandEnv(dexCfg.HTTPURL))
+	batch := dexCfg.SubscribeBatch
+	if batch <= 0 {
+		batch = 150
+	}
+	ping := time.Duration(dexCfg.PingInterval) * time.Second
+	if ping <= 0 {
+		ping = 25 * time.Second
+	}
+	poolsPath := strings.TrimSpace(os.ExpandEnv(dexCfg.PoolsSource.Resolve()))
+	if poolsPath == "" {
+		poolsPath = strings.TrimSpace(os.ExpandEnv(dexCfg.PoolsFile))
+	}
+	dexFilter := strings.TrimSpace(dexCfg.PoolsSource.GeckoDex)
+	if dexFilter == "" {
+		dexFilter = strings.TrimSpace(dexCfg.Name)
+	}
+	networkFilter := strings.TrimSpace(dexCfg.PoolsSource.GeckoNetwork)
+	if networkFilter == "" {
+		networkFilter = strings.TrimSpace(dexCfg.Network)
+	}
+
+	exchangeName := strings.ToLower(strings.TrimSpace(dexCfg.Name))
+	if exchangeName == "" {
+		exchangeName = "uniswap_v3"
+	}
+	network := strings.ToLower(strings.TrimSpace(dexCfg.Network))
+	if network != "" {
+		exchangeName = fmt.Sprintf("%s:%s", exchangeName, network)
+	}
+
+	decodeSwap := dexCfg.SwapOnly
+	if !dexCfg.SwapOnly {
+		decodeSwap = true
+	}
+
+	maxMeta := dexCfg.MaxMetaWorkers
+	if maxMeta < 0 {
+		maxMeta = 0
+	}
+
+	return uniswap.V3Config{
+		Exchange:       exchangeName,
+		WSURL:          wsURL,
+		HTTPURL:        httpURL,
+		PoolsPath:      poolsPath,
+		DexFilter:      dexFilter,
+		NetworkFilter:  networkFilter,
+		BatchSize:      batch,
+		PingInterval:   ping,
+		StopOnAckError: dexCfg.StopOnAckError,
+		LogAllEvents:   dexCfg.LogAllEvents,
+		DecodeSwapOnly: decodeSwap,
+		MaxMetaWorkers: maxMeta,
+	}, nil
+}
+
 func uniswapPoolsFromConfig(dexCfg config.DexConfig) ([]uniswap.PoolConfig, error) {
 	poolMap := make(map[common.Address]uniswap.PoolConfig)
 	merge := func(pool uniswap.PoolConfig) {
@@ -735,6 +849,8 @@ func (c *gorillaConn) ReadMessage() (int, []byte, error) {
 }
 
 // loadLinesFile reads non-empty, trimmed lines from a text file; returns empty slice on error.
+//
+//lint:ignore U1000 helper preserved for manual symbol imports
 func loadLinesFile(path string) []string {
 	f, err := os.Open(path)
 	if err != nil {

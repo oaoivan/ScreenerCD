@@ -179,7 +179,7 @@ func (c *BitgetClient) ReadLoop(exchangeName string) {
 		}
 
 		md := &protobuf.MarketData{
-			Exchange:  exchangeName,
+			Exchange:  strings.ToLower(exchangeName),
 			Symbol:    d.InstId,
 			Price:     price,
 			Timestamp: time.Now().Unix(),

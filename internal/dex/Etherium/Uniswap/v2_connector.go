@@ -17,6 +17,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
 )
@@ -85,23 +86,47 @@ type WSConnection interface {
 type Connector struct {
 	cfg    Config
 	dialer Dialer
+	pricer pricing.Pricer
 
 	mu    sync.RWMutex
 	pools map[common.Address]*poolState
-
-	wethUSD       *big.Rat
-	wethUSDStable string
 }
 
 // NewConnector создаёт коннектор с заданной конфигурацией и транспортом.
-func NewConnector(cfg Config, dialer Dialer) *Connector {
-	return &Connector{cfg: cfg, dialer: dialer}
+func NewConnector(cfg Config, dialer Dialer, pricer pricing.Pricer) *Connector {
+	return &Connector{cfg: cfg, dialer: dialer, pricer: pricer}
 }
 
 type poolState struct {
 	meta      PoolConfig
 	lastPrice *big.Rat
 	gotFirst  bool
+}
+
+type poolSnapshot struct {
+	Price    *big.Rat
+	Reserve0 *big.Int
+	Reserve1 *big.Int
+}
+
+func (c *Connector) registerPoolTokens(pool PoolConfig) {
+	if c.pricer == nil {
+		return
+	}
+	if (pool.Token0.Address != common.Address{}) {
+		info := pricing.TokenInfo{Address: pool.Token0.Address, Symbol: pool.Token0.Symbol, Decimals: pool.Token0.Decimals}
+		c.pricer.RegisterToken(info)
+		if pool.Token0.IsStable {
+			c.pricer.RegisterStable(info)
+		}
+	}
+	if (pool.Token1.Address != common.Address{}) {
+		info := pricing.TokenInfo{Address: pool.Token1.Address, Symbol: pool.Token1.Symbol, Decimals: pool.Token1.Decimals}
+		c.pricer.RegisterToken(info)
+		if pool.Token1.IsStable {
+			c.pricer.RegisterStable(info)
+		}
+	}
 }
 
 // Run запускает приём цен и публикует их в общий канал Screener Core.
@@ -117,6 +142,7 @@ func (c *Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error {
 	for _, pool := range c.cfg.Pools {
 		ps := &poolState{meta: pool}
 		c.pools[pool.Address] = ps
+		c.registerPoolTokens(pool)
 	}
 
 	backoff := time.Second
@@ -283,19 +309,19 @@ func (c *Connector) handleRaw(raw []byte, out chan<- *pb.MarketData) error {
 		return nil
 	}
 
-	priceRat, err := computePrice(state.meta, note.Params.Result.Data)
+	snapshot, err := computeSnapshot(state.meta, note.Params.Result.Data)
 	if err != nil {
 		return err
 	}
-	if priceRat == nil {
+	if snapshot == nil || snapshot.Price == nil {
 		return nil
 	}
 
-	if drop := shouldDrop(state, priceRat); drop {
+	if drop := shouldDrop(state, snapshot.Price); drop {
 		return nil
 	}
 
-	c.publish(state, priceRat, out)
+	c.publish(state, snapshot, out)
 	return nil
 }
 
@@ -338,38 +364,109 @@ func shouldDrop(state *poolState, price *big.Rat) bool {
 	return false
 }
 
-const maxUSDPrice = 100000.0
-
-func (c *Connector) publish(state *poolState, price *big.Rat, out chan<- *pb.MarketData) {
+func (c *Connector) publish(state *poolState, snap *poolSnapshot, out chan<- *pb.MarketData) {
+	if snap == nil || snap.Price == nil {
+		return
+	}
 	meta := state.meta
-	c.updateWethUSD(&meta, price)
 	emitted := false
-
-	if meta.HasWETH && meta.HasStable {
-		if ratio := c.wethStablePrice(&meta, price); ratio != nil {
-			if c.emitPrice(out, fmt.Sprintf("WETH%s", meta.StableSymbol), ratio) {
-				emitted = true
-			}
-		}
+	pair := strings.ToUpper(strings.TrimSpace(meta.CanonicalPair))
+	if pair == "" {
+		pair = strings.ToUpper(baseSymbol(&meta) + quoteSymbol(&meta))
 	}
-
-	if usd, stable, mode, ok := c.tokenUSD(&meta, price); ok && usd != nil {
-		symBase := tokenSymbol(&meta)
-		if val, okf := ratToFloat(usd); okf {
-			if val > 0 && val <= maxUSDPrice {
-				symbol := fmt.Sprintf("%s%s", symBase, stable)
-				if c.emitFloat(out, symbol, val) {
-					emitted = true
-				}
-			} else if val > maxUSDPrice {
-				util.Debugf("uniswap_v2: skip unrealistic USD price %.2f for %s (mode=%s)", val, meta.PairName, mode)
-			}
-		}
+	priceCopy := new(big.Rat).Set(snap.Price)
+	if c.emitPrice(out, pair, priceCopy) {
+		emitted = true
 	}
-
+	if c.pricer != nil {
+		c.updatePricing(meta, snap, out)
+	}
 	if emitted && !state.gotFirst {
 		state.gotFirst = true
 	}
+}
+
+func (c *Connector) updatePricing(meta PoolConfig, snap *poolSnapshot, out chan<- *pb.MarketData) {
+	if snap == nil || snap.Price == nil || c.pricer == nil {
+		return
+	}
+	info0 := pricing.TokenInfo{Address: meta.Token0.Address, Symbol: meta.Token0.Symbol, Decimals: meta.Token0.Decimals}
+	info1 := pricing.TokenInfo{Address: meta.Token1.Address, Symbol: meta.Token1.Symbol, Decimals: meta.Token1.Decimals}
+	price := new(big.Rat).Set(snap.Price)
+	var price1Per0, price0Per1 *big.Rat
+	if meta.BaseIsToken0 {
+		price1Per0 = price
+		price0Per1 = invert(price)
+	} else {
+		price0Per1 = price
+		price1Per0 = invert(price)
+	}
+	weight := reserveWeight(snap, meta)
+	now := time.Now()
+	if val, ok := ratToFloat(price1Per0); ok && val > 0 {
+		c.pricer.UpdatePair(info0, info1, val, weight, now)
+	} else if val, ok := ratToFloat(price0Per1); ok && val > 0 {
+		c.pricer.UpdatePair(info1, info0, val, weight, now)
+	} else {
+		return
+	}
+	c.emitUSD(out, info0)
+	c.emitUSD(out, info1)
+}
+
+func (c *Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo) {
+	if c.pricer == nil {
+		return
+	}
+	res, ok := c.pricer.ResolveUSD(info)
+	if !ok || res.Price <= 0 || math.IsNaN(res.Price) || math.IsInf(res.Price, 0) {
+		return
+	}
+	symbol := strings.ToUpper(strings.TrimSpace(info.Symbol))
+	if symbol == "" {
+		symbol = strings.ToUpper(strings.TrimPrefix(info.Address.Hex(), "0x"))
+	}
+	marketSymbol := symbol + "USD"
+	if c.emitFloat(out, marketSymbol, res.Price) {
+		route := strings.Join(res.Route, "->")
+		if route == "" {
+			route = "direct"
+		}
+		util.Infof("uniswap_v2: USD %s price=%.8f weight=%.4f route=%s", marketSymbol, res.Price, res.Weight, route)
+	}
+}
+
+func reserveWeight(snap *poolSnapshot, meta PoolConfig) float64 {
+	if snap == nil {
+		return 1e-9
+	}
+	r0 := reserveToFloat(snap.Reserve0, meta.Token0.Decimals)
+	r1 := reserveToFloat(snap.Reserve1, meta.Token1.Decimals)
+	weight := math.Max(r0, r1)
+	if weight <= 0 {
+		return 1e-9
+	}
+	return weight
+}
+
+func reserveToFloat(reserve *big.Int, decimals int) float64 {
+	if reserve == nil {
+		return 0
+	}
+	abs := new(big.Int).Abs(new(big.Int).Set(reserve))
+	if abs.Sign() == 0 {
+		return 0
+	}
+	f := new(big.Float).SetPrec(256).SetInt(abs)
+	if decimals > 0 {
+		den := new(big.Float).SetPrec(256).SetInt(tenPow(uint(decimals)))
+		f.Quo(f, den)
+	}
+	val, _ := f.Float64()
+	if math.IsNaN(val) || math.IsInf(val, 0) {
+		return 0
+	}
+	return val
 }
 
 func (c *Connector) emitPrice(out chan<- *pb.MarketData, symbol string, value *big.Rat) bool {
@@ -392,160 +489,6 @@ func (c *Connector) emitFloat(out chan<- *pb.MarketData, symbol string, value fl
 	}
 	out <- md
 	return true
-}
-
-func (c *Connector) updateWethUSD(meta *PoolConfig, price *big.Rat) {
-	if !meta.HasWETH || !meta.HasStable || meta.StableSymbol == "" {
-		return
-	}
-	var wethPerStable *big.Rat
-	if (meta.BaseIsToken0 && meta.Token0.IsWETH) || (!meta.BaseIsToken0 && meta.Token1.IsWETH) {
-		wethPerStable = price
-	} else {
-		wethPerStable = invert(price)
-	}
-	if wethPerStable == nil {
-		return
-	}
-	if !c.sanityWETHUSD(wethPerStable) {
-		util.Debugf("uniswap_v2: reject WETHUSD candidate %s %s", formatRat(wethPerStable, 6), meta.PairName)
-		return
-	}
-	if !c.shouldUpdateWETH(meta.StableSymbol) {
-		return
-	}
-	c.wethUSD = new(big.Rat).Set(wethPerStable)
-	c.wethUSDStable = meta.StableSymbol
-	util.Infof("uniswap_v2: WETHUSD=%s %s via %s", formatRat(wethPerStable, 6), meta.StableSymbol, meta.PairName)
-}
-
-func (c *Connector) wethStablePrice(meta *PoolConfig, price *big.Rat) *big.Rat {
-	if !meta.HasWETH || !meta.HasStable {
-		return nil
-	}
-	if (meta.BaseIsToken0 && meta.Token0.IsWETH) || (!meta.BaseIsToken0 && meta.Token1.IsWETH) {
-		return price
-	}
-	return invert(price)
-}
-
-func (c *Connector) tokenUSD(meta *PoolConfig, price *big.Rat) (*big.Rat, string, string, bool) {
-	if meta.HasWETH && meta.HasStable {
-		return nil, "", "", false
-	}
-	if meta.HasStable && !meta.HasWETH {
-		stable := meta.StableSymbol
-		if stable == "" {
-			return nil, "", "", false
-		}
-		if meta.Token0.IsStable && !meta.Token1.IsStable {
-			if meta.BaseIsToken0 {
-				inv := invert(price)
-				if inv == nil {
-					return nil, "", "", false
-				}
-				return inv, stable, "direct-inv", true
-			}
-			return price, stable, "direct", true
-		}
-		if meta.Token1.IsStable && !meta.Token0.IsStable {
-			if meta.BaseIsToken0 {
-				return price, stable, "direct", true
-			}
-			inv := invert(price)
-			if inv == nil {
-				return nil, "", "", false
-			}
-			return inv, stable, "direct-inv", true
-		}
-		return nil, "", "", false
-	}
-	if meta.HasWETH && !meta.HasStable {
-		if c.wethUSD == nil || c.wethUSDStable == "" {
-			return nil, "", "", false
-		}
-		if c.isTokenBase(meta) {
-			usd := new(big.Rat).Mul(price, c.wethUSD)
-			return usd, c.wethUSDStable, "derived", true
-		}
-		inv := invert(price)
-		if inv == nil {
-			return nil, "", "", false
-		}
-		usd := new(big.Rat).Mul(inv, c.wethUSD)
-		return usd, c.wethUSDStable, "derived-inv", true
-	}
-	return nil, "", "", false
-}
-
-func (c *Connector) shouldUpdateWETH(stable string) bool {
-	if stable == "" {
-		return false
-	}
-	if c.wethUSD == nil {
-		return true
-	}
-	switch c.wethUSDStable {
-	case "USDC":
-		return false
-	case "USDT":
-		if stable == "USDC" {
-			return true
-		}
-		return false
-	case "DAI":
-		if stable == "USDC" || stable == "USDT" {
-			return true
-		}
-		return false
-	}
-	if c.wethUSDStable == stable {
-		return true
-	}
-	return true
-}
-
-func (c *Connector) sanityWETHUSD(p *big.Rat) bool {
-	if p == nil || p.Sign() <= 0 {
-		return false
-	}
-	val, ok := ratToFloat(p)
-	if !ok {
-		return false
-	}
-	if val < 300 || val > 100000 {
-		return false
-	}
-	if c.wethUSD != nil {
-		cur, ok := ratToFloat(c.wethUSD)
-		if ok && cur > 0 {
-			ratio := val / cur
-			if ratio < 0.5 || ratio > 2.0 {
-				return false
-			}
-		}
-	}
-	return true
-}
-
-func (c *Connector) isTokenBase(meta *PoolConfig) bool {
-	if meta.HasWETH && !meta.HasStable {
-		if meta.BaseIsToken0 && !meta.Token0.IsWETH {
-			return true
-		}
-		if !meta.BaseIsToken0 && !meta.Token1.IsWETH {
-			return true
-		}
-	}
-	if meta.HasStable && !meta.HasWETH {
-		if meta.BaseIsToken0 && !meta.Token0.IsStable {
-			return true
-		}
-		if !meta.BaseIsToken0 && !meta.Token1.IsStable {
-			return true
-		}
-	}
-	return false
 }
 
 func baseSymbol(meta *PoolConfig) string {
@@ -608,7 +551,7 @@ func formatRat(r *big.Rat, precision int) string {
 	return f.Text('f', precision)
 }
 
-func computePrice(pool PoolConfig, rawData string) (*big.Rat, error) {
+func computeSnapshot(pool PoolConfig, rawData string) (*poolSnapshot, error) {
 	data := strings.TrimPrefix(rawData, "0x")
 	if len(data) < 64*2 {
 		return nil, errors.New("uniswap v2: invalid sync payload")
@@ -623,10 +566,13 @@ func computePrice(pool PoolConfig, rawData string) (*big.Rat, error) {
 		return nil, nil
 	}
 
+	var price *big.Rat
 	if pool.BaseIsToken0 {
-		return ratio(r1, pool.Token1.Decimals, r0, pool.Token0.Decimals), nil
+		price = ratio(r1, pool.Token1.Decimals, r0, pool.Token0.Decimals)
+	} else {
+		price = ratio(r0, pool.Token0.Decimals, r1, pool.Token1.Decimals)
 	}
-	return ratio(r0, pool.Token0.Decimals, r1, pool.Token1.Decimals), nil
+	return &poolSnapshot{Price: price, Reserve0: r0, Reserve1: r1}, nil
 }
 
 func ratio(num *big.Int, numDec int, den *big.Int, denDec int) *big.Rat {

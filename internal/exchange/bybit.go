@@ -3,6 +3,7 @@ package exchange
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -102,7 +103,7 @@ func (c *BybitClient) ReadLoop(exchangeName, symbol string) {
 		util.Debugf("Bybit parsed price=%f for %s/%s", price, exchangeName, messageSymbol)
 
 		md := &protobuf.MarketData{
-			Exchange:  exchangeName,
+			Exchange:  strings.ToLower(exchangeName),
 			Symbol:    messageSymbol, // Use symbol from message topic
 			Price:     price,
 			Timestamp: time.Now().Unix(),

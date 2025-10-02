@@ -3,6 +3,7 @@ package exchange
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -115,7 +116,7 @@ func (c *OkxClient) ReadLoop(exchangeName string) {
 			continue
 		}
 		md := &protobuf.MarketData{
-			Exchange:  exchangeName,
+			Exchange:  strings.ToLower(exchangeName),
 			Symbol:    d.InstId,
 			Price:     price,
 			Timestamp: time.Now().Unix(),

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -54,6 +56,11 @@ type DexConfig struct {
 	PingInterval   int             `yaml:"ping_interval"`
 	Pools          []DexPoolConfig `yaml:"pools"`
 	PoolsFile      string          `yaml:"pools_file"`
+	PoolsSource    PoolsSource     `yaml:"pools_source"`
+	MaxMetaWorkers int             `yaml:"max_meta_workers"`
+	SwapOnly       bool            `yaml:"swap_only"`
+	LogAllEvents   bool            `yaml:"log_all_events"`
+	StopOnAckError bool            `yaml:"stop_on_ack_error"`
 }
 
 // DexPoolConfig описывает минимальную информацию по пулу.
@@ -68,6 +75,28 @@ type DexPoolConfig struct {
 	Token1Decimals uint8  `yaml:"token1_decimals"`
 	BaseIsToken0   bool   `yaml:"base_is_token0"`
 	CanonicalPair  string `yaml:"canonical_pair"`
+}
+
+// PoolsSource задаёт параметры внешнего списка пулов, например GeckoTerminal JSON.
+type PoolsSource struct {
+	File          string `yaml:"file"`
+	Env           string `yaml:"env"`
+	GeckoDex      string `yaml:"gecko_dex"`
+	GeckoNetwork  string `yaml:"gecko_network"`
+	IncludeStable bool   `yaml:"include_stable"`
+}
+
+// Resolve возвращает итоговый путь к файлу пулов с учётом env и подстановок.
+func (ps PoolsSource) Resolve() string {
+	if env := strings.TrimSpace(ps.Env); env != "" {
+		if val := strings.TrimSpace(os.Getenv(env)); val != "" {
+			return val
+		}
+	}
+	if ps.File == "" {
+		return ""
+	}
+	return strings.TrimSpace(os.ExpandEnv(ps.File))
 }
 
 // ExchangeConfig describes how to load symbols for a specific exchange

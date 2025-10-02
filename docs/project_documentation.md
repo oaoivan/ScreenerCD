@@ -17,6 +17,7 @@
 - **Bitget**: Supports batched subscriptions to respect the 10 msg/s cap, aggregates rate-limit error codes, and parses ticker payloads into canonical instrument identifiers.【F:cmd/screener-core/main.go†L267-L325】【F:internal/exchange/bitget.go†L15-L215】
 - **OKX**: Uses batched `tickers` subscriptions, transforms symbols to OKX `instId` format, and handles error frames before forwarding parsed prices.【F:cmd/screener-core/main.go†L326-L388】【F:internal/exchange/okx.go†L13-L151】
 - **Uniswap V2 (Ethereum)**: `internal/dex/Etherium/Uniswap/v2_connector.go` загружает перечень пулов из `ticker_source/geckoterminal_pools.json`, при необходимости корректирует `token0/token1` через RPC, подписывается на `Sync` события и публикует цены в USD в общий поток так же, как CEX коннекторы.【F:internal/dex/Etherium/Uniswap/v2_connector.go†L41-L533】
+- **DEX USD-прайсер**: `internal/dex/pricing` собирает граф токенов на основе всех swap-событий (V2/V3/V4), хранит направленные рёбра с весами (цена, ликвидность) и по запросу строит короткий маршрут к стейблкоинам; результатом становятся точные `TOKENUSD` котировки через общий канал без каких-либо фиксированных 1.0.
 - **DEX конфигурация**: Блок `dex_configs` в `configs/screener-core.yaml` описывает сеть, RPC/WS endpoints и перечень пулов; core автоматически подхватывает эти настройки и запускает коннектор вместе с CEX биржами.【F:configs/screener-core.yaml†L28-L63】【F:cmd/screener-core/main.go†L389-L526】
 
 ## 4. Symbol Management

@@ -3,6 +3,7 @@ package exchange
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -110,7 +111,7 @@ func (c *GateClient) ReadLoop(exchangeName string) {
 		sym := m.Result.CurrencyPair
 
 		md := &protobuf.MarketData{
-			Exchange:  exchangeName,
+			Exchange:  strings.ToLower(exchangeName),
 			Symbol:    sym,
 			Price:     price,
 			Timestamp: time.Now().Unix(),

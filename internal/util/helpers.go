@@ -2,6 +2,31 @@ package util
 
 import "strings"
 
+var exchangeAliases = map[string]string{
+	"gate":      "gate",
+	"gateio":    "gate",
+	"gate-io":   "gate",
+	"gate_io":   "gate",
+	"gate-spot": "gate",
+	"gate.io":   "gate",
+}
+
+// NormalizeExchangeName приводит имя биржи к каноническому виду, применяя известные алиасы.
+// Возвращает строку в нижнем регистре. Неизвестные имена просто очищаются и понижаются.
+func NormalizeExchangeName(name string) string {
+	trimmed := strings.ToLower(strings.TrimSpace(name))
+	if trimmed == "" {
+		return ""
+	}
+	if canon, ok := exchangeAliases[trimmed]; ok {
+		if canon != trimmed {
+			Debugf("normalize exchange alias %s -> %s", trimmed, canon)
+		}
+		return canon
+	}
+	return trimmed
+}
+
 // BybitToGateSymbol converts Bybit spot symbol (e.g., BTCUSDT) to Gate format (BTC_USDT)
 // If input is too short or not in expected pattern, returns as-is.
 func BybitToGateSymbol(bybit string) string {
