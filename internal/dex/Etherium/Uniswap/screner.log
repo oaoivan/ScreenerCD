@@ -1,1 +1,5 @@
 2025/10/02 18:03:54 logger.go:35: 2025-10-02T18:03:54+03:00 [INFO] logger initialized, output=screner.log
+2025/10/03 17:15:13 logger.go:35: 2025-10-03T17:15:13+03:00 [INFO] logger initialized, output=screner.log
+2025/10/03 17:57:23 logger.go:35: 2025-10-03T17:57:22+03:00 [INFO] logger initialized, output=screner.log
+2025/10/03 18:21:39 logger.go:35: 2025-10-03T18:21:39+03:00 [INFO] logger initialized, output=screner.log
+2025/10/03 22:37:17 logger.go:35: 2025-10-03T22:37:17+03:00 [INFO] logger initialized, output=screner.log

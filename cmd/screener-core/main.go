@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/config"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/launcher"
@@ -68,8 +69,22 @@ func main() {
 		util.Fatalf("Error loading config: %v", err)
 	}
 	sharedPoolsPath := strings.TrimSpace(cfg.ResolveSharedPoolsPath())
+	var assetProvider *assets.Provider
 	if sharedPoolsPath == "" {
 		util.Fatalf("shared pools file is not configured; set shared_pools.file or env")
+	}
+
+	assetsPath := strings.TrimSpace(cfg.ResolveAssetsRegistryPath())
+	if assetsPath != "" {
+		if provider, err := assets.LoadOrGetProvider(assetsPath); err != nil {
+			util.Errorf("failed to load assets registry %s: %v", assetsPath, err)
+			assetProvider = nil
+		} else {
+			assetProvider = provider
+			util.Infof("Assets registry loaded: %s", assetsPath)
+		}
+	} else if len(cfg.DexConfigs) > 0 {
+		util.Infof("Assets registry path not configured; using fallback stable anchors")
 	}
 
 	// Init Redis
@@ -177,12 +192,12 @@ func main() {
 
 	var pricer pricing.Pricer
 	if len(cfg.DexConfigs) > 0 {
-		anchors := []pricing.TokenInfo{
+		fallbackAnchors := []pricing.TokenInfo{
 			{Address: common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"), Symbol: "USDC", Decimals: 6},
 			{Address: common.HexToAddress("0xdac17f958d2ee523a2206206994597c13d831ec7"), Symbol: "USDT", Decimals: 6},
 			{Address: common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f"), Symbol: "DAI", Decimals: 18},
 		}
-		pricer = pricing.NewGraphPricer(anchors)
+		pricer = pricing.NewGraphPricerFromAssets(assetProvider, nil, fallbackAnchors)
 	}
 
 	launchCtx := launcher.LaunchContext{
@@ -190,6 +205,7 @@ func main() {
 		DataChannel: dataChannel,
 		Stop:        stop,
 		Pricer:      pricer,
+		Assets:      assetProvider,
 		Supervisor: func(name string, fn func() error) {
 			go supervisor(name, fn, stop)
 		},

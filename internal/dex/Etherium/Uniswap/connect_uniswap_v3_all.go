@@ -188,6 +188,8 @@ type v3PoolMeta struct {
 }
 
 // Глобальные
+const v3FallbackWETHHex = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+
 var (
 	v3Pools          = make(map[common.Address]*v3PoolMeta)
 	v3BatchSize      int
@@ -204,8 +206,9 @@ var (
 	v3TokenMu        sync.RWMutex
 	v3Pow10Cache     = make(map[uint8]*big.Int)
 	v3Pow10Mu        sync.RWMutex
-	v3WETHAddress    = common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
-	v3StableSyms     = map[string]bool{"USDC": true, "USDT": true, "DAI": true, "TUSD": true, "FDUSD": true}
+	v3Registry       *TokenRegistry
+	v3WETHAddress    = common.HexToAddress(v3FallbackWETHHex)
+	v3StableLookup   map[string]struct{}
 	v3WETHUSD        *big.Rat
 	v3WETHUSDStable  string
 	v3WethMu         sync.RWMutex
@@ -218,6 +221,92 @@ var (
 	v3MessageCount   uint64
 	v3ReconnectCount uint64
 )
+
+var v3FallbackStableSymbols = []string{"USDC", "USDT", "DAI", "TUSD", "FDUSD"}
+
+func init() {
+	v3StableLookup = v3FallbackStableSet()
+}
+
+func v3FallbackStableSet() map[string]struct{} {
+	lookup := make(map[string]struct{}, len(v3FallbackStableSymbols))
+	for _, sym := range v3FallbackStableSymbols {
+		key := strings.ToUpper(strings.TrimSpace(sym))
+		if key == "" {
+			continue
+		}
+		lookup[key] = struct{}{}
+	}
+	return lookup
+}
+
+func v3InitAssets(reg *TokenRegistry) {
+	provided := reg != nil
+	if reg == nil {
+		util.Debugf("uniswap_v3 assets: registry nil, using defaults")
+		reg = NewTokenRegistry(nil, "")
+	}
+	v3Registry = reg
+	lookup := v3FallbackStableSet()
+	added := 0
+	stables := reg.StableTokens()
+	for _, meta := range stables {
+		key := strings.ToUpper(strings.TrimSpace(meta.Symbol))
+		if key == "" {
+			continue
+		}
+		if _, exists := lookup[key]; !exists {
+			added++
+		}
+		lookup[key] = struct{}{}
+	}
+	if added > 0 {
+		util.Infof("uniswap_v3 assets: registry stables added=%d total=%d", added, len(lookup))
+	} else if provided {
+		util.Debugf("uniswap_v3 assets: registry stables empty, fallback total=%d", len(lookup))
+	} else {
+		util.Debugf("uniswap_v3 assets: fallback stables total=%d", len(lookup))
+	}
+	v3StableLookup = lookup
+
+	addr := common.Address{}
+	if wethMeta, ok := reg.WETHMeta(); ok && (wethMeta.Address != common.Address{}) {
+		addr = wethMeta.Address
+	}
+	if (addr == common.Address{}) {
+		addr = reg.WETHAddress()
+	}
+	if (addr == common.Address{}) {
+		addr = common.HexToAddress(v3FallbackWETHHex)
+		if provided {
+			util.Debugf("uniswap_v3 assets: registry missing WETH, fallback address=%s", addr.Hex())
+		} else {
+			util.Debugf("uniswap_v3 assets: WETH fallback address=%s", addr.Hex())
+		}
+	} else {
+		util.Infof("uniswap_v3 assets: WETH address=%s", addr.Hex())
+	}
+	v3WETHAddress = addr
+}
+
+func v3IsStableSymbol(symbol string) bool {
+	key := strings.ToUpper(strings.TrimSpace(symbol))
+	if key == "" {
+		return false
+	}
+	if v3Registry != nil && v3Registry.IsStableSymbol(key) {
+		return true
+	}
+	if v3StableLookup != nil {
+		if _, ok := v3StableLookup[key]; ok {
+			return true
+		}
+	}
+	if _, ok := v3FallbackStableSet()[key]; ok {
+		return true
+	}
+	return false
+}
 
 type V3Config struct {
 	Exchange       string
@@ -232,6 +321,7 @@ type V3Config struct {
 	LogAllEvents   bool
 	DecodeSwapOnly bool
 	MaxMetaWorkers int
+	Registry       *TokenRegistry
 }
 
 type V3Connector struct {
@@ -266,6 +356,7 @@ func v3Run(ctx context.Context, cfg V3Config, out chan<- *pb.MarketData, pricer 
 	if len(v3Pools) == 0 {
 		return fmt.Errorf("uniswap_v3: no pools loaded")
 	}
+	v3InitAssets(cfg.Registry)
 
 	v3OutMu.Lock()
 	v3OutChan = out
@@ -830,7 +921,7 @@ func v3RegisterToken(meta v3TokenMeta) {
 	if pricer := v3CurrentPricer(); pricer != nil {
 		info := pricing.TokenInfo{Address: meta.Address, Symbol: meta.Symbol, Decimals: int(meta.Dec)}
 		pricer.RegisterToken(info)
-		if v3StableSyms[strings.ToUpper(strings.TrimSpace(meta.Symbol))] {
+		if v3IsStableSymbol(meta.Symbol) {
 			pricer.RegisterStable(info)
 		}
 	}
@@ -1152,11 +1243,11 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 	usdParts := []string{}
 	// 1. Обновление WETHUSD (WETH-стэйбл пул)
 	updated := false
-	if (pm.Token0.Address == v3WETHAddress && v3StableSyms[sym1]) && price0Per1 != nil { // WETH - STABLE (token0=WETH, token1=STABLE)
+	if (pm.Token0.Address == v3WETHAddress && v3IsStableSymbol(sym1)) && price0Per1 != nil { // WETH - STABLE (token0=WETH, token1=STABLE)
 		stablePerWeth := v3Invert(price0Per1)
 		v3MaybeSetWETHUSD(stablePerWeth, sym1, pm.PairName)
 		updated = true
-	} else if (pm.Token1.Address == v3WETHAddress && v3StableSyms[sym0]) && price1Per0 != nil { // STABLE - WETH (token1=WETH)
+	} else if (pm.Token1.Address == v3WETHAddress && v3IsStableSymbol(sym0)) && price1Per0 != nil { // STABLE - WETH (token1=WETH)
 		stablePerWeth := v3Invert(price1Per0)
 		v3MaybeSetWETHUSD(stablePerWeth, sym0, pm.PairName)
 		updated = true
@@ -1176,13 +1267,13 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 	var ba *baInfo
 
 	// 2. Стэйбл <-> токен (прямой USD) — цена токена в USD напрямую
-	if v3StableSyms[sym0] && !v3StableSyms[sym1] && price1Per0 != nil { // token0=STABLE, token1=TOKEN : price1Per0 = token1 per token0 => 1 token0 (USD) = price1Per0 token1 => 1 token1 = 1/price1Per0 USD
+	if v3IsStableSymbol(sym0) && !v3IsStableSymbol(sym1) && price1Per0 != nil { // token0=STABLE, token1=TOKEN : price1Per0 = token1 per token0 => 1 token0 (USD) = price1Per0 token1 => 1 token1 = 1/price1Per0 USD
 		usd := v3Invert(price1Per0)
 		if usd != nil {
 			usdParts = append(usdParts, fmt.Sprintf("%sUSD=%s %s", sym1, v3Format(usd, 6), sym0))
 			ba = &baInfo{sym: sym1, usd: usd, stable: sym0}
 		}
-	} else if v3StableSyms[sym1] && !v3StableSyms[sym0] && price0Per1 != nil { // token1=STABLE, token0=TOKEN : price0Per1 = token0 per token1 => 1 token1(USD)=price0Per1 token0 => 1 token0 = 1/price0Per1 USD
+	} else if v3IsStableSymbol(sym1) && !v3IsStableSymbol(sym0) && price0Per1 != nil { // token1=STABLE, token0=TOKEN : price0Per1 = token0 per token1 => 1 token1(USD)=price0Per1 token0 => 1 token0 = 1/price0Per1 USD
 		usd := v3Invert(price0Per1)
 		if usd != nil {
 			usdParts = append(usdParts, fmt.Sprintf("%sUSD=%s %s", sym0, v3Format(usd, 6), sym1))
@@ -1192,14 +1283,14 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 
 	// 3. Токен-WETH — деривация через WETHUSD
 	if wethUSD != nil {
-		if pm.Token0.Address == v3WETHAddress && !v3StableSyms[sym1] && price1Per0 != nil { // WETH -> token1
+		if pm.Token0.Address == v3WETHAddress && !v3IsStableSymbol(sym1) && price1Per0 != nil { // WETH -> token1
 			token1PerWeth := price1Per0
 			usd := new(big.Rat).Mul(v3Invert(token1PerWeth), wethUSD)
 			usdParts = appendIfMissing(usdParts, fmt.Sprintf("%sUSD=%s %s", sym1, v3Format(usd, 6), wethStable))
 			if ba == nil {
 				ba = &baInfo{sym: sym1, usd: usd, stable: wethStable}
 			}
-		} else if pm.Token1.Address == v3WETHAddress && !v3StableSyms[sym0] && price0Per1 != nil { // token0 -> WETH
+		} else if pm.Token1.Address == v3WETHAddress && !v3IsStableSymbol(sym0) && price0Per1 != nil { // token0 -> WETH
 			token0PerWeth := price0Per1
 			usd := new(big.Rat).Mul(v3Invert(token0PerWeth), wethUSD)
 			usdParts = appendIfMissing(usdParts, fmt.Sprintf("%sUSD=%s %s", sym0, v3Format(usd, 6), wethStable))
@@ -1210,7 +1301,7 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 	}
 
 	// 4. Стэйбл-стэйбл пул — можно указать BA=первый стэйбл (цена 1)
-	if v3StableSyms[sym0] && v3StableSyms[sym1] && ba == nil {
+	if v3IsStableSymbol(sym0) && v3IsStableSymbol(sym1) && ba == nil {
 		one := big.NewRat(1, 1)
 		ba = &baInfo{sym: sym0, usd: one, stable: sym0}
 		// Не добавляем дублирующий XXXUSD=1 если уже есть другие
@@ -1247,6 +1338,11 @@ func appendIfMissing(sl []string, val string) []string {
 
 func v3MaybeSetWETHUSD(stablePerWeth *big.Rat, stableSym, src string) {
 	if stablePerWeth == nil || stablePerWeth.Sign() <= 0 {
+		return
+	}
+	stableSym = strings.ToUpper(strings.TrimSpace(stableSym))
+	if !v3IsStableSymbol(stableSym) {
+		util.Debugf("uniswap_v3 skip wethusd update unknown stable=%s", stableSym)
 		return
 	}
 	// WETHUSD = stable per WETH

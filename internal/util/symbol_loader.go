@@ -23,17 +23,16 @@ type legacySymbolMap map[string]json.RawMessage
 
 // stableSkipSet хранит список базовых активов, которые не нужно подписывать.
 var stableSkipSet = map[string]struct{}{
-	"USDT": {},
-	"USDC": {},
-	"DAI":  {},
 	"BUSD": {},
-	"USD":  {},
+	"DAI":  {},
 	"EUR":  {},
+	"TUSD": {},
+	"USD":  {},
+	"USD1": {},
+	"USDC": {},
+	"USDT": {},
 }
 
-// LoadSymbolsFromFile загружает базовые тикеры из JSON файла, поддерживая формат GeckoTerminal.
-// Функция возвращает уникальные тикеры в верхнем регистре без привязки к котировке (например, "BTC").
-// Stablecoins и пустые значения автоматически фильтруются. Порядок возвращаемых тикеров отсортирован.
 func LoadSymbolsFromFile(filePath string) ([]string, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {

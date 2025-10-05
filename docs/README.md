@@ -44,7 +44,7 @@ flowchart LR
    Workers --> Logs[Logs & metrics\napp.log]
 ```
 
-Symbol lists are defined per exchange in the YAML config: each entry can provide inline pairs or a `symbols_file`, and falls back to the global `default_symbols_file` when unspecified. Для всех коннекторов стартует единая фабрика `internal/launcher`: достаточно зарегистрировать builder под нужным именем и прописать настройки в YAML — `main.go` автоматически подберёт его по ключу. Для DEX-коннекторов дополнительно требуется рабочий `http_url`, чтобы перед подпиской через RPC проверить `token0/token1` и корректно привести цены к USD.
+Symbol lists are defined per exchange in the YAML config: each entry can provide inline pairs or a `symbols_file`, and falls back to the global `default_symbols_file` when unspecified. Для всех коннекторов стартует единая фабрика `internal/launcher`: достаточно зарегистрировать builder под нужным именем и прописать настройки в YAML — `main.go` автоматически подберёт его по ключу. Для DEX-коннекторов дополнительно требуется рабочий `http_url`, чтобы перед подпиской через RPC проверить `token0/token1` и корректно привести цены к USD. При добавлении новой площадки не забудьте расширить `configs/assets/tokens.yaml`, иначе графовый прайсер не увидит свежие стейблы и нативные токены.
 
 ## Getting Started
 To set up the project, follow these steps:

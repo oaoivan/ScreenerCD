@@ -1,42 +1,56 @@
-# ScreenerCD Architecture Guide
+﻿# ScreenerCD Architecture Guide
 
 ## 1. Runtime Overview
-- **Core service**: `cmd/screener-core/main.go` bootstraps the runtime by loading YAML configuration, instantiating the Redis client, resolving the enabled exchanges, и теперь делегирует запуск коннекторов фабрике `internal/launcher` (реестр `Register/LaunchContext`). Добавление новой площадки требует лишь регистрации билдера без правок `main.go`. Символьные списки по-прежнему подготавливаются через shared pools/inline конфиг.【F:cmd/screener-core/main.go†L60-L156】【F:internal/launcher/registry.go†L1-L45】【F:internal/launcher/register_cex.go†L1-L167】
-- **Configuration schema**: `internal/config/config.go` models Redis connectivity, symbol sources, and batching parameters, applying safe defaults for buffer sizes, Redis workers, and Bitget-specific rate limits when options are omitted.【F:internal/config/config.go†L11-L107】
-- **Data structures**: Market snapshots are expressed through both Go structs (`pkg/common/models.go`) and Protocol Buffers (`pkg/protobuf/arbitrage.proto`) to keep serialization consistent across components.【F:pkg/common/models.go†L3-L18】【F:pkg/protobuf/arbitrage.proto†L5-L19】
+- **Core service**: `cmd/screener-core/main.go` загружает YAML-конфигурацию, поднимает Redis-клиент, определяет включённые площадки и делегирует запуск коннекторов фабрике `internal/launcher` (`Register/LaunchContext`). Чтобы добавить биржу, достаточно зарегистрировать новый билдер — изменения `main.go` не нужны. Символьные списки по-прежнему собираются через общие пулы и inline-конфиг.
+- **Configuration schema**: `internal/config/config.go` описывает параметры Redis, источники символов и настройки батчинга, задавая безопасные значения по умолчанию (буферы, воркеры, лимиты Bitget), когда опции пропущены.
+- **Data structures**: Снимки рынка описаны одновременно Go-структурами (`pkg/common/models.go`) и protobuf-схемой (`pkg/protobuf/arbitrage.proto`), что обеспечивает единообразную сериализацию.
 
 ## 2. Data Flow Pipeline
-1. **Exchange ingestion** – Supervisors spawn a connector per exchange, subscribe in batches (respecting venue-specific throttling), and push parsed ticker updates into a shared buffered channel.【F:cmd/screener-core/main.go†L173-L325】
-2. **Redis workers** – A configurable pool drains the channel, writes both raw and canonical hash keys via pipelined `HSET`s, and tracks per-exchange throughput counters and drop statistics.【F:cmd/screener-core/main.go†L395-L454】
-3. **Health & metrics** – Background goroutines ping Redis, aggregate error counters, and periodically log rates (messages, Redis ops, drops) for observability.【F:cmd/screener-core/main.go†L463-L535】
-4. **Shutdown** – POSIX signals close the supervision loop gracefully after flushing outstanding batches.【F:cmd/screener-core/main.go†L528-L535】
+1. **Exchange ingestion**: супервизоры поднимают коннектор на каждую площадку, подписываются батчами (учитывая лимиты бирж) и складывают нормализованные тикеры в общий буфер (см. `cmd/screener-core/main.go`).
+2. **Redis workers**: настраиваемый пул забирает данные из канала, пишет сырой и канонический `HSET` в пайплайне и ведёт счётчики пропускной способности/дропов.
+3. **Health & metrics**: фоновые горутины пингуют Redis, агрегируют ошибки и периодически логируют throughput (сообщения, операции Redis, дропы).
+4. **Shutdown**: обработка POSIX-сигналов закрывает цикл супервайзеров после сброса оставшихся батчей.
 
 ## 3. Exchange Connectors
-- **Bybit**: Establishes a v5 public spot WebSocket, subscribes to `tickers.<symbol>`, parses `lastPrice`, and emits `MarketData` frames with timestamped prices while maintaining a keep-alive ping.【F:internal/exchange/bybit.go†L13-L107】【F:internal/exchange/bybit.go†L134-L149】
-- **Gate.io**: Targets the v4 `spot.tickers` channel, converts Bybit symbols to Gate format, tolerates numeric or string payloads, and streams normalized quotes.【F:cmd/screener-core/main.go†L223-L265】【F:internal/exchange/gateio.go†L13-L142】
-- **Bitget**: Supports batched subscriptions to respect the 10 msg/s cap, aggregates rate-limit error codes, and parses ticker payloads into canonical instrument identifiers.【F:cmd/screener-core/main.go†L267-L325】【F:internal/exchange/bitget.go†L15-L215】
-- **OKX**: Uses batched `tickers` subscriptions, transforms symbols to OKX `instId` format, and handles error frames before forwarding parsed prices.【F:cmd/screener-core/main.go†L326-L388】【F:internal/exchange/okx.go†L13-L151】
-- **Uniswap V2 (Ethereum)**: `internal/dex/Etherium/Uniswap/v2_connector.go` загружает перечень пулов из `ticker_source/geckoterminal_pools.json`, до запуска вызывает `AdjustPoolsOrdering` через HTTP RPC (нужно задать `http_url` в конфиге) чтобы выровнять фактический `token0/token1`, подписывается на `Sync` события и публикует цены в USD в общий поток так же, как CEX коннекторы.【F:internal/dex/Etherium/Uniswap/v2_connector.go†L41-L533】
-- **Uniswap V3 (Ethereum)**: `internal/dex/Etherium/Uniswap/connect_uniswap_v3_all.go` читает список пулов из общего JSON (фильтрация по `gecko_dex`/`gecko_network`), подписывается на `Swap` события, перед расчётом сверяет `token0/token1` и `decimals` с on-chain `token0()/token1()` (если нужно — переставляет местами), после чего публикует нормализованные котировки `TOKEN0TOKEN1` (цена token0 в token1) и USD-деривацию через графовый прайсер.【F:internal/dex/Etherium/Uniswap/connect_uniswap_v3_all.go†L220-L934】【F:internal/dex/Etherium/Uniswap/connect_uniswap_v3_all.go†L680-L722】
-- **DEX USD-прайсер**: `internal/dex/pricing` собирает граф токенов на основе всех swap-событий (V2/V3/V4), хранит направленные рёбра с весами (цена, ликвидность) и по запросу строит короткий маршрут к стейблкоинам; результатом становятся точные `TOKENUSD` котировки через общий канал без каких-либо фиксированных 1.0.
-- **DEX конфигурация**: Блок `dex_configs` в `configs/screener-core.yaml` описывает сеть, RPC/WS endpoints и перечень пулов; фабрика `launcher` передаёт `DexConfig` соответствующему билдеру (`uniswap_v2`, `uniswap_v3` и др.) и запускает его наряду с CEX-коннекторами через общий `LaunchContext`. Это устраняет ручные `switch` в `main.go` и унифицирует старт пайплайна.【F:configs/screener-core.yaml†L28-L63】【F:internal/launcher/register_dex.go†L1-L152】
+- **Bybit**: Открывает публичный WebSocket v5, подписывается на `tickers.<symbol>`, парсит `lastPrice`, эмитит `MarketData` с таймстемпом и поддерживает keep-alive ping (см. `internal/exchange/bybit.go`).
+- **Gate.io**: Работает с каналом v4 `spot.tickers`, преобразует символы из формата Bybit в Gate, принимает числовые и строковые payload и публикует нормализованные котировки (см. `internal/exchange/gateio.go`).
+- **Bitget**: Формирует пакетные подписки, чтобы уложиться в лимит 10 сообщений/с, аггрегирует ошибки rate-limit и приводит тикеры к каноническим идентификаторам (см. `internal/exchange/bitget.go`).
+- **OKX**: Использует пакетные подписки `tickers`, трансформирует символы в формат OKX `instId` и фильтрует error-frames перед выдачей цен (см. `internal/exchange/okx.go`).
+- **Uniswap V2 (Ethereum)**: Коннектор загружает пулы из `ticker_source/geckoterminal_pools.json`, до старта дергает `AdjustPoolsOrdering` по HTTP (нужен `http_url` в конфиге) для выравнивания `token0/token1`, подписывается на события `Sync` и публикует USD-цены в общий поток так же, как CEX-коннекторы (см. `internal/dex/Etherium/Uniswap/v2_connector.go`).
+- **Uniswap V3 (Ethereum)**: Читает список пулов из общего JSON (фильтры `gecko_dex`/`gecko_network`), слушает события `Swap`, сверяет `token0/token1` и `decimals` через on-chain `token0()/token1()`, при необходимости меняет порядок и отдает нормализованные котировки `TOKEN0TOKEN1` + USD-деривацию через графовый прайсер (см. `internal/dex/Etherium/Uniswap/connect_uniswap_v3_all.go`).
+- **DEX USD-прайсер**: Пакет `internal/dex/pricing` строит граф токенов по всем swap-событиям (V2/V3/V4), хранит направленные ребра с весами (цена, ликвидность) и на запрос выдает кратчайший маршрут к стейблам, формируя точные `TOKENUSD` котировки без забитых 1.0.
+- **DEX конфигурация**: Блок `dex_configs` в `configs/screener-core.yaml` описывает сеть, RPC/WS endpoints и перечень пулов; фабрика `launcher` передает `DexConfig` нужному билдеру (`uniswap_v2`, `uniswap_v3` и др.) и запускает их рядом с CEX-коннекторами через общий `LaunchContext`, устраняя ручные `switch` в `main.go`.
 
 ## 4. Symbol Management
-- **Loader**: `internal/util/symbol_loader.go` ingests GeckoTerminal-style JSON or legacy maps, drops stable-coin bases, and returns sorted uppercase tickers for further processing.【F:internal/util/symbol_loader.go†L11-L118】
-- **Normalization helpers**: Utilities convert Bybit symbols to Gate format, strip separators for canonical keys, and attach default quotes when synthesizing subscription lists.【F:internal/util/helpers.go†L5-L64】
+- **Loader**: `internal/util/symbol_loader.go` загружает JSON GeckoTerminal или легаси карты, выкидывает стейблы из базовой валюты и возвращает отсортированные тикеры в верхнем регистре.
+- **Normalization helpers**: `internal/util/helpers.go` конвертирует символы между форматами (Bybit → Gate), убирает разделители для канонических ключей и подставляет дефолтные котировки при генерации подписок.
 
 ## 5. Redis Integration & Persistence
-- **Client wrapper**: `internal/redisclient/client.go` wraps go-redis with structured logging, single-key helpers, and an `HSetBatch` pipeline used by workers to minimize round-trips.【F:internal/redisclient/client.go†L10-L105】
-- **Storage layout**: Workers write to `price:<exchange>:<symbol>` (raw) and `price_canon:<canon>:<exchange>` (normalized) hash keys containing price, timestamp, exchange, and original symbol fields.【F:cmd/screener-core/main.go†L430-L439】
+- **Client wrapper**: `internal/redisclient/client.go` оборачивает go-redis, добавляя структурированные логи, хелперы для одиночных ключей и пайплайн `HSetBatch`, чтобы рабочие минимизировали RTT.
+- **Storage layout**: Воркеры пишут `price:<exchange>:<symbol>` (сырой) и `price_canon:<canon>:<exchange>` (нормализованный) хеши с полями price, timestamp, exchange и оригинальный символ.
 
 ## 6. Logging & Diagnostics
-- **Logger**: `internal/util/logger.go` initializes dual output to stdout and `screner.log`, supports dynamic log levels, and formats ISO-timestamped messages shared across packages.【F:internal/util/logger.go†L12-L76】
-- **Metrics**: Throughput, Redis pipeline success, and drop counters are surfaced via periodic logs, aiding production dashboards and alerting.【F:cmd/screener-core/main.go†L493-L525】
+- **Logger**: `internal/util/logger.go` ведёт вывод одновременно в stdout и `screner.log`, поддерживает динамические уровни и форматирует сообщения с ISO-временем.
+- **Metrics**: Трафик, успешность пайплайна Redis и счётчики дропов выводятся периодическими логами для мониторинга и алёртов.
 
 ## 7. Operations Tooling
-- **Start/stop scripts**: `scripts/start_all.sh` builds the binary, ensures Redis availability (local or Docker Compose), and controls process PID files, while companion scripts manage status and shutdown flows.【F:scripts/start_all.sh†L1-L172】
-- **Proto generation**: `scripts/generate_proto.sh` wraps `protoc` invocation to regenerate the Go bindings for the shared protobuf schema.【F:scripts/generate_proto.sh†L1-L16】
+- **Start/stop scripts**: `scripts/start_all.sh` собирает бинарь, проверяет наличие Redis (локально или через Docker Compose) и управляет PID-файлами; соседние скрипты отвечают за статус и остановку.
+- **Proto generation**: `scripts/generate_proto.sh` оборачивает вызов `protoc` для регенерации Go-байндингов общей protobuf-схемы.
 
 ## 8. Extending the Platform
-- **Adding exchanges**: Implement a connector mirroring the existing interface (`Connect`, `Subscribe`, `ReadLoop`, `KeepAlive`), register it in `main.go`, and supply symbol normalization helpers if the venue uses non-standard tickers.【F:internal/exchange/bybit.go†L20-L149】【F:cmd/screener-core/main.go†L173-L388】
-- **Custom processors**: Downstream consumers can subscribe to Redis hash updates (raw or canonical) and derive arbitrage opportunities using the shared data contracts.【F:cmd/screener-core/main.go†L430-L439】【F:pkg/common/models.go†L3-L18】
+- **Adding exchanges**: Реализуйте коннектор с интерфейсом (`Connect`, `Subscribe`, `ReadLoop`, `KeepAlive`), зарегистрируйте билдер в `internal/launcher`, и расширьте `configs/assets/tokens.yaml`, чтобы прайсер и DEX-коннекторы получили свежие якоря.
+- **Custom processors**: Даунстрим-потребители могут подписываться на Redis-хеши (raw или canonical) и собирать арбитраж, используя общие модели из `pkg/common`.
+
+## 9. Asset Registry
+- Unified registry lives in `configs/assets/tokens.yaml`; connectors and pricers will pull stable/native metadata from here instead of hardcoded maps.
+- Top-level keys follow `<network>_mainnet` naming and declare `chain_id` alongside the `stable` and `native` token arrays for that network.
+- Each token entry defines `symbol`, `address`, and `decimals`; optional flags such as `wrapped: true` mark wrapped natives (e.g., WETH or WBNB).
+- Extend coverage by adding a new network block or appending tokens to the existing lists while keeping checksum casing and on-chain decimals in sync.
+- После любого изменения `tokens.yaml` прогоняйте валидатор, чтобы синхронизировать skip-листы и проверить данные. Сначала запускаем проверку без изменений, затем — полный прогон:
+
+	```powershell
+	go run ./test_scripts/assets/validate_tokens.go -dry-run
+	go run ./test_scripts/assets/validate_tokens.go
+	```
+
+	Dry-run завершается ошибкой, если требуются правки, и используется в CI. Полный запуск при необходимости дописывает новые стейблы в `stableSkipSet` и `isStablecoinOrFiat`.

@@ -2,6 +2,7 @@ package redisclient
 
 import (
 	"context"
+	"fmt"
 
 	redis "github.com/go-redis/redis/v8"
 	"github.com/yourusername/screner/internal/util"
@@ -72,7 +73,8 @@ func (r *RedisClient) HSetBatch(entries [][]interface{}) error {
 	}
 	pipe := r.client.Pipeline()
 	for _, e := range entries {
-		if len(e) < 2 {
+		if len(e) < 3 {
+			// need at least key and one field/value pair
 			continue
 		}
 		key, ok := e[0].(string)
@@ -80,13 +82,37 @@ func (r *RedisClient) HSetBatch(entries [][]interface{}) error {
 			util.Errorf("HSetBatch: first element must be key string, got %T", e[0])
 			continue
 		}
-		util.Debugf("PIPE HSET %s %v", key, e[1:])
-		pipe.HSet(r.ctx, key, e[1:]...)
+		fields := make(map[string]interface{}, (len(e)-1)/2)
+		var invalid bool
+		for i := 1; i < len(e); i += 2 {
+			if i+1 >= len(e) {
+				util.Errorf("HSetBatch: odd field count for key=%s payload=%v", key, e)
+				invalid = true
+				break
+			}
+			fieldName, ok := e[i].(string)
+			if !ok {
+				util.Errorf("HSetBatch: field name must be string for key=%s, got %T", key, e[i])
+				invalid = true
+				break
+			}
+			// Older Redis (<=3.x) only accepts HMSET for multiple fields; convert values to strings for consistency.
+			fields[fieldName] = fmt.Sprint(e[i+1])
+		}
+		if invalid || len(fields) == 0 {
+			continue
+		}
+		util.Debugf("PIPE HMSET %s %v", key, fields)
+		pipe.HMSet(r.ctx, key, fields)
 	}
-	_, err := pipe.Exec(r.ctx)
+	cmds, err := pipe.Exec(r.ctx)
 	if err != nil {
-		// Шум подавляем: агрегация ошибок происходит в core (metrics)
-		util.Debugf("HSetBatch pipeline exec error: %v", err)
+		util.Errorf("HSetBatch pipeline exec error: %v", err)
+		for _, cmd := range cmds {
+			if cmdErr := cmd.Err(); cmdErr != nil {
+				util.Errorf("HSetBatch command error: %v args=%v", cmdErr, cmd.Args())
+			}
+		}
 	}
 	return err
 }

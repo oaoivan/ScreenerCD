@@ -17,6 +17,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
@@ -68,6 +69,190 @@ type TokenMeta struct {
 	Decimals int
 	IsStable bool
 	IsWETH   bool
+}
+
+// TokenRegistry предоставляет метаданные по стейблам и нативным токенам для текущей сети.
+type TokenRegistry struct {
+	byAddress      map[string]TokenMeta
+	stableBySymbol map[string]TokenMeta
+	nativeBySymbol map[string]TokenMeta
+	wethAddr       string
+}
+
+// NewTokenRegistry строит справочник токенов из провайдера активов с резервным набором адресов.
+func NewTokenRegistry(provider *assets.Provider, network string) *TokenRegistry {
+	reg := &TokenRegistry{
+		byAddress:      make(map[string]TokenMeta),
+		stableBySymbol: make(map[string]TokenMeta),
+		nativeBySymbol: make(map[string]TokenMeta),
+	}
+
+	addNetworkTokens := func(net string) {
+		if net == "" {
+			return
+		}
+		for _, token := range provider.TokensByNetwork(net, assets.TokenTypeStable) {
+			reg.addStable(token.Symbol, token.Address, int(token.Decimals))
+		}
+		for _, token := range provider.TokensByNetwork(net, assets.TokenTypeNative) {
+			// Wrapped нативы помечаем как WETH-эквиваленты.
+			markWETH := token.Wrapped || strings.EqualFold(token.Symbol, "WETH")
+			reg.addNative(token.Symbol, token.Address, int(token.Decimals), markWETH)
+		}
+	}
+
+	if provider != nil {
+		trimmed := strings.TrimSpace(network)
+		if trimmed != "" {
+			addNetworkTokens(trimmed)
+		} else {
+			for _, net := range provider.NetworkNames() {
+				addNetworkTokens(net)
+				if len(reg.stableBySymbol) > 0 && reg.wethAddr != "" {
+					break
+				}
+			}
+		}
+	}
+
+	if len(reg.stableBySymbol) == 0 {
+		reg.addStable("USDC", common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"), 6)
+		reg.addStable("USDT", common.HexToAddress("0xdac17f958d2ee523a2206206994597c13d831ec7"), 6)
+		reg.addStable("DAI", common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f"), 18)
+		reg.addStable("TUSD", common.HexToAddress("0x0000000000085d4780B73119b644AE5ecd22b376"), 18)
+		reg.addStable("USD1", common.HexToAddress("0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d"), 18)
+	}
+	if reg.wethAddr == "" {
+		reg.addNative("WETH", common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"), 18, true)
+	}
+
+	return reg
+}
+
+func (r *TokenRegistry) addStable(symbol string, addr common.Address, decimals int) {
+	meta := TokenMeta{
+		Address:  addr,
+		Symbol:   symbolKey(symbol),
+		Decimals: clampDecimals(decimals),
+		IsStable: true,
+	}
+	key := meta.Symbol
+	r.stableBySymbol[key] = meta
+	r.byAddress[strings.ToLower(addr.Hex())] = meta
+}
+
+func (r *TokenRegistry) addNative(symbol string, addr common.Address, decimals int, isWETH bool) {
+	meta := TokenMeta{
+		Address:  addr,
+		Symbol:   symbolKey(symbol),
+		Decimals: clampDecimals(decimals),
+		IsWETH:   isWETH || strings.EqualFold(symbol, "WETH"),
+	}
+	key := meta.Symbol
+	r.nativeBySymbol[key] = meta
+	r.byAddress[strings.ToLower(addr.Hex())] = meta
+	if meta.IsWETH {
+		r.wethAddr = strings.ToLower(addr.Hex())
+	}
+}
+
+// Resolve возвращает метаданные токена по адресу/символу с учётом fallback-значений.
+func (r *TokenRegistry) Resolve(addr common.Address, symbol string, decimals int) TokenMeta {
+	addrLower := strings.ToLower(addr.Hex())
+	if meta, ok := r.byAddress[addrLower]; ok {
+		return meta
+	}
+	meta := TokenMeta{Address: addr}
+	meta.Symbol = symbolKey(symbol)
+	if meta.Symbol == "" {
+		meta.Symbol = strings.ToUpper(shortAddress(addr.Hex()))
+	}
+	if stable, ok := r.stableBySymbol[meta.Symbol]; ok {
+		meta.Decimals = stable.Decimals
+		meta.IsStable = true
+		return meta
+	}
+	if native, ok := r.nativeBySymbol[meta.Symbol]; ok {
+		meta.Decimals = native.Decimals
+		meta.IsWETH = native.IsWETH
+		return meta
+	}
+	meta.Decimals = clampDecimals(decimals)
+	if meta.Decimals == 0 {
+		meta.Decimals = 18
+	}
+	if addrLower == r.wethAddr || meta.Symbol == "WETH" {
+		meta.IsWETH = true
+	}
+	return meta
+}
+
+func (r *TokenRegistry) StableBySymbol(symbol string) (TokenMeta, bool) {
+	meta, ok := r.stableBySymbol[symbolKey(symbol)]
+	return meta, ok
+}
+
+// StableTokens возвращает копию списка стейблкоинов из реестра.
+func (r *TokenRegistry) StableTokens() []TokenMeta {
+	if r == nil {
+		return nil
+	}
+	result := make([]TokenMeta, 0, len(r.stableBySymbol))
+	for _, meta := range r.stableBySymbol {
+		result = append(result, meta)
+	}
+	return result
+}
+
+// NativeTokens возвращает копию списка нативных токенов из реестра.
+func (r *TokenRegistry) NativeTokens() []TokenMeta {
+	if r == nil {
+		return nil
+	}
+	result := make([]TokenMeta, 0, len(r.nativeBySymbol))
+	for _, meta := range r.nativeBySymbol {
+		result = append(result, meta)
+	}
+	return result
+}
+
+// WETHAddress возвращает адрес Wrapped ETH, если он известен в реестре.
+func (r *TokenRegistry) WETHAddress() common.Address {
+	if r == nil || r.wethAddr == "" {
+		return common.Address{}
+	}
+	return common.HexToAddress(r.wethAddr)
+}
+
+func (r *TokenRegistry) WETHMeta() (TokenMeta, bool) {
+	if r.wethAddr == "" {
+		return TokenMeta{}, false
+	}
+	meta, ok := r.byAddress[r.wethAddr]
+	return meta, ok
+}
+
+func (r *TokenRegistry) IsStableSymbol(symbol string) bool {
+	_, ok := r.stableBySymbol[symbolKey(symbol)]
+	return ok
+}
+
+func (r *TokenRegistry) IsWETHAddress(addr common.Address) bool {
+	if r.wethAddr == "" {
+		return false
+	}
+	return strings.ToLower(addr.Hex()) == r.wethAddr
+}
+
+func symbolKey(symbol string) string {
+	return strings.ToUpper(strings.TrimSpace(symbol))
+}
+
+func clampDecimals(dec int) int {
+	if dec <= 0 || dec > 255 {
+		return 0
+	}
+	return dec
 }
 
 // Dialer абстрагирует создание WebSocket соединения, что упростит тестирование и переиспользование логики.
@@ -696,27 +881,6 @@ type geckoToken struct {
 }
 
 var (
-	wethAddressLower = strings.ToLower("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
-	stableSymbols    = map[string]bool{
-		"USDC":  true,
-		"USDT":  true,
-		"DAI":   true,
-		"TUSD":  true,
-		"FDUSD": true,
-		"USDD":  true,
-		"USD1":  true,
-	}
-	canonicalTokens = map[string]struct {
-		Symbol string
-		Dec    uint8
-	}{
-		strings.ToLower("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"): {Symbol: "USDC", Dec: 6},
-		strings.ToLower("0xdac17f958d2ee523a2206206994597c13d831ec7"): {Symbol: "USDT", Dec: 6},
-		strings.ToLower("0x6b175474e89094c44da98b954eedeac495271d0f"): {Symbol: "DAI", Dec: 18},
-		strings.ToLower("0x0000000000085d4780B73119b644AE5ecd22b376"): {Symbol: "TUSD", Dec: 18},
-		strings.ToLower("0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d"): {Symbol: "USD1", Dec: 18},
-		wethAddressLower: {Symbol: "WETH", Dec: 18},
-	}
 	hardWethStable = []struct {
 		Addr   string
 		Stable string
@@ -727,8 +891,17 @@ var (
 	}
 )
 
-// LoadPoolsFromGecko парсит geckoterminal JSON и возвращает набор пулов Uniswap V2.
+// LoadPoolsFromGecko парсит geckoterminal JSON и возвращает набор пулов Uniswap V2 с дефолтным реестром токенов.
 func LoadPoolsFromGecko(path string) ([]PoolConfig, error) {
+	return LoadPoolsFromGeckoWithRegistry(path, nil)
+}
+
+// LoadPoolsFromGeckoWithRegistry аналогичен LoadPoolsFromGecko, но позволяет передать внешний реестр токенов.
+func LoadPoolsFromGeckoWithRegistry(path string, registry *TokenRegistry) ([]PoolConfig, error) {
+	if registry == nil {
+		registry = NewTokenRegistry(nil, "")
+	}
+
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -759,13 +932,13 @@ func LoadPoolsFromGecko(path string) ([]PoolConfig, error) {
 			continue
 		}
 
-		t0 := normalizeToken(entry.Token0)
-		t1 := normalizeToken(entry.Token1)
+		t0 := normalizeToken(entry.Token0, registry)
+		t1 := normalizeToken(entry.Token1, registry)
 
-		stable0 := stableSymbols[t0.Symbol]
-		stable1 := stableSymbols[t1.Symbol]
-		weth0 := strings.ToLower(t0.Address.Hex()) == wethAddressLower
-		weth1 := strings.ToLower(t1.Address.Hex()) == wethAddressLower
+		stable0 := t0.IsStable
+		stable1 := t1.IsStable
+		weth0 := t0.IsWETH
+		weth1 := t1.IsWETH
 
 		if stable0 && stable1 {
 			continue
@@ -807,46 +980,57 @@ func LoadPoolsFromGecko(path string) ([]PoolConfig, error) {
 	}
 
 	added := 0
+	wethMeta, hasWETH := registry.WETHMeta()
 	for _, hw := range hardWethStable {
 		addr := common.HexToAddress(hw.Addr)
 		if seen[addr] {
 			continue
 		}
-		stableSymbol := strings.ToUpper(hw.Stable)
-		stableAddrHex := stableAddressForSymbol(stableSymbol)
-		if stableAddrHex == "" {
+		stableMeta, ok := registry.StableBySymbol(hw.Stable)
+		if !ok {
+			util.Debugf("uniswap_v2: skip hard pool %s missing stable %s", addr.Hex(), hw.Stable)
 			continue
 		}
-		stableDecimals := 18
-		if stableSymbol == "USDC" || stableSymbol == "USDT" {
-			stableDecimals = 6
+		if !hasWETH || (wethMeta.Address == common.Address{}) {
+			util.Debugf("uniswap_v2: skip hard pool %s missing WETH meta", addr.Hex())
+			continue
 		}
-		stableMeta := NormalizeTokenMeta(stableSymbol, stableAddrHex, stableDecimals)
-		wethMeta := NormalizeTokenMeta("WETH", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", 18)
+		// Make copies to avoid sharing underlying struct references.
+		stableCopy := stableMeta
+		stableCopy.IsStable = true
+		if stableCopy.Decimals == 0 {
+			stableCopy.Decimals = 18
+		}
+		wethCopy := wethMeta
+		if wethCopy.Decimals == 0 {
+			wethCopy.Decimals = 18
+		}
+		wethCopy.IsWETH = true
+
 		var pool PoolConfig
-		switch stableSymbol {
+		switch strings.ToUpper(hw.Stable) {
 		case "USDC":
 			pool = PoolConfig{
 				Address:      addr,
 				PairName:     "USDC / WETH (hard)",
-				Token0:       stableMeta,
-				Token1:       wethMeta,
+				Token0:       stableCopy,
+				Token1:       wethCopy,
 				BaseIsToken0: false,
 			}
 		case "USDT":
 			pool = PoolConfig{
 				Address:      addr,
 				PairName:     "WETH / USDT (hard)",
-				Token0:       wethMeta,
-				Token1:       stableMeta,
+				Token0:       wethCopy,
+				Token1:       stableCopy,
 				BaseIsToken0: true,
 			}
 		case "DAI":
 			pool = PoolConfig{
 				Address:      addr,
 				PairName:     "DAI / WETH (hard)",
-				Token0:       stableMeta,
-				Token1:       wethMeta,
+				Token0:       stableCopy,
+				Token1:       wethCopy,
 				BaseIsToken0: false,
 			}
 		default:
@@ -998,63 +1182,19 @@ func fetchTokenDecimals(ctx context.Context, client *rpc.Client, addr common.Add
 	return dec, nil
 }
 
-func stableAddressForSymbol(sym string) string {
-	switch strings.ToUpper(sym) {
-	case "USDC":
-		return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-	case "USDT":
-		return "0xdac17f958d2ee523a2206206994597c13d831ec7"
-	case "DAI":
-		return "0x6b175474e89094c44da98b954eedeac495271d0f"
-	case "TUSD":
-		return "0x0000000000085d4780B73119b644AE5ecd22b376"
-	default:
-		return ""
-	}
-}
-
-func normalizeToken(token geckoToken) TokenMeta {
+func normalizeToken(token geckoToken, registry *TokenRegistry) TokenMeta {
 	addrTrim := strings.TrimSpace(token.Address)
-	addrLower := strings.ToLower(addrTrim)
-	meta := TokenMeta{Address: common.HexToAddress(addrTrim)}
-	if alias, ok := canonicalTokens[addrLower]; ok {
-		meta.Symbol = alias.Symbol
-		meta.Decimals = int(alias.Dec)
-	} else {
-		symbol := strings.ToUpper(strings.TrimSpace(token.Symbol))
-		if symbol == "" {
-			symbol = strings.ToUpper(shortAddress(token.Address))
-		}
-		meta.Symbol = symbol
-		dec := int(token.Decimals)
-		if dec <= 0 {
-			if stableSymbols[meta.Symbol] {
-				if meta.Symbol == "USDC" || meta.Symbol == "USDT" {
-					dec = 6
-				} else {
-					dec = 18
-				}
-			} else {
-				dec = 18
-			}
-		}
-		if dec > 255 {
-			dec = 18
-		}
-		meta.Decimals = dec
+	addr := common.HexToAddress(addrTrim)
+	meta := registry.Resolve(addr, token.Symbol, int(token.Decimals))
+	if meta.Address == (common.Address{}) {
+		meta.Address = addr
 	}
-	meta.IsStable = stableSymbols[meta.Symbol]
-	meta.IsWETH = addrLower == wethAddressLower
-	return meta
-}
-
-// NormalizeTokenMeta формирует TokenMeta из произвольных входных данных (для конфигурации).
-func NormalizeTokenMeta(symbol, address string, decimals int) TokenMeta {
-	meta := normalizeToken(geckoToken{
-		Address:  address,
-		Symbol:   symbol,
-		Decimals: intOrString(decimals),
-	})
+	if meta.Symbol == "" {
+		meta.Symbol = strings.ToUpper(shortAddress(addr.Hex()))
+	}
+	if meta.Decimals == 0 {
+		meta.Decimals = 18
+	}
 	return meta
 }
 

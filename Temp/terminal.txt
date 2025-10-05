@@ -1,74 +1,77 @@
-graph TD
-    subgraph Inputs["Входные файлы"]
-        A1["configs/screener-core.yaml\n(биржи, Redis, батчи)"]
-        A2["Temp/all_contracts_merged_reformatted.json\n(перечень тикеров)"]
-    end
+Проверил коннекторы и конфиг, собрал Step 1.
 
-    subgraph Core["cmd/screener-core/main.go"]
-        C1["config.LoadConfig\ninternal/config"]
-        C2["util.LoadSymbolsFromFile\ninternal/util"]
-        C3["supervisor запускает коннекторы\nи перезапускает при падении"]
-        A1 --> C1
-        A2 --> C2
-        C1 --> C3
-        C2 --> C3
+Инвентаризация
 
-        subgraph WSConnectors["internal/exchange"]
-            E1["BybitClient"]
-            E2["GateClient"]
-            E3["BitgetClient"]
-            E4["OKXClient"]
-        end
-        C3 --> E1
-        C3 --> E2
-        C3 --> E3
-        C3 --> E4
+ethereum (chainId 1)
+USDC (stable) — 0xa0b8…48, decimals 6 (internal/dex/Etherium/Uniswap/v2_connector.go:713, cmd/screener-core/main.go:181, configs/screener-core.yaml:38, configs/screener-core.yaml:88)
+USDT (stable) — 0xdac1…c7, decimals 6 (internal/dex/Etherium/Uniswap/v2_connector.go:714, cmd/screener-core/main.go:182, configs/screener-core.yaml:49)
+DAI (stable) — 0x6b17…0f, decimals 18 (internal/dex/Etherium/Uniswap/v2_connector.go:715, cmd/screener-core/main.go:183)
+TUSD (stable) — 0x0000…76, decimals 18 (internal/dex/Etherium/Uniswap/v2_connector.go:716)
+USD1 (stable) — 0x8d0d…0d, decimals 18 (internal/dex/Etherium/Uniswap/v2_connector.go:717)
+WETH (native) — 0xC02a…c2, decimals 18 (internal/dex/Etherium/Uniswap/v2_connector.go:699, internal/dex/Etherium/Uniswap/v2_connector.go:718, configs/screener-core.yaml:39, configs/screener-core.yaml:85)
+FDUSD (stable) — только флаг, нет адреса/dec (internal/dex/Etherium/Uniswap/v2_connector.go:700, internal/dex/Etherium/Uniswap/connect_uniswap_v3_all.go:208)
+USDD (stable) — только флаг, нет адреса/dec (internal/dex/Etherium/Uniswap/v2_connector.go:706)
+bsc (chainId 56)
+WBNB (native) — 0xBB4c…5c, decimals отсутствуют (configs/screener-core.yaml:95, configs/screener-core.yaml:96)
+USDT (stable) — 0x55d3…55, decimals отсутствуют (configs/screener-core.yaml:98, configs/screener-core.yaml:99)
+Где используется
 
-        D1["dataChannel (*pb.MarketData)\nобщая очередь"]
-        E1 --> D1
-        E2 --> D1
-        E3 --> D1
-        E4 --> D1
+Графовый прайсер стартует с anchors USDC/USDT/DAI (cmd/screener-core/main.go:180-185)
+Лоадер символов фильтрует стейблы USDT/USDC/DAI/BUSD/… без метаданных (internal/util/symbol_loader.go:25-32)
+Гэпы
 
-        subgraph Pipeline["Запись в Redis"]
-            P1["Worker pool\n(cfg.redis_workers)"]
-            P2["redisclient.HSetBatch"]
-        end
-        D1 --> P1
-        P1 --> P2
-        P2 --> R1["Redis"]
+Нет chain id/адресов/decimals для FDUSD, USDD, BUSD — надо внести в единый реестр.
+Для BSC пары в конфиге отсутствуют decimals, chain id явно.
+Дальше логично переходить к схеме configs/assets/tokens.yaml (шаг 2).
 
-        M1["Метрики и счётчики\n(totalProcessed, totalDrops)"]
-        D1 --> M1
-    end
+выполни шаг 2.1
 
-    subgraph API["cmd/api-gateway/main.go"]
-        G1["LoadConfig + Redis\nпроверка Ping"]
-        G2["BybitClient\n(ReadLoop, KeepAlive)"]
-        G3["GateClient\n(конвертируем тикеры)"]
-        G4["/ws WebSocket хендлер"]
-        A1 --> G1
-        A2 --> G1
-        G1 --> G2
-        G1 --> G3
-        G2 --> R1
-        G3 --> R1
-    end
 
-    subgraph Frontend["web/"]
-        F1["index.html + app.js"]
-        Users["Браузер"]
-        F1 -.websocket.-> G4
-        Users --> F1
-    end
+Создал configs/assets/tokens.yaml (lines 1-33, 35-45) — единый реестр с блоками ethereum_mainnet и bsc_mainnet, внутри выделены stable/native, задан chain_id, адреса и decimals; для wrapped-нативов добавил флаг wrapped. В конце пометил TODO по FDUSD/USDD/BUSD, чтобы закрыть пробелы из шага 1.
 
-    subgraph Shared["Общие пакеты"]
-        S1["pkg/protobuf.MarketData"]
-        S2["internal/util.logger\n(app.log / screner.log)"]
-    end
+Дальше логично описать структуру YAML в документации (шаг 2.2) или подготовить загрузчик.
 
-    D1 --> S1
-    G2 --> S1
-    G3 --> S1
-    M1 --> S2
-    G1 --> S2
+добавим стэйблы и нативные токены позже. сейчас выполни шаг 2.2
+
+
+Обновил документацию: добавил секцию о реестре configs/assets/tokens.yaml, описал структуру блоков <network>_mainnet, поля chain_id, списки stable/native, а также правила расширения (docs/project_documentation.md:44-48).
+Следующий шаг — привязать конфиг-лоадер к этому YAML и начать замену хардкодов в коннекторах/прайсере.
+
+выполни шаг 3.1
+
+
+Добавил пакет internal/assets с моделью TokenInfo и перечислением TokenType (stable/native), чтобы коннекторы и прайсеры могли оперировать нормализованными метаданными без дублирования (internal/assets/token.go:1-37). Запланировано: на шаге 3.2 подвязать YAML‑лоадер к этим типам.
+
+выполни шаг 3.2
+
+
+Добавил YAML‑лоадер для реестра (internal/assets/loader.go): читает configs/assets/tokens.yaml, валидирует chain_id, символы, адреса (checksum) и decimals, предотвращает дубли, и возвращает каталоги стейблов/нативов как TokenInfo.
+Пакет internal/assets теперь содержит модель + парсер, готовый для кэширования и интеграции на шаге 3.3.
+
+выполни шаг 3.3
+
+
+Готов шаг 3.3.
+
+Добавил пакетный провайдер internal/assets/provider.go: кэш по пути (LoadOrGetProvider), индексация стейблов/нативов по сети и chain_id, быстрый поиск токенов по символу/адресу, методы TokensByNetwork/TokensByChain с копиями данных, всё под RW‑lock.
+internal/assets/loader.go уже выдаёт нормализованные TokenInfo, их использует провайдер; модель лежит в internal/assets/token.go.
+configs/assets/tokens.yaml и docs/project_documentation.md синхронизированы с новой схемой.
+Проверил go test ./... — сборка падает в уже существующих вспомогательных скриптах (дубли main, временные импорты), на core‑модули это не повлияло.
+
+Дальше логично протянуть провайдер в конфиг (AssetsConfigPath) и начать замену хардкодов в коннекторах/прайсере.
+
+выполни шаг 4.1
+
+
+Прописал путь к реестру активов в конфиге (configs/screener-core.yaml:11-13) — блок assets_registry теперь указывает на configs/assets/tokens.yaml и переменную окружения ASSETS_REGISTRY.
+Дальше логично расширить internal/config для чтения этого блока (шаг 4.2).
+
+выполни шаг 4.2
+
+
+Протянул путь к реестру до уровня конфига.
+
+Добавил в глобальный конфиг поле AssetsRegistry и для каждого DEX — AssetsSource/AssetsPath, плюс резолвер ResolveAssetsPath (internal/config/config.go:30, internal/config/config.go:63, internal/config/config.go:82-89).
+Ввел общий FileSource с Resolve, а PoolsSource.Resolve теперь на нём основан (internal/config/config.go:103-134).
+Config.LoadConfig заполняет AssetsPath для всех dex_configs, есть помощник ResolveAssetsRegistryPath (internal/config/config.go:134-135, internal/config/config.go:220-225).
+Далее можно прокинуть AssetsPath в launcher/коннекторы, заменить хардкоды и подключить провайдер.

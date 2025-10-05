@@ -56,8 +56,10 @@ func LoadSymbolsFromJSON(filePath string) ([]CoinSymbol, error) {
 // isStablecoinOrFiat проверяет, является ли символ стейблкоином или фиатной валютой
 func isStablecoinOrFiat(symbol string) bool {
 	stablecoins := []string{
-		"USDT", "USDC", "DAI", "BUSD", "USD", "EUR", "GBP", "JPY",
-		"USDE", "USD1", "USTC", // добавляем другие стейблкоины из списка
+		"BUSD", "DAI", "EUR", "GBP", "JPY", "TUSD", "USD",
+		"USD1", "USDC",
+		"USDE", "USDT",
+		"USTC", // добавляем другие стейблкоины из списка
 	}
 
 	for _, stable := range stablecoins {

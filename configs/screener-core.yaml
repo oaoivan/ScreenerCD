@@ -8,6 +8,10 @@ shared_pools:
   file: "ticker_source/geckoterminal_pools.json"
   env: "GECKO_POOLS_JSON"
 
+assets_registry:
+  file: "configs/assets/tokens.yaml"
+  env: "ASSETS_REGISTRY"
+
 exchange_configs:
   - name: "gate"
   - name: "bybit"
@@ -103,3 +107,4 @@ reference_pools:
 bitget_subscribe_batch_size: 30   # сколько инстр. в одном сообщении подписки
 bitget_subscribe_pause_ms: 700    # пауза между батчами, мс
 bitget_ping_interval_sec: 25      # интервал ping
+

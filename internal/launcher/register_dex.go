@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/config"
-	"github.com/yourusername/screner/internal/dex/Etherium/Uniswap"
+	uniswap "github.com/yourusername/screner/internal/dex/Etherium/Uniswap"
 )
 
 func init() {
@@ -19,7 +20,7 @@ func buildUniswapV2(ctx LaunchContext, _ string, _ []string, dexCfg *config.DexC
 	if ctx.Pricer == nil {
 		return fmt.Errorf("uniswap_v2: pricer not configured")
 	}
-	uv2Cfg, err := buildUniswapV2Config(*dexCfg, ctx.Config.ResolveSharedPoolsPath())
+	uv2Cfg, err := buildUniswapV2Config(*dexCfg, ctx.Config.ResolveSharedPoolsPath(), ctx.Assets)
 	if err != nil {
 		return err
 	}
@@ -48,7 +49,7 @@ func buildUniswapV3(ctx LaunchContext, _ string, _ []string, dexCfg *config.DexC
 	if ctx.Pricer == nil {
 		return fmt.Errorf("uniswap_v3: pricer not configured")
 	}
-	v3Cfg, err := buildUniswapV3Config(*dexCfg, ctx.Config.ResolveSharedPoolsPath())
+	v3Cfg, err := buildUniswapV3Config(*dexCfg, ctx.Config.ResolveSharedPoolsPath(), ctx.Assets)
 	if err != nil {
 		return err
 	}
@@ -72,7 +73,7 @@ func buildUniswapV3(ctx LaunchContext, _ string, _ []string, dexCfg *config.DexC
 	return nil
 }
 
-func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string) (uniswap.Config, error) {
+func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string, assetsProvider *assets.Provider) (uniswap.Config, error) {
 	wsURL := dexCfg.WSURL
 	if wsURL == "" {
 		return uniswap.Config{}, fmt.Errorf("uniswap_v2: ws_url empty")
@@ -82,7 +83,8 @@ func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string) (uniswap.
 		return uniswap.Config{}, fmt.Errorf("uniswap_v2: http_url empty")
 	}
 	path := dexCfg.ResolvePoolsPath(sharedPools)
-	pools, err := uniswap.LoadPoolsFromGecko(path)
+	registry := uniswap.NewTokenRegistry(assetsProvider, dexCfg.Network)
+	pools, err := uniswap.LoadPoolsFromGeckoWithRegistry(path, registry)
 	if err != nil {
 		return uniswap.Config{}, err
 	}
@@ -107,7 +109,7 @@ func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string) (uniswap.
 	}, nil
 }
 
-func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string) (uniswap.V3Config, error) {
+func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string, assetsProvider *assets.Provider) (uniswap.V3Config, error) {
 	wsURL := dexCfg.WSURL
 	httpURL := dexCfg.HTTPURL
 	if wsURL == "" || httpURL == "" {
@@ -118,6 +120,7 @@ func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string) (uniswap.
 		return uniswap.V3Config{}, fmt.Errorf("uniswap_v3: pools path empty")
 	}
 	ps := dexCfg.PoolsSource
+	registry := uniswap.NewTokenRegistry(assetsProvider, dexCfg.Network)
 	cfg := uniswap.V3Config{
 		Exchange:       dexCfg.Name,
 		WSURL:          wsURL,
@@ -131,6 +134,7 @@ func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string) (uniswap.
 		LogAllEvents:   dexCfg.LogAllEvents,
 		DecodeSwapOnly: dexCfg.SwapOnly,
 		MaxMetaWorkers: dexCfg.MaxMetaWorkers,
+		Registry:       registry,
 	}
 	if cfg.BatchSize <= 0 {
 		cfg.BatchSize = 150

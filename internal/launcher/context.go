@@ -1,6 +1,7 @@
 package launcher
 
 import (
+	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/config"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	pb "github.com/yourusername/screner/pkg/protobuf"
@@ -15,5 +16,6 @@ type LaunchContext struct {
 	DataChannel chan<- *pb.MarketData
 	Stop        <-chan struct{}
 	Pricer      pricing.Pricer
+	Assets      *assets.Provider
 	Supervisor  SupervisorFunc
 }

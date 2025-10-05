@@ -1,0 +1,39 @@
+# Unified token registry for stablecoins and native assets
+# Grouped by network with explicit chain identifiers so loaders can pick by chain.
+ethereum_mainnet:
+  chain_id: 1
+  stable:
+    - symbol: USDC
+      address: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+      decimals: 6
+    - symbol: USDT
+      address: 0xdac17f958d2ee523a2206206994597c13d831ec7
+      decimals: 6
+    - symbol: DAI
+      address: 0x6b175474e89094c44da98b954eedeac495271d0f
+      decimals: 18
+    - symbol: TUSD
+      address: 0x0000000000085d4780b73119b644ae5ecd22b376
+      decimals: 18
+    - symbol: USD1
+      address: 0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d
+      decimals: 18
+  native:
+    - symbol: WETH
+      address: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
+      decimals: 18
+      wrapped: true
+
+bsc_mainnet:
+  chain_id: 56
+  stable:
+    - symbol: USDT
+      address: 0x55d398326f99059fF775485246999027B3197955
+      decimals: 18
+  native:
+    - symbol: WBNB
+      address: 0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c
+      decimals: 18
+      wrapped: true
+
+# TODO: add FDUSD, USDD, BUSD and other network natives once addresses/decimals are verified.

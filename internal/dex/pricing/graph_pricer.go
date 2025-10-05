@@ -2,11 +2,13 @@ package pricing
 
 import (
 	"math"
+	"sort"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/util"
 )
 
@@ -56,17 +58,104 @@ const (
 )
 
 // NewGraphPricer создаёт графовый агрегатор с предопределёнными стейблами.
-func NewGraphPricer(stables []TokenInfo) *GraphPricer {
-	gp := &GraphPricer{
+func newGraphPricer() *GraphPricer {
+	return &GraphPricer{
 		edges:   make(map[string]map[string]edge),
 		symbols: make(map[string]string),
 		stables: make(map[string]bool),
 		maxHops: defaultMaxHops,
 	}
-	for _, s := range stables {
-		gp.RegisterStable(s)
-	}
+}
+
+// NewGraphPricer создаёт графовый агрегатор с предопределёнными стейблами.
+func NewGraphPricer(stables []TokenInfo) *GraphPricer {
+	gp := newGraphPricer()
+	gp.registerAnchors(stables)
 	return gp
+}
+
+// NewGraphPricerFromAssets создаёт прайсёр и загружает стейблы из реестра активов.
+// networks позволяет ограничить список сетей; если пусто, используются все сети провайдера.
+// fallback применяется, если провайдер не вернул ни одного стейбла.
+func NewGraphPricerFromAssets(provider *assets.Provider, networks []string, fallback []TokenInfo) *GraphPricer {
+	gp := newGraphPricer()
+
+	anchors := anchorsFromProvider(provider, networks)
+	switch {
+	case len(anchors) > 0:
+		util.Infof("pricing: assets registry supplied %d stable anchors", len(anchors))
+	case len(fallback) > 0:
+		util.Infof("pricing: assets registry returned no anchors, using fallback (%d entries)", len(fallback))
+		anchors = fallback
+	default:
+		util.Errorf("pricing: no stable anchors available (provider empty, fallback empty)")
+	}
+
+	gp.registerAnchors(anchors)
+	return gp
+}
+
+func (g *GraphPricer) registerAnchors(anchors []TokenInfo) {
+	for _, anchor := range anchors {
+		g.RegisterStable(anchor)
+	}
+}
+
+func anchorsFromProvider(provider *assets.Provider, networks []string) []TokenInfo {
+	if provider == nil {
+		util.Errorf("pricing: anchorsFromProvider called with nil provider")
+		return nil
+	}
+
+	requested := networks
+	if len(requested) == 0 {
+		requested = provider.NetworkNames()
+	}
+
+	anchorByAddr := make(map[string]TokenInfo)
+	for _, raw := range requested {
+		network := strings.TrimSpace(raw)
+		if network == "" {
+			continue
+		}
+		tokens := provider.TokensByNetwork(network, assets.TokenTypeStable)
+		if len(tokens) == 0 {
+			util.Debugf("pricing: anchors: network=%s has no stable tokens", network)
+			continue
+		}
+		util.Infof("pricing: anchors: network=%s stable=%d", network, len(tokens))
+		for _, token := range tokens {
+			addr := normalizeAddr(token.Address)
+			if addr == "" {
+				util.Errorf("pricing: anchors: network=%s token=%s missing address", network, token.Symbol)
+				continue
+			}
+			if _, exists := anchorByAddr[addr]; exists {
+				continue
+			}
+			anchorByAddr[addr] = TokenInfo{
+				Address:  token.Address,
+				Symbol:   token.Symbol,
+				Decimals: int(token.Decimals),
+			}
+		}
+	}
+
+	if len(anchorByAddr) == 0 {
+		return nil
+	}
+
+	anchors := make([]TokenInfo, 0, len(anchorByAddr))
+	for _, info := range anchorByAddr {
+		anchors = append(anchors, info)
+	}
+	sort.Slice(anchors, func(i, j int) bool {
+		if anchors[i].Symbol == anchors[j].Symbol {
+			return normalizeAddr(anchors[i].Address) < normalizeAddr(anchors[j].Address)
+		}
+		return anchors[i].Symbol < anchors[j].Symbol
+	})
+	return anchors
 }
 
 // RegisterToken сохраняет символ токена для отображения маршрутов.

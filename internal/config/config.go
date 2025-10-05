@@ -26,7 +26,8 @@ type Config struct {
 	// DefaultSymbolsFile allows pointing to a shared JSON with tickers
 	DefaultSymbolsFile string `yaml:"default_symbols_file"`
 	// SharedPools describes global pools/tickers source reused by all connectors
-	SharedPools PoolsSource `yaml:"shared_pools"`
+	SharedPools    PoolsSource `yaml:"shared_pools"`
+	AssetsRegistry FileSource  `yaml:"assets_registry"`
 	// ExchangeConfigs describe per-exchange symbol sources
 	ExchangeConfigs []ExchangeConfig `yaml:"exchange_configs"`
 	Redis           RedisConfig      `yaml:"redis"`
@@ -59,6 +60,8 @@ type DexConfig struct {
 	Pools          []DexPoolConfig `yaml:"pools"`
 	PoolsFile      string          `yaml:"pools_file"`
 	PoolsSource    PoolsSource     `yaml:"pools_source"`
+	AssetsSource   FileSource      `yaml:"assets_registry"`
+	AssetsPath     string          `yaml:"-"`
 	MaxMetaWorkers int             `yaml:"max_meta_workers"`
 	SwapOnly       bool            `yaml:"swap_only"`
 	LogAllEvents   bool            `yaml:"log_all_events"`
@@ -71,6 +74,13 @@ func (d DexConfig) ResolvePoolsPath(shared string) string {
 		return path
 	}
 	if path := strings.TrimSpace(os.ExpandEnv(d.PoolsFile)); path != "" {
+		return path
+	}
+	return strings.TrimSpace(shared)
+}
+
+func (d DexConfig) ResolveAssetsPath(shared string) string {
+	if path := strings.TrimSpace(d.AssetsSource.Resolve()); path != "" {
 		return path
 	}
 	return strings.TrimSpace(shared)
@@ -90,6 +100,23 @@ type DexPoolConfig struct {
 	CanonicalPair  string `yaml:"canonical_pair"`
 }
 
+type FileSource struct {
+	File string `yaml:"file"`
+	Env  string `yaml:"env"`
+}
+
+func (fs FileSource) Resolve() string {
+	if env := strings.TrimSpace(fs.Env); env != "" {
+		if val := strings.TrimSpace(os.Getenv(env)); val != "" {
+			return val
+		}
+	}
+	if fs.File == "" {
+		return ""
+	}
+	return strings.TrimSpace(os.ExpandEnv(fs.File))
+}
+
 // PoolsSource задаёт параметры внешнего списка пулов, например GeckoTerminal JSON.
 type PoolsSource struct {
 	File          string `yaml:"file"`
@@ -101,15 +128,11 @@ type PoolsSource struct {
 
 // Resolve возвращает итоговый путь к файлу пулов с учётом env и подстановок.
 func (ps PoolsSource) Resolve() string {
-	if env := strings.TrimSpace(ps.Env); env != "" {
-		if val := strings.TrimSpace(os.Getenv(env)); val != "" {
-			return val
-		}
-	}
-	if ps.File == "" {
-		return ""
-	}
-	return strings.TrimSpace(os.ExpandEnv(ps.File))
+	return FileSource{File: ps.File, Env: ps.Env}.Resolve()
+}
+
+func (c *Config) ResolveAssetsRegistryPath() string {
+	return strings.TrimSpace(c.AssetsRegistry.Resolve())
 }
 
 // ResolveSharedPoolsPath возвращает путь к общему JSON со списком пулов/тикеров для всех коннекторов.
@@ -192,6 +215,11 @@ func LoadConfig(filePath string) (*Config, error) {
 	}
 	if config.BitgetPingIntervalSec <= 0 {
 		config.BitgetPingIntervalSec = 25
+	}
+
+	sharedAssets := strings.TrimSpace(config.AssetsRegistry.Resolve())
+	for i := range config.DexConfigs {
+		config.DexConfigs[i].AssetsPath = config.DexConfigs[i].ResolveAssetsPath(sharedAssets)
 	}
 
 	return &config, nil
