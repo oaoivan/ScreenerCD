@@ -190,14 +190,34 @@ func main() {
 	var mu sync.Mutex
 	perExchange := map[string]int64{}
 
+	pricerRequiredBy := make([]string, 0, len(cfg.DexConfigs))
+	seenPricerDex := make(map[string]struct{}, len(cfg.DexConfigs))
+	for i := range cfg.DexConfigs {
+		trimmed := strings.TrimSpace(cfg.DexConfigs[i].Name)
+		if trimmed == "" {
+			continue
+		}
+		nameLower := strings.ToLower(trimmed)
+		switch nameLower {
+		case "uniswap_v2", "uniswap_v3", "uniswap_v4":
+			if _, ok := seenPricerDex[nameLower]; !ok {
+				pricerRequiredBy = append(pricerRequiredBy, trimmed)
+				seenPricerDex[nameLower] = struct{}{}
+			}
+		}
+	}
+
 	var pricer pricing.Pricer
-	if len(cfg.DexConfigs) > 0 {
+	if len(pricerRequiredBy) > 0 {
 		fallbackAnchors := []pricing.TokenInfo{
 			{Address: common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"), Symbol: "USDC", Decimals: 6},
 			{Address: common.HexToAddress("0xdac17f958d2ee523a2206206994597c13d831ec7"), Symbol: "USDT", Decimals: 6},
 			{Address: common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f"), Symbol: "DAI", Decimals: 18},
 		}
 		pricer = pricing.NewGraphPricerFromAssets(assetProvider, nil, fallbackAnchors)
+		util.Infof("Graph pricer enabled for DEX connectors: %s", strings.Join(pricerRequiredBy, ", "))
+	} else {
+		util.Infof("Graph pricer not required: no matching DEX connectors")
 	}
 
 	launchCtx := launcher.LaunchContext{

@@ -51,22 +51,35 @@ type Config struct {
 
 // DexConfig описывает настройки DEX коннектора для конкретной сети.
 type DexConfig struct {
-	Name           string          `yaml:"name"`
-	Network        string          `yaml:"network"`
-	WSURL          string          `yaml:"ws_url"`
-	HTTPURL        string          `yaml:"http_url"`
-	SubscribeBatch int             `yaml:"subscribe_batch"`
-	PingInterval   int             `yaml:"ping_interval"`
-	Pools          []DexPoolConfig `yaml:"pools"`
-	PoolsFile      string          `yaml:"pools_file"`
-	PoolsSource    PoolsSource     `yaml:"pools_source"`
-	AssetsSource   FileSource      `yaml:"assets_registry"`
-	AssetsPath     string          `yaml:"-"`
-	MaxMetaWorkers int             `yaml:"max_meta_workers"`
-	SwapOnly       bool            `yaml:"swap_only"`
-	LogAllEvents   bool            `yaml:"log_all_events"`
-	StopOnAckError bool            `yaml:"stop_on_ack_error"`
+	Name            string          `yaml:"name"`
+	Network         string          `yaml:"network"`
+	WSURL           string          `yaml:"ws_url"`
+	HTTPURL         string          `yaml:"http_url"`
+	SubscribeBatch  int             `yaml:"subscribe_batch"`
+	PingInterval    int             `yaml:"ping_interval"`
+	PoolManager     string          `yaml:"pool_manager"`
+	Pools           []DexPoolConfig `yaml:"pools"`
+	PoolsFile       string          `yaml:"pools_file"`
+	PoolsSource     PoolsSource     `yaml:"pools_source"`
+	AssetsSource    FileSource      `yaml:"assets_registry"`
+	AssetsPath      string          `yaml:"-"`
+	MaxMetaWorkers  int             `yaml:"max_meta_workers"`
+	SwapOnly        bool            `yaml:"swap_only"`
+	LogAllEvents    bool            `yaml:"log_all_events"`
+	StopOnAckError  bool            `yaml:"stop_on_ack_error"`
+	WantedPairs     []string        `yaml:"wanted_pairs"`
+	WantedPairsOnly bool            `yaml:"wanted_pairs_only"`
+	Once            bool            `yaml:"once"`
 }
+
+const (
+	minSubscribeBatch = 1
+	maxSubscribeBatch = 500
+	minPingInterval   = 5
+	maxPingInterval   = 120
+	minMetaWorkers    = 1
+	maxMetaWorkers    = 64
+)
 
 // ResolvePoolsPath возвращает путь для конкретного DEX коннектора с учётом shared fallback.
 func (d DexConfig) ResolvePoolsPath(shared string) string {
@@ -84,6 +97,61 @@ func (d DexConfig) ResolveAssetsPath(shared string) string {
 		return path
 	}
 	return strings.TrimSpace(shared)
+}
+
+func (d *DexConfig) applyDefaults() {
+	if d.SubscribeBatch <= 0 {
+		d.SubscribeBatch = 150
+	}
+	if d.PingInterval <= 0 {
+		d.PingInterval = 25
+	}
+	if strings.EqualFold(d.Name, "uniswap_v4") && d.MaxMetaWorkers <= 0 {
+		d.MaxMetaWorkers = 4
+	}
+}
+
+func (d DexConfig) Validate() error {
+	name := strings.TrimSpace(d.Name)
+	if name == "" {
+		return fmt.Errorf("name is required")
+	}
+	if strings.TrimSpace(d.Network) == "" {
+		return fmt.Errorf("network is required")
+	}
+	if strings.TrimSpace(d.WSURL) == "" {
+		return fmt.Errorf("ws_url is required")
+	}
+	if d.SubscribeBatch < minSubscribeBatch || d.SubscribeBatch > maxSubscribeBatch {
+		return fmt.Errorf("subscribe_batch must be in range %d..%d", minSubscribeBatch, maxSubscribeBatch)
+	}
+	if d.PingInterval < minPingInterval || d.PingInterval > maxPingInterval {
+		return fmt.Errorf("ping_interval must be in range %d..%d", minPingInterval, maxPingInterval)
+	}
+	if d.WantedPairsOnly && len(d.WantedPairs) == 0 {
+		return fmt.Errorf("wanted_pairs must be provided when wanted_pairs_only=true")
+	}
+
+	if strings.EqualFold(name, "uniswap_v4") {
+		if strings.TrimSpace(d.HTTPURL) == "" {
+			return fmt.Errorf("http_url is required for uniswap_v4")
+		}
+		if strings.TrimSpace(d.PoolManager) == "" {
+			return fmt.Errorf("pool_manager is required for uniswap_v4")
+		}
+		if d.MaxMetaWorkers < minMetaWorkers || d.MaxMetaWorkers > maxMetaWorkers {
+			return fmt.Errorf("max_meta_workers must be in range %d..%d", minMetaWorkers, maxMetaWorkers)
+		}
+		poolsPath := strings.TrimSpace(d.PoolsSource.Resolve())
+		if poolsPath == "" {
+			poolsPath = strings.TrimSpace(os.ExpandEnv(d.PoolsFile))
+		}
+		if len(d.Pools) == 0 && poolsPath == "" {
+			return fmt.Errorf("either pools, pools_file or pools_source must be provided for uniswap_v4")
+		}
+	}
+
+	return nil
 }
 
 // DexPoolConfig описывает минимальную информацию по пулу.
@@ -119,11 +187,12 @@ func (fs FileSource) Resolve() string {
 
 // PoolsSource задаёт параметры внешнего списка пулов, например GeckoTerminal JSON.
 type PoolsSource struct {
-	File          string `yaml:"file"`
-	Env           string `yaml:"env"`
-	GeckoDex      string `yaml:"gecko_dex"`
-	GeckoNetwork  string `yaml:"gecko_network"`
-	IncludeStable bool   `yaml:"include_stable"`
+	File          string   `yaml:"file"`
+	Env           string   `yaml:"env"`
+	GeckoDex      string   `yaml:"gecko_dex"`
+	GeckoNetwork  string   `yaml:"gecko_network"`
+	IncludeStable bool     `yaml:"include_stable"`
+	WantedPairs   []string `yaml:"wanted_pairs"`
 }
 
 // Resolve возвращает итоговый путь к файлу пулов с учётом env и подстановок.
@@ -219,8 +288,47 @@ func LoadConfig(filePath string) (*Config, error) {
 
 	sharedAssets := strings.TrimSpace(config.AssetsRegistry.Resolve())
 	for i := range config.DexConfigs {
+		config.DexConfigs[i].WSURL = strings.TrimSpace(os.ExpandEnv(config.DexConfigs[i].WSURL))
+		config.DexConfigs[i].HTTPURL = strings.TrimSpace(os.ExpandEnv(config.DexConfigs[i].HTTPURL))
+		config.DexConfigs[i].PoolManager = strings.TrimSpace(os.ExpandEnv(config.DexConfigs[i].PoolManager))
+		config.DexConfigs[i].applyDefaults()
 		config.DexConfigs[i].AssetsPath = config.DexConfigs[i].ResolveAssetsPath(sharedAssets)
 	}
 
+	if err := config.Validate(); err != nil {
+		log.Fatalf("invalid config: %v", err)
+		return nil, err
+	}
+
 	return &config, nil
+}
+
+func (c *Config) Validate() error {
+	globalAssetsPath := strings.TrimSpace(c.ResolveAssetsRegistryPath())
+	requiresV4 := false
+	for i := range c.DexConfigs {
+		if err := c.DexConfigs[i].Validate(); err != nil {
+			name := strings.TrimSpace(c.DexConfigs[i].Name)
+			if name == "" {
+				name = fmt.Sprintf("index %d", i)
+			}
+			return fmt.Errorf("dex config %s: %w", name, err)
+		}
+
+		name := strings.ToLower(strings.TrimSpace(c.DexConfigs[i].Name))
+		if name == "uniswap_v4" {
+			requiresV4 = true
+			dexAssetsPath := strings.TrimSpace(c.DexConfigs[i].AssetsPath)
+			if dexAssetsPath == "" && globalAssetsPath == "" {
+				return fmt.Errorf("dex config %s: assets registry path required for uniswap_v4", c.DexConfigs[i].Name)
+			}
+		}
+	}
+
+	if requiresV4 && globalAssetsPath == "" {
+		// Валидация уже проверяет per-dex путь, но дополнительная проверка
+		// помогает обнаружить забытый глобальный реестр для графового прайсера.
+		return fmt.Errorf("assets_registry must be configured when uniswap_v4 is enabled")
+	}
+	return nil
 }

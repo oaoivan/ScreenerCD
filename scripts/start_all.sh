@@ -48,6 +48,17 @@ Env:
 USAGE
 }
 
+load_env_file() {
+  local env_file="$ROOT_DIR/.env"
+  if [[ -f "$env_file" ]]; then
+    info "Loading environment from $env_file"
+    set -a
+    # shellcheck disable=SC1090
+    source "$env_file"
+    set +a
+  fi
+}
+
 for arg in "$@"; do
   case "$arg" in
   --docker-all)     DOCKER_ALL=1 ;;
@@ -58,6 +69,8 @@ for arg in "$@"; do
     *) warn "Unknown option: $arg" ;;
   esac
 done
+
+load_env_file
 
 require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
