@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -74,14 +75,14 @@ type PoolEntry struct {
 	PoolAddr string `json:"pool_address"`
 	Network  string `json:"network"`
 	Token0   struct {
-		Address  string `json:"address"`
-		Symbol   string `json:"symbol"`
-		Decimals int    `json:"decimals"`
+		Address  string      `json:"address"`
+		Symbol   string      `json:"symbol"`
+		Decimals json.Number `json:"decimals"`
 	} `json:"token0"`
 	Token1 struct {
-		Address  string `json:"address"`
-		Symbol   string `json:"symbol"`
-		Decimals int    `json:"decimals"`
+		Address  string      `json:"address"`
+		Symbol   string      `json:"symbol"`
+		Decimals json.Number `json:"decimals"`
 	} `json:"token1"`
 }
 
@@ -242,14 +243,24 @@ func loadPools() error {
 			continue
 		}
 		h := common.HexToHash(pid)
+		dec0, err0 := parseDecimals(e.Token0.Decimals)
+		if err0 != nil {
+			log.Printf("[WARN] skip pool %s invalid token0 decimals=%v", e.PairName, err0)
+			continue
+		}
+		dec1, err1 := parseDecimals(e.Token1.Decimals)
+		if err1 != nil {
+			log.Printf("[WARN] skip pool %s invalid token1 decimals=%v", e.PairName, err1)
+			continue
+		}
 		pm := &poolMeta{
 			PoolID:    h,
 			Symbol0:   e.Token0.Symbol,
 			Symbol1:   e.Token1.Symbol,
 			Addr0:     common.HexToAddress(e.Token0.Address),
 			Addr1:     common.HexToAddress(e.Token1.Address),
-			Decimals0: e.Token0.Decimals,
-			Decimals1: e.Token1.Decimals,
+			Decimals0: dec0,
+			Decimals1: dec1,
 			BaseIs0:   strings.Contains(strings.ToUpper(e.PairName), e.Token0.Symbol) && strings.Contains(strings.ToUpper(e.PairName), "USDC") && !strings.Contains(strings.ToUpper(e.Token1.Symbol), "USDC"),
 			PairName:  e.PairName,
 		}
@@ -265,6 +276,18 @@ func loadPools() error {
 		}
 	}
 	return nil
+}
+
+func parseDecimals(raw json.Number) (int, error) {
+	s := strings.TrimSpace(raw.String())
+	if s == "" {
+		return 0, fmt.Errorf("empty decimals")
+	}
+	v, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, err
+	}
+	return v, nil
 }
 
 func resolveAlchemyWSURL() (string, error) {

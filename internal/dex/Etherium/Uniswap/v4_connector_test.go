@@ -31,6 +31,7 @@ func makeTestConnector(t *testing.T, exchange string, pricer pricing.Pricer) *V4
 	t.Helper()
 	cfg := V4Config{
 		Exchange:       exchange,
+		Network:        "ethereum",
 		WSURL:          "wss://example",
 		HTTPURL:        "https://example",
 		PoolManager:    common.HexToAddress("0x0000000000000000000000000000000000000001"),

@@ -88,10 +88,7 @@ dex_configs:
       env: "GECKO_POOLS_JSON"
       gecko_dex: "uniswap_v4"
       gecko_network: "ethereum"
-      wanted_pairs:
-        - "UNI/USDC"
-        - "LINK/USDC"
-    wanted_pairs_only: false                                      # true — использовать только пары из wanted_pairs (smoke-тест)
+    wanted_pairs_only: false                                      # подписываемся на все доступные пулы из источника
 
 # Performance tuning
 data_channel_buffer: 8192         # 8k–32k в зависимости от нагрузки

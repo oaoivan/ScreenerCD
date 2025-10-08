@@ -236,6 +236,7 @@ func buildUniswapV4Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 
 	cfg := uniswap.V4Config{
 		Exchange:        strings.ToLower(exchangeName),
+		Network:         strings.ToLower(strings.TrimSpace(dexCfg.Network)),
 		WSURL:           wsURL,
 		HTTPURL:         httpURL,
 		PoolManager:     common.HexToAddress(manager),

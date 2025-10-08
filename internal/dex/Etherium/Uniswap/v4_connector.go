@@ -9,6 +9,7 @@ import (
 	"math"
 	"math/big"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -34,11 +35,13 @@ var (
 	twoPow192       = new(big.Int).Lsh(big.NewInt(1), 192)
 	pow10Cache      sync.Map
 	errOnceComplete = errors.New("uniswap_v4: once completed")
+	errStablePool   = errors.New("uniswap_v4: stable-stable pool skipped")
 )
 
 // V4Config описывает параметры продакшн-коннектора Uniswap V4.
 type V4Config struct {
 	Exchange        string
+	Network         string
 	WSURL           string
 	HTTPURL         string
 	PoolManager     common.Address
@@ -59,6 +62,8 @@ type V4Config struct {
 // V4PoolConfig хранит метаданные пула для статической подписки.
 type V4PoolConfig struct {
 	PoolID        common.Hash
+	PoolAddress   common.Address
+	HookAddress   common.Address
 	PairName      string
 	Token0        TokenMeta
 	Token1        TokenMeta
@@ -85,11 +90,16 @@ type GeckoEntry struct {
 	Dex        string `json:"dex"`
 	Network    string `json:"network"`
 	lastUpdate time.Time
-	PairName   string     `json:"pair_name"`
-	PoolID     string     `json:"pool_id"`
-	PoolAddr   string     `json:"pool_address"`
-	Token0     GeckoToken `json:"token0"`
-	Token1     GeckoToken `json:"token1"`
+	PairName   string       `json:"pair_name"`
+	PoolID     string       `json:"pool_id"`
+	PoolAddr   string       `json:"pool_address"`
+	Token0     GeckoToken   `json:"token0"`
+	Token1     GeckoToken   `json:"token1"`
+	PoolKey    GeckoPoolKey `json:"pool_key"`
+}
+
+type GeckoPoolKey struct {
+	Hooks string `json:"hooks"`
 }
 
 // GeckoToken описывает структуру токена из GeckoTerminal.
@@ -256,6 +266,7 @@ func NewV4Connector(cfg V4Config, pricer pricing.Pricer) (*V4Connector, error) {
 		return nil, fmt.Errorf("uniswap_v4: pricer is required")
 	}
 	cfg.Exchange = strings.ToLower(strings.TrimSpace(cfg.Exchange))
+	cfg.Network = strings.ToLower(strings.TrimSpace(cfg.Network))
 	if cfg.Exchange == "" {
 		cfg.Exchange = defaultExchangeName
 	}
@@ -275,7 +286,7 @@ func NewV4Connector(cfg V4Config, pricer pricing.Pricer) (*V4Connector, error) {
 		return nil, fmt.Errorf("uniswap_v4: pool_manager address is required")
 	}
 
-	util.Infof("uniswap_v4: init exchange=%s pools_inline=%d wanted_only=%v swap_only=%v", cfg.Exchange, len(cfg.Pools), cfg.WantedPairsOnly, cfg.SwapOnly)
+	util.Infof("uniswap_v4: init exchange=%s network=%s pools_inline=%d wanted_only=%v swap_only=%v", cfg.Exchange, cfg.Network, len(cfg.Pools), cfg.WantedPairsOnly, cfg.SwapOnly)
 
 	return &V4Connector{
 		cfg:    cfg,
@@ -488,7 +499,15 @@ func (c *V4Connector) bootstrapPools(ctx context.Context) error {
 		final[pool.PoolID] = &v4PoolState{meta: metaCopy}
 		c.registerToken(pool.Token0)
 		c.registerToken(pool.Token1)
-		util.Infof("uniswap_v4: pool ready pair=%s id=%s base=%s quote=%s canon=%s dec0=%d dec1=%d", pool.PairName, pool.PoolID.Hex(), poolBaseSymbol(&pool), poolQuoteSymbol(&pool), pool.CanonicalPair, pool.Token0.Decimals, pool.Token1.Decimals)
+		poolAddr := "-"
+		if pool.PoolAddress != (common.Address{}) {
+			poolAddr = strings.ToLower(pool.PoolAddress.Hex())
+		}
+		hookAddr := "-"
+		if pool.HookAddress != (common.Address{}) {
+			hookAddr = strings.ToLower(pool.HookAddress.Hex())
+		}
+		util.Infof("uniswap_v4: pool ready pair=%s id=%s pool_addr=%s hook=%s base=%s quote=%s canon=%s dec0=%d dec1=%d", pool.PairName, pool.PoolID.Hex(), poolAddr, hookAddr, poolBaseSymbol(&pool), poolQuoteSymbol(&pool), pool.CanonicalPair, pool.Token0.Decimals, pool.Token1.Decimals)
 	}
 
 	c.poolsMu.Lock()
@@ -547,11 +566,17 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 	util.Infof("uniswap_v4: pools file entries=%d", len(payload.Entries))
 
 	result := make([]V4PoolConfig, 0, len(payload.Entries))
+	networkFilter := strings.TrimSpace(c.cfg.Network)
+	skippedNetwork := 0
 	for _, entry := range payload.Entries {
 		if err := ctxErr(ctx); err != nil {
 			return nil, err
 		}
 		if !strings.EqualFold(entry.Dex, "uniswap_v4") {
+			continue
+		}
+		if networkFilter != "" && !strings.EqualFold(entry.Network, networkFilter) {
+			skippedNetwork++
 			continue
 		}
 		if filter {
@@ -561,13 +586,17 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 		}
 		pool, err := c.poolFromGecko(entry)
 		if err != nil {
+			if errors.Is(err, errStablePool) {
+				util.Infof("uniswap_v4: skip stable pool pair=%s pool_id=%s token0=%s token1=%s", normalizePairName(entry.PairName, entry.Token0.Symbol, entry.Token1.Symbol), strings.TrimSpace(entry.PoolID), strings.ToUpper(strings.TrimSpace(entry.Token0.Symbol)), strings.ToUpper(strings.TrimSpace(entry.Token1.Symbol)))
+				continue
+			}
 			util.Errorf("uniswap_v4: skip pool %s: %v", entry.PairName, err)
 			continue
 		}
 		result = append(result, pool)
 	}
 
-	util.Infof("uniswap_v4: pools loaded from file=%d", len(result))
+	util.Infof("uniswap_v4: pools loaded from file=%d skipped_network=%d filter=%s", len(result), skippedNetwork, networkFilter)
 	return result, nil
 }
 
@@ -591,8 +620,14 @@ func (c *V4Connector) poolFromGecko(entry GeckoEntry) (V4PoolConfig, error) {
 	baseIsToken0 := chooseBaseToken(token0, token1)
 	pairName := normalizePairName(entry.PairName, token0.Symbol, token1.Symbol)
 
+	if token0.IsStable && token1.IsStable {
+		return V4PoolConfig{}, fmt.Errorf("%w pair=%s", errStablePool, pairName)
+	}
+
 	pool := V4PoolConfig{
 		PoolID:        pid,
+		PoolAddress:   parseOptionalAddress(entry.PoolAddr),
+		HookAddress:   parseOptionalAddress(entry.PoolKey.Hooks),
 		PairName:      pairName,
 		Token0:        token0,
 		Token1:        token1,
@@ -600,6 +635,22 @@ func (c *V4Connector) poolFromGecko(entry GeckoEntry) (V4PoolConfig, error) {
 		CanonicalPair: canonicalPair(V4PoolConfig{Token0: token0, Token1: token1, BaseIsToken0: baseIsToken0}),
 	}
 	return pool, nil
+}
+
+func parseOptionalAddress(raw string) common.Address {
+	addr := strings.TrimSpace(raw)
+	if addr == "" {
+		return common.Address{}
+	}
+	if strings.HasPrefix(strings.ToLower(addr), "0x") && len(addr) == 66 {
+		// 32-byte value (likely pool_id) — not an address, silently ignore
+		return common.Address{}
+	}
+	if !common.IsHexAddress(addr) {
+		util.Infof("uniswap_v4: skip invalid address=%s", raw)
+		return common.Address{}
+	}
+	return common.HexToAddress(addr)
 }
 
 // buildTokenMeta нормализует токен из JSON и обогащает его через реестр.
@@ -759,17 +810,70 @@ func (c *V4Connector) dial(ctx context.Context) (*websocket.Conn, error) {
 	return conn, nil
 }
 
-func (c *V4Connector) subscribe(conn *websocket.Conn) error {
-	addressFilter := map[string]interface{}{
-		"address": []string{strings.ToLower(c.cfg.PoolManager.Hex())},
+func (c *V4Connector) subscriptionAddresses() []string {
+	set := make(map[string]struct{})
+	if c.cfg.PoolManager != (common.Address{}) {
+		set[strings.ToLower(c.cfg.PoolManager.Hex())] = struct{}{}
 	}
+	c.poolsMu.RLock()
+	for _, state := range c.pools {
+		if addr := state.meta.PoolAddress; addr != (common.Address{}) {
+			set[strings.ToLower(addr.Hex())] = struct{}{}
+		}
+		if hook := state.meta.HookAddress; hook != (common.Address{}) {
+			set[strings.ToLower(hook.Hex())] = struct{}{}
+		}
+	}
+	c.poolsMu.RUnlock()
+	if len(set) == 0 {
+		return nil
+	}
+	result := make([]string, 0, len(set))
+	for addr := range set {
+		result = append(result, addr)
+	}
+	sort.Strings(result)
+	return result
+}
+
+func (c *V4Connector) subscriptionPoolIDs() []string {
+	c.poolsMu.RLock()
+	defer c.poolsMu.RUnlock()
+	if len(c.pools) == 0 {
+		return nil
+	}
+	result := make([]string, 0, len(c.pools))
+	for id := range c.pools {
+		result = append(result, strings.ToLower(id.Hex()))
+	}
+	sort.Strings(result)
+	return result
+}
+
+func (c *V4Connector) subscribe(conn *websocket.Conn) error {
+	addresses := c.subscriptionAddresses()
+	if len(addresses) == 0 {
+		addresses = []string{strings.ToLower(c.cfg.PoolManager.Hex())}
+	}
+	poolIDs := c.subscriptionPoolIDs()
+	filter := map[string]interface{}{
+		"address": addresses,
+	}
+	if evt, ok := c.managerABI.Events["Swap"]; ok {
+		topics := []interface{}{evt.ID.Hex()}
+		if len(poolIDs) > 0 {
+			topics = append(topics, poolIDs)
+		}
+		filter["topics"] = topics
+	}
+	util.Infof("uniswap_v4: subscribe filters addresses=%d pool_ids=%d", len(addresses), len(poolIDs))
 	req := RPCRequest{
 		JSONRPC: "2.0",
 		ID:      1,
 		Method:  "eth_subscribe",
 		Params: []interface{}{
 			"logs",
-			addressFilter,
+			filter,
 		},
 	}
 	if err := conn.WriteJSON(req); err != nil {
