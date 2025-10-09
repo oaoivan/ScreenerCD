@@ -1,5 +1,11 @@
 # Uniswap v4 → Redis Data Path Analysis
 
+## 0. Итог и фикс
+- На шаге подписки WS использовался адрес PoolManager из `.env` (`POOLMANAGER_V4=0x868031d4cba8b7a8e7a3e97b4dab7fa5120e061a`), для которого `eth_getCode` возвращает `0x`, то есть контракт отсутствует. Подтверждение — запрос к Alchemy (`eth_getCode`) в `curl` показал пустой байткод.
+- Реальный PoolManager для сетки Ethereum, фигурирующий в `ticker_source/geckoterminal_pools.json`, — `0x000000000004444c5dc75cb358380d2e3de08a90`. Именно этот адрес выдаёт полноценный байткод (`eth_getCode` → длинный hex).
+- Из-за подписки на «пустой» адрес коннектор не получал ни одного события `Swap`, поэтому пайплайн дальше (store→pricing→Redis) оставался пустым.
+- Обновил `.env` (`POOLMANAGER_V4`) на корректный адрес. После перезапуска сервиса ожидаем появление строк `uniswap_v4: swap…`/`pricing update…` и рост `perExchange["uniswap_v4"]` в `metrics`, что подтвердит попадание данных в Redis.
+
 ## 1. Поток данных внутри коннектора
 - `V4Connector.Run` поднимает websocket, ждёт ack и каждую входящую ноту прокидывает в `handleFrame`, который распознаёт `eth_subscription` и передаёт лог в `handleLog`.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L888-L1093】
 - `handleLog` отфильтровывает только события `Swap` и вызывает `handleSwapEvent` для дальнейшего разбора.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1148-L1188】
@@ -14,10 +20,14 @@
 - Worker pool читает из `dataChannel`, формирует батч `HSET` и пишет в Redis через `redisClient.HSetBatch`. Одновременно счётчики `totalProcessed` и `perExchange[md.Exchange]` увеличиваются для каждой полученной записи, так что любое сообщение, дошедшее до этой точки, попадёт как в метрики, так и в Redis-пайплайн.【F:cmd/screener-core/main.go†L263-L327】
 
 ## 4. Где теряются данные
-- События, пришедшие для пулов, отсутствующих в `c.pools`, отбрасываются в `handleSwapEvent` до публикации в канал (см. `storeSwapMetrics` → `return nil`). Это происходит тихо (через `Debugf`) при неподключённых пулах или несовпадении `pool_id`/`PoolId` из источника.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1095-L1146】【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1238-L1243】
-- Даже для известных пулов публикация зависит от успешного преобразования рациональных цен в `float64`. Если `ratToFloat64` возвращает `false` (NaN/Inf/<=0), `updatePricing` завершится без `emitSpot`, и данные снова не попадут в общий канал.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1205-L1322】
+- В текущем запуске потеря происходила **до** входа в коннектор: провайдер не отдавал ни одного лога, потому что подписка шла на некорректный PoolManager (`0x8680…`, код=0x). Поскольку `log_all_events=true`, в `screner.log` отсутствуют строки `uniswap_v4: swap…`/`unknown pool…`, что подтверждает отсутствие входящих событий.【screner.log】
+- При корректном адресе возможные точки отбрасывания остаются прежними: не распознанный `pool_id` (см. `storeSwapMetrics` → `return false`) или невалидные цены (NaN/Inf) в `updatePricing`. Эти ветки остаются релевантны для мониторинга после фикса.【internal/dex/Etherium/Uniswap/v4_connector.go†L1095-L1146】【internal/dex/Etherium/Uniswap/v4_connector.go†L1205-L1322】
 
 ## 5. Рекомендации по диагностике
-1. Включить `log_all_events: true` или поднять лог-левел до `debug`, чтобы увидеть, для каких `pool_id` срабатывает ветка `!ok` или конвертация цен падает.
-2. Сверить список `pool_id` из `ticker_source/geckoterminal_pools.json` с фактическими `PoolId`, которые отдаёт RPC, и исключить записи без валидных адресов (в логе bootstrap видно множество пулов с `pool_addr=-`).
-3. Добавить счётчик ошибок `conversionErrors`/`unknownPool` в метрики, чтобы отслеживать долю отброшенных свопов прямо на коннекторе.
+1. После перезапуска проверить, что `metrics` логирует ненулевой `perExchange.uniswap_v4` и что в Redis появляются ключи из V4 (можно через `redis-cli keys uniswap_v4:*`).
+2. Сохранить привычку валидировать `POOLMANAGER_V4` запросом `eth_getCode` при обновлении окружения — это мгновенно подтверждает корректность адреса.
+3. Для дальнейшего контроля оставить `log_all_events` включённым на ближайшие сессии; при стабилизации можно отключить и добавить счётчики `conversionErrors`/`unknownPool` в метрики для раннего детекта аномалий внутри коннектора.
+
+## 6. Постобработка Redis (исправление)
+- В пайплайне `HSetBatch` значения попадали в hash через промежуточную `map[string]interface{}`. Redis не гарантирует порядок полей при `HGETALL`, из-за чего при переборе “первым” значением часто оказывался `timestamp` (например, `BIOUSD=1760018762089`), хотя реальная цена лежала в поле `price`.
+- Теперь пайплайн отправляет набор полей через `HSET` с сохранением исходного порядка (`price`, затем `timestamp`, …). `HGETALL` по-прежнему не детерминирован на 100%, но в Valkey/Redis 6+ возвращает поля в порядке записи — скрипты, которые читают “первый элемент = цена”, больше не спотыкаются.【internal/redisclient/client.go:64】

@@ -82,28 +82,27 @@ func (r *RedisClient) HSetBatch(entries [][]interface{}) error {
 			util.Errorf("HSetBatch: first element must be key string, got %T", e[0])
 			continue
 		}
-		fields := make(map[string]interface{}, (len(e)-1)/2)
-		var invalid bool
+		fields := make([]interface{}, 0, len(e)-1)
+		valid := true
 		for i := 1; i < len(e); i += 2 {
 			if i+1 >= len(e) {
 				util.Errorf("HSetBatch: odd field count for key=%s payload=%v", key, e)
-				invalid = true
+				valid = false
 				break
 			}
 			fieldName, ok := e[i].(string)
 			if !ok {
 				util.Errorf("HSetBatch: field name must be string for key=%s, got %T", key, e[i])
-				invalid = true
+				valid = false
 				break
 			}
-			// Older Redis (<=3.x) only accepts HMSET for multiple fields; convert values to strings for consistency.
-			fields[fieldName] = fmt.Sprint(e[i+1])
+			fields = append(fields, fieldName, fmt.Sprint(e[i+1]))
 		}
-		if invalid || len(fields) == 0 {
+		if !valid || len(fields) == 0 {
 			continue
 		}
-		util.Debugf("PIPE HMSET %s %v", key, fields)
-		pipe.HMSet(r.ctx, key, fields)
+		util.Debugf("PIPE HSET %s %v", key, fields)
+		pipe.HSet(r.ctx, key, fields...)
 	}
 	cmds, err := pipe.Exec(r.ctx)
 	if err != nil {
