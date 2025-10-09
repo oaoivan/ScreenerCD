@@ -235,8 +235,9 @@ type V4Connector struct {
 	managerABI abi.ABI
 	eventBySig map[common.Hash]abi.Event
 
-	successUpdates   uint64
-	conversionErrors uint64
+	successUpdates    uint64
+	conversionErrors  uint64
+	unknownPoolEvents uint64
 }
 
 // выборочное хранение состояния пула (lazy metadata, кэш цены и т.д.).
@@ -484,6 +485,11 @@ func (c *V4Connector) bootstrapPools(ctx context.Context) error {
 		return fmt.Errorf("uniswap_v4: no pools resolved (inline=%d path=%s)", len(c.cfg.Pools), path)
 	}
 
+	var (
+		missingPoolAddr int
+		missingHookAddr int
+	)
+
 	final := make(map[common.Hash]*v4PoolState, len(prepared))
 	seen := make(map[common.Hash]struct{}, len(prepared))
 	for _, pool := range prepared {
@@ -502,10 +508,14 @@ func (c *V4Connector) bootstrapPools(ctx context.Context) error {
 		poolAddr := "-"
 		if pool.PoolAddress != (common.Address{}) {
 			poolAddr = strings.ToLower(pool.PoolAddress.Hex())
+		} else {
+			missingPoolAddr++
 		}
 		hookAddr := "-"
 		if pool.HookAddress != (common.Address{}) {
 			hookAddr = strings.ToLower(pool.HookAddress.Hex())
+		} else {
+			missingHookAddr++
 		}
 		util.Infof("uniswap_v4: pool ready pair=%s id=%s pool_addr=%s hook=%s base=%s quote=%s canon=%s dec0=%d dec1=%d", pool.PairName, pool.PoolID.Hex(), poolAddr, hookAddr, poolBaseSymbol(&pool), poolQuoteSymbol(&pool), pool.CanonicalPair, pool.Token0.Decimals, pool.Token1.Decimals)
 	}
@@ -513,6 +523,10 @@ func (c *V4Connector) bootstrapPools(ctx context.Context) error {
 	c.poolsMu.Lock()
 	c.pools = final
 	c.poolsMu.Unlock()
+
+	if missingPoolAddr > 0 || missingHookAddr > 0 {
+		util.Infof("uniswap_v4: pools missing addresses pool_addr=%d hook_addr=%d", missingPoolAddr, missingHookAddr)
+	}
 
 	util.Infof("uniswap_v4: bootstrap pools done total=%d inline=%d file=%d wanted_only=%v", len(final), len(c.cfg.Pools), fileCount, filterWanted)
 	return nil
@@ -1165,7 +1179,12 @@ func (c *V4Connector) handleSwapEvent(ctx context.Context, evt abi.Event, logIte
 	}
 	c.poolsMu.RUnlock()
 	if !ok {
-		util.Debugf("uniswap_v4: swap for unknown pool id=%s", poolID.Hex())
+		totalUnknown := atomic.AddUint64(&c.unknownPoolEvents, 1)
+		if totalUnknown <= 5 || totalUnknown%100 == 0 {
+			util.Infof("uniswap_v4: swap for unknown pool id=%s total_unknown=%d", poolID.Hex(), totalUnknown)
+		} else {
+			util.Debugf("uniswap_v4: swap for unknown pool id=%s total_unknown=%d", poolID.Hex(), totalUnknown)
+		}
 		return nil
 	}
 
@@ -1329,6 +1348,11 @@ func (c *V4Connector) updatePricing(meta V4PoolConfig, price1Float float64, pric
 	}
 	c.emitUSD(out, info0, ts)
 	c.emitUSD(out, info1, ts)
+	if total <= 10 || total%200 == 0 {
+		convErr := atomic.LoadUint64(&c.conversionErrors)
+		unknown := atomic.LoadUint64(&c.unknownPoolEvents)
+		util.Infof("uniswap_v4: metrics success=%d conversion_errors=%d unknown_pools=%d", total, convErr, unknown)
+	}
 	if c.cfg.LogAllEvents {
 		util.Infof("uniswap_v4: pricing update pair=%s weight=%.6f p1=%.10f p0=%.10f success_count=%d", meta.PairName, weight, price1Float, price0Float, total)
 	} else {

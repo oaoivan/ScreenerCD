@@ -145,7 +145,19 @@ func init() {
 	}
 	logFile = limitedWriter.file
 
-	mw := io.MultiWriter(os.Stdout, limitedWriter)
+	logToStdout := true
+	if env := strings.TrimSpace(os.Getenv("SCR_LOG_STDOUT")); env != "" {
+		switch strings.ToLower(env) {
+		case "0", "false", "no", "off":
+			logToStdout = false
+		}
+	}
+	writers := make([]io.Writer, 0, 2)
+	if logToStdout {
+		writers = append(writers, os.Stdout)
+	}
+	writers = append(writers, limitedWriter)
+	mw := io.MultiWriter(writers...)
 	Logger = log.New(mw, "", log.Ldate|log.Ltime|log.Lshortfile)
 	Infof("logger initialized, output=%s", logPath)
 }

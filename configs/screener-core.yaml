@@ -81,7 +81,7 @@ dex_configs:
     ping_interval: 25                                             # интервал ping/pong (секунды)
     max_meta_workers: 8                                           # максимальное число параллельных eth_call для метаданных
     swap_only: true                                               # true — декодируем только Swap события
-    log_all_events: false                                         # включает детальный лог raw-фреймов
+    log_all_events: true                                          # включает детальный лог raw-фреймов
     stop_on_ack_error: true                                       # аварийно останавливаемся, если ack вернул ошибку
     pools_source:
       file: "ticker_source/geckoterminal_pools.json"             # общий список пулов, фильтруемый по dex/network

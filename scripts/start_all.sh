@@ -259,7 +259,7 @@ start_local_app() {
   fi
 
   info "Starting local screener-core in background..."
-  nohup "$APP_BIN" >> "$LOG_FILE" 2>&1 &
+  SCR_LOG_STDOUT=false nohup "$APP_BIN" >/dev/null 2>>"$LOG_FILE" &
   local msys_pid=$!
   sleep 0.2
   write_pid_files "$msys_pid"
