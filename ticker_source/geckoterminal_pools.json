@@ -3,6 +3,7 @@
   "sources": [
     "dexscreener",
     "geckoterminal",
+    "pool_manager_rpc",
     "subgraph"
   ],
   "entries": [
@@ -11,13 +12,13 @@
       "dex": "uniswap_v4",
       "network": "base",
       "token_address": "0x00000000a22c618fd6b4d7e9a335c4b96b189a38",
-      "pool_address": "0xfad2469b92c68806df21ae007513fd10af984c386c097f1ae4e2f0aa3d953e0b",
+      "pool_address": "0x66e116d58bb0abb583bee3d2f1ece4d461610b286015467e7bbbd843798a90b0",
       "pair_name": "TOWNS/ETH",
-      "pool_created_at": "2025-08-05T14:23:35+00:00",
+      "pool_created_at": "2025-09-19T06:24:27+00:00",
       "base_token": "0x00000000a22c618fd6b4d7e9a335c4b96b189a38",
-      "quote_token": "0x0000000000000000000000000000000000000000",
+      "quote_token": "0x1111111111166b7fe7bd91427724b487980afc69",
       "source": "dexscreener",
-      "liquidity_usd": 902621.1,
+      "liquidity_usd": 2.51,
       "token0": {
         "address": "0x00000000a22c618fd6b4d7e9a335c4b96b189a38",
         "symbol": "TOWNS",
@@ -25,20 +26,21 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x1111111111166b7fe7bd91427724b487980afc69",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
       },
-      "pool_id": "0xfad2469b92c68806df21ae007513fd10af984c386c097f1ae4e2f0aa3d953e0b",
+      "pool_id": "0x66e116d58bb0abb583bee3d2f1ece4d461610b286015467e7bbbd843798a90b0",
       "pool_key": {
         "currency0": "0x00000000a22c618fd6b4d7e9a335c4b96b189a38",
-        "currency1": "0x0000000000000000000000000000000000000000",
-        "fee": null,
-        "tickSpacing": null,
-        "hooks": null,
-        "status": "unavailable"
-      }
+        "currency1": "0x1111111111166b7fe7bd91427724b487980afc69",
+        "fee": 3000,
+        "tickSpacing": 60,
+        "hooks": "0x0000000000000000000000000000000000000000",
+        "status": "ok"
+      },
+      "pool_manager": "0x498581ff718922c3f8e6a244956af099b2652b2b"
     },
     {
       "symbol": "BRETT",
@@ -51,62 +53,64 @@
       "base_token": "0x532f27101965dd16442e59d40670faf5ebb142e4",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 257067.6,
+      "liquidity_usd": 281235.2,
       "token0": {
-        "address": "0x532f27101965dd16442e59d40670faf5ebb142e4",
+        "address": "0x0000000000000000000000000000000000000000",
         "symbol": "BRETT",
         "decimals": 18,
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x532f27101965dd16442e59d40670faf5ebb142e4",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
       },
       "pool_id": "0x27402edf3c6a6d6b5a279dfc7a2c8cbacebbfdfc3559f7c03d6971b09126a9f3",
       "pool_key": {
-        "currency0": "0x532f27101965dd16442e59d40670faf5ebb142e4",
-        "currency1": "0x0000000000000000000000000000000000000000",
-        "fee": null,
-        "tickSpacing": null,
-        "hooks": null,
-        "status": "unavailable"
-      }
+        "currency0": "0x0000000000000000000000000000000000000000",
+        "currency1": "0x532f27101965dd16442e59d40670faf5ebb142e4",
+        "fee": 3000,
+        "tickSpacing": 60,
+        "hooks": "0x0000000000000000000000000000000000000000",
+        "status": "ok"
+      },
+      "pool_manager": "0x498581ff718922c3f8e6a244956af099b2652b2b"
     },
     {
       "symbol": "AVNT",
       "dex": "uniswap_v4",
       "network": "base",
       "token_address": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
-      "pool_address": "0x46e595a9e7bc10f66e3422656591f1ee66ca14be5c2e74ed21b699337130a647",
+      "pool_address": "0x0f62c69be79b91a0ce2c175dd6e98318031fb117018883bc661c0228335a4c7c",
       "pair_name": "OPENX/AVNT",
-      "pool_created_at": "2025-09-10T20:08:15+00:00",
-      "base_token": "0xa66b448f97cbf58d12f00711c02bac2d9eac6f7f",
-      "quote_token": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
+      "pool_created_at": "2025-09-14T08:56:15+00:00",
+      "base_token": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
+      "quote_token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "source": "dexscreener",
-      "liquidity_usd": 320379.01,
+      "liquidity_usd": 17342.18,
       "token0": {
-        "address": "0xa66b448f97cbf58d12f00711c02bac2d9eac6f7f",
+        "address": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
         "symbol": "OPENX",
         "decimals": 18,
         "source": "rpc"
       },
       "token1": {
-        "address": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
+        "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
         "symbol": "AVNT",
         "decimals": 18,
         "source": "rpc"
       },
-      "pool_id": "0x46e595a9e7bc10f66e3422656591f1ee66ca14be5c2e74ed21b699337130a647",
+      "pool_id": "0x0f62c69be79b91a0ce2c175dd6e98318031fb117018883bc661c0228335a4c7c",
       "pool_key": {
-        "currency0": "0xa66b448f97cbf58d12f00711c02bac2d9eac6f7f",
-        "currency1": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
-        "fee": null,
-        "tickSpacing": null,
-        "hooks": null,
-        "status": "unavailable"
-      }
+        "currency0": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
+        "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "fee": 46000,
+        "tickSpacing": 920,
+        "hooks": "0x0000000000000000000000000000000000000000",
+        "status": "ok"
+      },
+      "pool_manager": "0x498581ff718922c3f8e6a244956af099b2652b2b"
     },
     {
       "symbol": "ETHFI",
@@ -119,28 +123,29 @@
       "base_token": "0x6c240dda6b5c336df09a4d011139beaaa1ea2aa2",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 300091.76,
+      "liquidity_usd": 317339.12,
       "token0": {
-        "address": "0x6c240dda6b5c336df09a4d011139beaaa1ea2aa2",
+        "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETHFI",
         "decimals": 18,
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x6c240dda6b5c336df09a4d011139beaaa1ea2aa2",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
       },
       "pool_id": "0x3de2a8642859649d22d4a6f6a87b1441c51fdf8bf2bcd8864628a6a0f7119843",
       "pool_key": {
-        "currency0": "0x6c240dda6b5c336df09a4d011139beaaa1ea2aa2",
-        "currency1": "0x0000000000000000000000000000000000000000",
-        "fee": null,
-        "tickSpacing": null,
-        "hooks": null,
-        "status": "unavailable"
-      }
+        "currency0": "0x0000000000000000000000000000000000000000",
+        "currency1": "0x6c240dda6b5c336df09a4d011139beaaa1ea2aa2",
+        "fee": 3000,
+        "tickSpacing": 60,
+        "hooks": "0x0000000000000000000000000000000000000000",
+        "status": "ok"
+      },
+      "pool_manager": "0x498581ff718922c3f8e6a244956af099b2652b2b"
     },
     {
       "symbol": "USDC",
@@ -153,7 +158,7 @@
       "base_token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "quote_token": "0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca",
       "source": "dexscreener",
-      "liquidity_usd": 907362.58,
+      "liquidity_usd": 907381.35,
       "token0": {
         "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
         "symbol": "USDC",
@@ -170,11 +175,12 @@
       "pool_key": {
         "currency0": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
         "currency1": "0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca",
-        "fee": null,
-        "tickSpacing": null,
-        "hooks": null,
-        "status": "unavailable"
-      }
+        "fee": 10,
+        "tickSpacing": 1,
+        "hooks": "0x4440854b2d02c57a0dc5c58b7a884562d875c0c4",
+        "status": "ok"
+      },
+      "pool_manager": "0x498581ff718922c3f8e6a244956af099b2652b2b"
     },
     {
       "symbol": "DOT",
@@ -187,15 +193,15 @@
       "base_token": "0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 920862.93,
+      "liquidity_usd": 1206124.47,
       "token0": {
-        "address": "0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8",
+        "address": "0x0000000000000000000000000000000000000000",
         "symbol": "DOT",
         "decimals": 18,
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -204,11 +210,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8",
-        "fee": "3000",
-        "tickSpacing": "60",
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x498581ff718922c3f8e6a244956af099b2652b2b"
     },
     {
       "symbol": "CRV",
@@ -221,28 +228,29 @@
       "base_token": "0x8ee73c484a26e0a5df2ee2a4960b789967dd0415",
       "quote_token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "source": "dexscreener",
-      "liquidity_usd": 257919.67,
+      "liquidity_usd": 276706.74,
       "token0": {
-        "address": "0x8ee73c484a26e0a5df2ee2a4960b789967dd0415",
+        "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
         "symbol": "CRV",
         "decimals": 18,
         "source": "rpc"
       },
       "token1": {
-        "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "address": "0x8ee73c484a26e0a5df2ee2a4960b789967dd0415",
         "symbol": "USDC",
         "decimals": 6,
         "source": "rpc"
       },
       "pool_id": "0x7188cfc95722e160dc39cf32fbc3b44f0e0bc95319a152f659b7d6bfca8f4620",
       "pool_key": {
-        "currency0": "0x8ee73c484a26e0a5df2ee2a4960b789967dd0415",
-        "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
-        "hooks": null,
-        "status": "unavailable"
-      }
+        "currency0": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "currency1": "0x8ee73c484a26e0a5df2ee2a4960b789967dd0415",
+        "fee": 3000,
+        "tickSpacing": 60,
+        "hooks": "0x0000000000000000000000000000000000000000",
+        "status": "ok"
+      },
+      "pool_manager": "0x498581ff718922c3f8e6a244956af099b2652b2b"
     },
     {
       "symbol": "ICNT",
@@ -255,28 +263,29 @@
       "base_token": "0xe0cd4cacddcbf4f36e845407ce53e87717b6601d",
       "quote_token": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
       "source": "dexscreener",
-      "liquidity_usd": 291246.07,
+      "liquidity_usd": 350258.91,
       "token0": {
-        "address": "0xe0cd4cacddcbf4f36e845407ce53e87717b6601d",
+        "address": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
         "symbol": "ICNT",
         "decimals": 18,
         "source": "rpc"
       },
       "token1": {
-        "address": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+        "address": "0xe0cd4cacddcbf4f36e845407ce53e87717b6601d",
         "symbol": "cbBTC",
         "decimals": 8,
         "source": "rpc"
       },
       "pool_id": "0x595b32168ff15541c8a3fd24bae714cda44560cb3c89e077b4d6e13469cf3bd2",
       "pool_key": {
-        "currency0": "0xe0cd4cacddcbf4f36e845407ce53e87717b6601d",
-        "currency1": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
-        "fee": null,
-        "tickSpacing": null,
-        "hooks": null,
-        "status": "unavailable"
-      }
+        "currency0": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+        "currency1": "0xe0cd4cacddcbf4f36e845407ce53e87717b6601d",
+        "fee": 20000,
+        "tickSpacing": 400,
+        "hooks": "0x0000000000000000000000000000000000000000",
+        "status": "ok"
+      },
+      "pool_manager": "0x498581ff718922c3f8e6a244956af099b2652b2b"
     },
     {
       "symbol": "SKL",
@@ -592,7 +601,7 @@
       "base_token": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
       "quote_token": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "source": "dexscreener",
-      "liquidity_usd": 1639566.67,
+      "liquidity_usd": 1659860.55,
       "token0": {
         "address": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
         "symbol": "DOLO",
@@ -609,45 +618,47 @@
       "pool_key": {
         "currency0": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
         "currency1": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "fee": "3000",
-        "tickSpacing": "60",
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "DOLO",
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
-      "pool_address": "0x6f6f24b5a1cd819382379eb032466b8bac7ea0697cfcf31b7350b55ff4f1c472",
+      "pool_address": "0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea",
       "pair_name": "DOLO/ETH",
-      "pool_created_at": "2025-04-24T12:07:11+00:00",
+      "pool_created_at": "2025-05-26T16:13:35+00:00",
       "base_token": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
-      "quote_token": "0x0000000000000000000000000000000000000000",
+      "quote_token": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "source": "dexscreener",
-      "liquidity_usd": 317649.07,
+      "liquidity_usd": 1659860.55,
       "token0": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
         "symbol": "ETH",
         "decimals": "18",
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
       },
-      "pool_id": "0x6f6f24b5a1cd819382379eb032466b8bac7ea0697cfcf31b7350b55ff4f1c472",
+      "pool_id": "0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea",
       "pool_key": {
-        "currency0": "0x0000000000000000000000000000000000000000",
-        "currency1": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
-        "fee": "10000",
-        "tickSpacing": "200",
+        "currency0": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
+        "currency1": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "LA",
@@ -762,7 +773,7 @@
       "base_token": "0x111111111117dc0aa78b770fa6a738034120c302",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 351803.58,
+      "liquidity_usd": 365933.31,
       "token0": {
         "address": "0x111111111117dc0aa78b770fa6a738034120c302",
         "symbol": "1INCH",
@@ -830,7 +841,7 @@
       "base_token": "0x111111111117dc0aa78b770fa6a738034120c302",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 1342404.79,
+      "liquidity_usd": 1523972.74,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -1100,7 +1111,7 @@
       "base_token": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 8282733.51,
+      "liquidity_usd": 8408805.29,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -1372,7 +1383,7 @@
       "base_token": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 631333.21,
+      "liquidity_usd": 652901.75,
       "token0": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
         "symbol": "UNI",
@@ -1406,7 +1417,7 @@
       "base_token": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
       "quote_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "source": "dexscreener",
-      "liquidity_usd": 1123479.02,
+      "liquidity_usd": 1151114.22,
       "token0": {
         "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
         "symbol": "UNI",
@@ -1910,7 +1921,7 @@
       "base_token": "0x3b50805453023a91a8bf641e279401a0b23fa6f9",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 325160.22,
+      "liquidity_usd": 389672.33,
       "token0": {
         "address": "0x3b50805453023a91a8bf641e279401a0b23fa6f9",
         "symbol": "REZ",
@@ -2011,7 +2022,7 @@
       "base_token": "0x44108f0223a3c3028f5fe7aec7f9bb2e66bef82f",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 381361.16,
+      "liquidity_usd": 381721.2,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -2019,7 +2030,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x44108f0223a3c3028f5fe7aec7f9bb2e66bef82f",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -2028,11 +2039,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0x44108f0223a3c3028f5fe7aec7f9bb2e66bef82f",
-        "fee": "10000",
-        "tickSpacing": "100",
+        "fee": 10000,
+        "tickSpacing": 100,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "ACX",
@@ -2213,7 +2225,7 @@
       "base_token": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "quote_token": "0x6b175474e89094c44da98b954eedeac495271d0f",
       "source": "dexscreener",
-      "liquidity_usd": 537436.11,
+      "liquidity_usd": 467958.07,
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "symbol": "PAXG",
@@ -2230,11 +2242,12 @@
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "currency1": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "fee": "500",
-        "tickSpacing": "10",
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "PAXG",
@@ -2314,7 +2327,7 @@
       "base_token": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 787655.96,
+      "liquidity_usd": 368658.36,
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "symbol": "PAXG",
@@ -2483,7 +2496,7 @@
       "base_token": "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 1570935.65,
+      "liquidity_usd": 1794244.1,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -2491,7 +2504,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -2500,11 +2513,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
-        "fee": "3000",
-        "tickSpacing": "40",
+        "fee": 3000,
+        "tickSpacing": 40,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "QNT",
@@ -2551,7 +2565,7 @@
       "base_token": "0x4b9278b94a1112cad404048903b8d343a810b07e",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 245130.81,
+      "liquidity_usd": 227293.11,
       "token0": {
         "address": "0x4b9278b94a1112cad404048903b8d343a810b07e",
         "symbol": "HIFI",
@@ -2568,11 +2582,12 @@
       "pool_key": {
         "currency0": "0x4b9278b94a1112cad404048903b8d343a810b07e",
         "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "fee": "100",
-        "tickSpacing": "1",
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "PLUME",
@@ -2619,7 +2634,7 @@
       "base_token": "0x4c1746a800d224393fe2470c70a35717ed4ea5f1",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 1400733.29,
+      "liquidity_usd": 1453617.85,
       "token0": {
         "address": "0x4c1746a800d224393fe2470c70a35717ed4ea5f1",
         "symbol": "PLUME",
@@ -2647,13 +2662,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-      "pool_address": "0x2bcfb83929d023f4fb608b8d71e881b7ce68c2894b3ccf4fe6ba4f8e5f286333",
+      "pool_address": "0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7",
       "pair_name": "USDe/USDT",
-      "pool_created_at": "2025-08-05T09:40:47+00:00",
+      "pool_created_at": "2025-10-01T02:03:11+00:00",
       "base_token": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
       "quote_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "source": "dexscreener",
-      "liquidity_usd": 302537.4,
+      "liquidity_usd": 28336420.21,
       "token0": {
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "symbol": "USDe",
@@ -2666,15 +2681,16 @@
         "decimals": "6",
         "source": "rpc"
       },
-      "pool_id": "0x2bcfb83929d023f4fb608b8d71e881b7ce68c2894b3ccf4fe6ba4f8e5f286333",
+      "pool_id": "0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7",
       "pool_key": {
         "currency0": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "currency1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "fee": "100",
-        "tickSpacing": "1",
-        "hooks": "0x4440854b2d02c57a0dc5c58b7a884562d875c0c4",
+        "fee": 45,
+        "tickSpacing": 1,
+        "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "USDE",
@@ -2749,13 +2765,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-      "pool_address": "0xaae9da4a878406eb1de54efac30e239fd56d54fb8051e59f6fee529bc9609b3b",
+      "pool_address": "0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7",
       "pair_name": "USDe/USDT",
-      "pool_created_at": "2025-08-04T13:21:23+00:00",
+      "pool_created_at": "2025-10-01T02:03:11+00:00",
       "base_token": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
       "quote_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "source": "dexscreener",
-      "liquidity_usd": 26888953.24,
+      "liquidity_usd": 28336420.21,
       "token0": {
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "symbol": "USDe",
@@ -2768,28 +2784,29 @@
         "decimals": "6",
         "source": "rpc"
       },
-      "pool_id": "0xaae9da4a878406eb1de54efac30e239fd56d54fb8051e59f6fee529bc9609b3b",
+      "pool_id": "0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7",
       "pool_key": {
         "currency0": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "currency1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "fee": "63",
-        "tickSpacing": "1",
+        "fee": 45,
+        "tickSpacing": 1,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "USDE",
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-      "pool_address": "0xce93ea3914c62e0008348cf39fd006e130e7c503935fb01d154b971c8663f4fb",
+      "pool_address": "0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7",
       "pair_name": "USDe/USDT",
-      "pool_created_at": "2025-08-26T11:21:59+00:00",
+      "pool_created_at": "2025-10-01T02:03:11+00:00",
       "base_token": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
       "quote_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "source": "dexscreener",
-      "liquidity_usd": 5394114.49,
+      "liquidity_usd": 28336420.21,
       "token0": {
         "address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "symbol": "USDe",
@@ -2802,15 +2819,16 @@
         "decimals": "6",
         "source": "rpc"
       },
-      "pool_id": "0xce93ea3914c62e0008348cf39fd006e130e7c503935fb01d154b971c8663f4fb",
+      "pool_id": "0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7",
       "pool_key": {
         "currency0": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
         "currency1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "fee": "10",
-        "tickSpacing": "1",
-        "hooks": "0x4440854b2d02c57a0dc5c58b7a884562d875c0c4",
+        "fee": 45,
+        "tickSpacing": 1,
+        "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "USDE",
@@ -2857,7 +2875,7 @@
       "base_token": "0x4d1c297d39c5c1277964d0e3f8aa901493664530",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 554637.78,
+      "liquidity_usd": 504207.96,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -2865,7 +2883,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x4d1c297d39c5c1277964d0e3f8aa901493664530",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -2874,11 +2892,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0x4d1c297d39c5c1277964d0e3f8aa901493664530",
-        "fee": "10000",
-        "tickSpacing": "100",
+        "fee": 10000,
+        "tickSpacing": 100,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "PUFFER",
@@ -2993,7 +3012,7 @@
       "base_token": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
       "quote_token": "0xd533a949740bb3306d119cc777fa900ba034cd52",
       "source": "dexscreener",
-      "liquidity_usd": 303811.69,
+      "liquidity_usd": 297555.13,
       "token0": {
         "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
         "symbol": "CVX",
@@ -3129,7 +3148,7 @@
       "base_token": "0x514910771af9ca656af840dff83e8264ecf986ca",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 1247091.15,
+      "liquidity_usd": 1440003.0,
       "token0": {
         "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
         "symbol": "LINK",
@@ -3225,13 +3244,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0x514910771af9ca656af840dff83e8264ecf986ca",
-      "pool_address": "0x65640a77f15c44d43d7e71670ff5b0f7c6a57f08d3d54ddceaac383b70516988",
+      "pool_address": "0xb2b5618903d74bbac9e9049a035c3827afc4487cde3b994a1568b050f4c8e2e4",
       "pair_name": "LINK/ETH",
-      "pool_created_at": "2025-08-15T04:54:11+00:00",
+      "pool_created_at": "2025-01-30T23:08:47+00:00",
       "base_token": "0x514910771af9ca656af840dff83e8264ecf986ca",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 211600.23,
+      "liquidity_usd": 12484696.68,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -3244,7 +3263,7 @@
         "decimals": 18,
         "source": "native"
       },
-      "pool_id": "0x65640a77f15c44d43d7e71670ff5b0f7c6a57f08d3d54ddceaac383b70516988",
+      "pool_id": "0xb2b5618903d74bbac9e9049a035c3827afc4487cde3b994a1568b050f4c8e2e4",
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0x514910771af9ca656af840dff83e8264ecf986ca",
@@ -3332,7 +3351,7 @@
       "base_token": "0x514910771af9ca656af840dff83e8264ecf986ca",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 11614949.39,
+      "liquidity_usd": 12484696.68,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -3535,7 +3554,7 @@
       "base_token": "0x56072c95faa701256059aa122697b133aded9279",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 720477.03,
+      "liquidity_usd": 732671.16,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -3569,7 +3588,7 @@
       "base_token": "0x56072c95faa701256059aa122697b133aded9279",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 220834.03,
+      "liquidity_usd": 226504.04,
       "token0": {
         "address": "0x56072c95faa701256059aa122697b133aded9279",
         "symbol": "SKY",
@@ -3586,11 +3605,12 @@
       "pool_key": {
         "currency0": "0x56072c95faa701256059aa122697b133aded9279",
         "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "fee": "10000",
-        "tickSpacing": "200",
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "ENA",
@@ -3637,7 +3657,7 @@
       "base_token": "0x57e114b691db790c35207b2e685d4a43181e6061",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 524621.53,
+      "liquidity_usd": 365023.84,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -3807,7 +3827,7 @@
       "base_token": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 4281683.69,
+      "liquidity_usd": 4589723.17,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -3815,7 +3835,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -3824,11 +3844,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
-        "fee": "2999",
-        "tickSpacing": "60",
+        "fee": 2999,
+        "tickSpacing": 60,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "POWR",
@@ -3869,13 +3890,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
-      "pool_address": "0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1",
+      "pool_address": "0xf4522df8ec238015cd11f3b1af87aa15f94af8b1198f2f30a310ddc3068bba6c",
       "pair_name": "PENDLE/LDO",
-      "pool_created_at": "2025-04-22T05:14:11+00:00",
-      "base_token": "0x808507121b80c02388fad14726482e061b8da827",
-      "quote_token": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+      "pool_created_at": "2025-02-06T11:06:47+00:00",
+      "base_token": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+      "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 505819.12,
+      "liquidity_usd": 94776.6,
       "token0": {
         "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
         "symbol": "LDO",
@@ -3888,7 +3909,7 @@
         "decimals": "18",
         "source": "rpc"
       },
-      "pool_id": "0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1",
+      "pool_id": "0xf4522df8ec238015cd11f3b1af87aa15f94af8b1198f2f30a310ddc3068bba6c",
       "pool_key": {
         "currency0": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
         "currency1": "0x808507121b80c02388fad14726482e061b8da827",
@@ -3977,7 +3998,7 @@
       "base_token": "0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 802312.97,
+      "liquidity_usd": 791460.82,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -3985,7 +4006,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -3994,11 +4015,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f",
-        "fee": "3000",
-        "tickSpacing": "60",
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "ES",
@@ -4180,7 +4202,7 @@
       "base_token": "0x643c4e15d7d62ad0abec4a9bd4b001aa3ef52d66",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 3480368.29,
+      "liquidity_usd": 3535493.64,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -4282,7 +4304,7 @@
       "base_token": "0x68749665ff8d2d112fa859aa293f07a622782f38",
       "quote_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "source": "dexscreener",
-      "liquidity_usd": 252237.37,
+      "liquidity_usd": 96685.81,
       "token0": {
         "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
         "symbol": "XAUt",
@@ -4316,7 +4338,7 @@
       "base_token": "0x68749665ff8d2d112fa859aa293f07a622782f38",
       "quote_token": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "source": "dexscreener",
-      "liquidity_usd": 1686070.56,
+      "liquidity_usd": 1846510.5,
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "symbol": "PAXG",
@@ -4344,13 +4366,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-      "pool_address": "0x5c1a9a7329913354597817638e615e0ecb38ae13679125eb1a3b5953ed4612d4",
+      "pool_address": "0x4bb2f1067164203bb9007338c523fa7c2fc69bc458c277d285a19650e8ef2239",
       "pair_name": "XAUt/PAXG",
-      "pool_created_at": "2025-08-14T06:15:23+00:00",
+      "pool_created_at": "2025-02-05T06:04:11+00:00",
       "base_token": "0x68749665ff8d2d112fa859aa293f07a622782f38",
       "quote_token": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "source": "dexscreener",
-      "liquidity_usd": 221352.83,
+      "liquidity_usd": 1846510.5,
       "token0": {
         "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "symbol": "PAXG",
@@ -4363,7 +4385,7 @@
         "decimals": 18,
         "source": "rpc"
       },
-      "pool_id": "0x5c1a9a7329913354597817638e615e0ecb38ae13679125eb1a3b5953ed4612d4",
+      "pool_id": "0x4bb2f1067164203bb9007338c523fa7c2fc69bc458c277d285a19650e8ef2239",
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "currency1": "0x68749665ff8d2d112fa859aa293f07a622782f38",
@@ -4588,7 +4610,7 @@
       "base_token": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 646896.88,
+      "liquidity_usd": 510325.75,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -5465,7 +5487,7 @@
       "base_token": "0x77146784315ba81904d654466968e3a7c196d1f3",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 565149.91,
+      "liquidity_usd": 536363.29,
       "token0": {
         "address": "0x77146784315ba81904d654466968e3a7c196d1f3",
         "symbol": "TREE",
@@ -5482,11 +5504,12 @@
       "pool_key": {
         "currency0": "0x77146784315ba81904d654466968e3a7c196d1f3",
         "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "fee": "10000",
-        "tickSpacing": "100",
+        "fee": 10000,
+        "tickSpacing": 100,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "FORTH",
@@ -5635,7 +5658,7 @@
       "base_token": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 635562.54,
+      "liquidity_usd": 512302.85,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -5669,7 +5692,7 @@
       "base_token": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 280345.59,
+      "liquidity_usd": 326875.12,
       "token0": {
         "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
         "symbol": "AAVE",
@@ -5941,7 +5964,7 @@
       "base_token": "0x808507121b80c02388fad14726482e061b8da827",
       "quote_token": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
       "source": "dexscreener",
-      "liquidity_usd": 505819.12,
+      "liquidity_usd": 521611.14,
       "token0": {
         "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
         "symbol": "LDO",
@@ -6179,7 +6202,7 @@
       "base_token": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "quote_token": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
       "source": "dexscreener",
-      "liquidity_usd": 2189774.34,
+      "liquidity_usd": 2056938.63,
       "token0": {
         "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "symbol": "USD1",
@@ -6196,11 +6219,12 @@
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "currency1": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "fee": "9900",
-        "tickSpacing": "198",
+        "fee": 9900,
+        "tickSpacing": 198,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "USD1",
@@ -6414,7 +6438,7 @@
       "base_token": "0x94314a14df63779c99c0764a30e0cd22fa78fc0e",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 320297.12,
+      "liquidity_usd": 319627.78,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -6651,7 +6675,7 @@
       "base_token": "0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 953739.24,
+      "liquidity_usd": 1021392.53,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -6747,13 +6771,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "pool_address": "0x3b1bd35a555160a9b60c7524db56029c2025ab93b69d97d33ca3f1c23b6494ad",
+      "pool_address": "0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47",
       "pair_name": "USDC/USDT",
-      "pool_created_at": "2025-05-23T08:02:35+00:00",
+      "pool_created_at": "2025-04-01T02:10:47+00:00",
       "base_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "quote_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "source": "dexscreener",
-      "liquidity_usd": 999826.92,
+      "liquidity_usd": 24786110.04,
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
@@ -6766,7 +6790,7 @@
         "decimals": "6",
         "source": "rpc"
       },
-      "pool_id": "0x3b1bd35a555160a9b60c7524db56029c2025ab93b69d97d33ca3f1c23b6494ad",
+      "pool_id": "0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47",
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "currency1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -6855,7 +6879,7 @@
       "base_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "quote_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "source": "dexscreener",
-      "liquidity_usd": 24488332.99,
+      "liquidity_usd": 24786110.04,
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
@@ -7019,13 +7043,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "pool_address": "0xe018f09af38956affdfeab72c2cefbcd4e6fee44d09df7525ec9dba3e51356a5",
+      "pool_address": "0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47",
       "pair_name": "USDC/USDT",
-      "pool_created_at": "2025-01-28T00:48:47+00:00",
+      "pool_created_at": "2025-04-01T02:10:47+00:00",
       "base_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "quote_token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "source": "dexscreener",
-      "liquidity_usd": 764916.44,
+      "liquidity_usd": 24786110.04,
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
@@ -7038,7 +7062,7 @@
         "decimals": "6",
         "source": "rpc"
       },
-      "pool_id": "0xe018f09af38956affdfeab72c2cefbcd4e6fee44d09df7525ec9dba3e51356a5",
+      "pool_id": "0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47",
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "currency1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -7294,7 +7318,7 @@
       "base_token": "0xb0ffa8000886e57f86dd5264b9582b2ad87b2b91",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 485679.23,
+      "liquidity_usd": 536963.57,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -7302,7 +7326,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0xb0ffa8000886e57f86dd5264b9582b2ad87b2b91",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -7311,11 +7335,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0xb0ffa8000886e57f86dd5264b9582b2ad87b2b91",
-        "fee": "3000",
-        "tickSpacing": "50",
+        "fee": 3000,
+        "tickSpacing": 50,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "W",
@@ -7565,7 +7590,7 @@
       "base_token": "0xba5bde662c17e2adff1075610382b9b691296350",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 239181.57,
+      "liquidity_usd": 245221.44,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -7870,7 +7895,7 @@
       "base_token": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 659531.64,
+      "liquidity_usd": 714069.05,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -7972,7 +7997,7 @@
       "base_token": "0xc20059e0317de91738d13af027dfc4a50781b066",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 870993.32,
+      "liquidity_usd": 787970.86,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -7980,7 +8005,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0xc20059e0317de91738d13af027dfc4a50781b066",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -7989,11 +8014,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0xc20059e0317de91738d13af027dfc4a50781b066",
-        "fee": "3000",
-        "tickSpacing": "60",
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "SPK",
@@ -8040,7 +8066,7 @@
       "base_token": "0xc20059e0317de91738d13af027dfc4a50781b066",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 440406.83,
+      "liquidity_usd": 399020.11,
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
@@ -8057,11 +8083,12 @@
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "currency1": "0xc20059e0317de91738d13af027dfc4a50781b066",
-        "fee": "10000",
-        "tickSpacing": "200",
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "RED",
@@ -8074,7 +8101,7 @@
       "base_token": "0xc43c6bfeda065fe2c4c11765bf838789bd0bb5de",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 795103.13,
+      "liquidity_usd": 870651.67,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -8082,7 +8109,7 @@
         "source": "coingecko"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0xc43c6bfeda065fe2c4c11765bf838789bd0bb5de",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -8091,11 +8118,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0xc43c6bfeda065fe2c4c11765bf838789bd0bb5de",
-        "fee": "10000",
-        "tickSpacing": "100",
+        "fee": 10000,
+        "tickSpacing": 100,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "USUAL",
@@ -8305,13 +8333,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
-      "pool_address": "0x4d83b92449ef7bf2054b09840b78498530b0a9e5a1f9f632c47f7866c29a7711",
+      "pool_address": "0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96",
       "pair_name": "CRYO/BIO",
-      "pool_created_at": "2025-04-23T03:47:35+00:00",
-      "base_token": "0xf4308b0263723b121056938c2172868e408079d0",
-      "quote_token": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
+      "pool_created_at": "2025-02-07T01:55:35+00:00",
+      "base_token": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
+      "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 458612.22,
+      "liquidity_usd": 2051412.2,
       "token0": {
         "address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
         "symbol": "BIO",
@@ -8324,7 +8352,7 @@
         "decimals": "18",
         "source": "coingecko"
       },
-      "pool_id": "0x4d83b92449ef7bf2054b09840b78498530b0a9e5a1f9f632c47f7866c29a7711",
+      "pool_id": "0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96",
       "pool_key": {
         "currency0": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
         "currency1": "0xf4308b0263723b121056938c2172868e408079d0",
@@ -8373,13 +8401,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
-      "pool_address": "0xbaf08f27fcef85bdc00ff005c08981d06f01e35aa5c5cb4631a0bcb2484ae3e3",
+      "pool_address": "0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96",
       "pair_name": "QBIO/BIO",
-      "pool_created_at": "2025-07-20T06:03:23+00:00",
-      "base_token": "0x3e6a1b21bd267677fa49be6425aebe2fc0f89bde",
-      "quote_token": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
+      "pool_created_at": "2025-02-07T01:55:35+00:00",
+      "base_token": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
+      "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 227395.6,
+      "liquidity_usd": 2051412.2,
       "token0": {
         "address": "0x3e6a1b21bd267677fa49be6425aebe2fc0f89bde",
         "symbol": "QBIO",
@@ -8392,7 +8420,7 @@
         "decimals": "18",
         "source": "coingecko"
       },
-      "pool_id": "0xbaf08f27fcef85bdc00ff005c08981d06f01e35aa5c5cb4631a0bcb2484ae3e3",
+      "pool_id": "0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96",
       "pool_key": {
         "currency0": "0x3e6a1b21bd267677fa49be6425aebe2fc0f89bde",
         "currency1": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
@@ -8413,7 +8441,7 @@
       "base_token": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 1079924.44,
+      "liquidity_usd": 2051412.2,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -8441,13 +8469,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
-      "pool_address": "0xf612b59da31ffddf3a99e7773abd35ef6a031578f0e7c93e0ee5386e66969b09",
+      "pool_address": "0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96",
       "pair_name": "PSY/BIO",
-      "pool_created_at": "2025-06-03T14:41:11+00:00",
-      "base_token": "0x2196b84eace74867b73fb003aff93c11fce1d47a",
-      "quote_token": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
+      "pool_created_at": "2025-02-07T01:55:35+00:00",
+      "base_token": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
+      "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 431034.61,
+      "liquidity_usd": 2051412.2,
       "token0": {
         "address": "0x2196b84eace74867b73fb003aff93c11fce1d47a",
         "symbol": "PSY",
@@ -8460,7 +8488,7 @@
         "decimals": "18",
         "source": "coingecko"
       },
-      "pool_id": "0xf612b59da31ffddf3a99e7773abd35ef6a031578f0e7c93e0ee5386e66969b09",
+      "pool_id": "0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96",
       "pool_key": {
         "currency0": "0x2196b84eace74867b73fb003aff93c11fce1d47a",
         "currency1": "0xcb1592591996765ec0efc1f92599a19767ee5ffa",
@@ -8514,7 +8542,7 @@
       "base_token": "0xd0ec028a3d21533fdd200838f39c85b03679285d",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 740381.32,
+      "liquidity_usd": 710188.86,
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
@@ -8531,11 +8559,12 @@
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "currency1": "0xd0ec028a3d21533fdd200838f39c85b03679285d",
-        "fee": "1000",
-        "tickSpacing": "20",
+        "fee": 1000,
+        "tickSpacing": 20,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "GALA",
@@ -8683,7 +8712,7 @@
       "base_token": "0xd533a949740bb3306d119cc777fa900ba034cd52",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 290374.58,
+      "liquidity_usd": 311952.61,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -8711,13 +8740,13 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
-      "pool_address": "0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3",
+      "pool_address": "0x540a21655573a3b1d18812d51660b515cafede7ccb1d978c064ba79360916557",
       "pair_name": "CVX/CRV",
-      "pool_created_at": "2025-03-24T23:15:11+00:00",
-      "base_token": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
-      "quote_token": "0xd533a949740bb3306d119cc777fa900ba034cd52",
+      "pool_created_at": "2025-02-15T14:05:47+00:00",
+      "base_token": "0xd533a949740bb3306d119cc777fa900ba034cd52",
+      "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 303811.69,
+      "liquidity_usd": 311952.61,
       "token0": {
         "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
         "symbol": "CVX",
@@ -8730,7 +8759,7 @@
         "decimals": "18",
         "source": "rpc"
       },
-      "pool_id": "0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3",
+      "pool_id": "0x540a21655573a3b1d18812d51660b515cafede7ccb1d978c064ba79360916557",
       "pool_key": {
         "currency0": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
         "currency1": "0xd533a949740bb3306d119cc777fa900ba034cd52",
@@ -8887,7 +8916,7 @@
       "base_token": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
       "quote_token": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
       "source": "dexscreener",
-      "liquidity_usd": 1877891.19,
+      "liquidity_usd": 2196070.79,
       "token0": {
         "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
         "symbol": "WBTC",
@@ -8904,11 +8933,12 @@
       "pool_key": {
         "currency0": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
         "currency1": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "fee": "10000",
-        "tickSpacing": "200",
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "WLFI",
@@ -8989,7 +9019,7 @@
       "base_token": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
       "quote_token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "source": "dexscreener",
-      "liquidity_usd": 476651.98,
+      "liquidity_usd": 277447.48,
       "token0": {
         "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
@@ -9006,11 +9036,12 @@
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "currency1": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "fee": "9400",
-        "tickSpacing": "188",
+        "fee": 9400,
+        "tickSpacing": 188,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "WLFI",
@@ -9023,7 +9054,7 @@
       "base_token": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 13735174.71,
+      "liquidity_usd": 16254189.93,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -9031,7 +9062,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -9040,11 +9071,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "fee": "9900",
-        "tickSpacing": "198",
+        "fee": 9900,
+        "tickSpacing": 198,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "WLFI",
@@ -9085,15 +9117,15 @@
       "dex": "uniswap_v4",
       "network": "ethereum",
       "token_address": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-      "pool_address": "0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056",
+      "pool_address": "0x7f2869b24d83f03e0438c045ce24fd18045b2b6cdec47cd7b62e67e2284d1be9",
       "pair_name": "USD1/WLFI",
-      "pool_created_at": "2025-09-06T22:35:59+00:00",
-      "base_token": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-      "quote_token": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
+      "pool_created_at": "2025-08-31T23:29:23+00:00",
+      "base_token": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
+      "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 2189774.34,
+      "liquidity_usd": 16254189.93,
       "token0": {
-        "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
+        "address": "0x0000000000000000000000000000000000000000",
         "symbol": "USD1",
         "decimals": "18",
         "source": "rpc"
@@ -9104,15 +9136,16 @@
         "decimals": "18",
         "source": "rpc"
       },
-      "pool_id": "0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056",
+      "pool_id": "0x7f2869b24d83f03e0438c045ce24fd18045b2b6cdec47cd7b62e67e2284d1be9",
       "pool_key": {
-        "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
+        "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "fee": "9900",
-        "tickSpacing": "198",
+        "fee": 9900,
+        "tickSpacing": 198,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "WLFI",
@@ -9259,7 +9292,7 @@
       "base_token": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 466187.54,
+      "liquidity_usd": 502272.85,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -9267,7 +9300,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -9276,11 +9309,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
-        "fee": "3000",
-        "tickSpacing": "60",
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "COW",
@@ -9427,7 +9461,7 @@
       "base_token": "0xe0f63a424a4439cbe457d80e4f4b51ad25b2c56c",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 527575.11,
+      "liquidity_usd": 670099.93,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -9495,7 +9529,7 @@
       "base_token": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 470665.75,
+      "liquidity_usd": 180015.78,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -10002,7 +10036,7 @@
       "base_token": "0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 267446.49,
+      "liquidity_usd": 290175.18,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -10138,7 +10172,7 @@
       "base_token": "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
       "quote_token": "0x0000000000000000000000000000000000000000",
       "source": "dexscreener",
-      "liquidity_usd": 1500033.42,
+      "liquidity_usd": 1698262.33,
       "token0": {
         "address": "0x0000000000000000000000000000000000000000",
         "symbol": "ETH",
@@ -10146,7 +10180,7 @@
         "source": "rpc"
       },
       "token1": {
-        "address": "0x0000000000000000000000000000000000000000",
+        "address": "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
         "symbol": "ETH",
         "decimals": 18,
         "source": "native"
@@ -10155,11 +10189,12 @@
       "pool_key": {
         "currency0": "0x0000000000000000000000000000000000000000",
         "currency1": "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
-        "fee": "10000",
-        "tickSpacing": "100",
+        "fee": 10000,
+        "tickSpacing": 100,
         "hooks": "0x0000000000000000000000000000000000000000",
         "status": "ok"
-      }
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
     },
     {
       "symbol": "ORBS",
