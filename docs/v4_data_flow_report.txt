@@ -1,0 +1,23 @@
+# Uniswap v4 → Redis Data Path Analysis
+
+## 1. Поток данных внутри коннектора
+- `V4Connector.Run` поднимает websocket, ждёт ack и каждую входящую ноту прокидывает в `handleFrame`, который распознаёт `eth_subscription` и передаёт лог в `handleLog`.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L888-L1093】
+- `handleLog` отфильтровывает только события `Swap` и вызывает `handleSwapEvent` для дальнейшего разбора.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1148-L1188】
+- `handleSwapEvent` декодирует payload, считает цены, вес и затем вызывает `storeSwapMetrics`. Если пул неизвестен (`c.pools` не содержит `poolID`), функция возвращает `false` и обработка завершается **до** публикации котировки.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1095-L1146】【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1238-L1243】
+- Лишь при успешном сохранении метрик и валидных float-ценах (`price1Valid/price0Valid`) вызывается `updatePricing`, которая публикует spot/USDT котировки через `emitSpot/emitUSD` в общий канал `out` (это `dataChannel`).【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1201-L1329】【F:internal/dex/Etherium/Uniswap/v4_connector.go†L317-L343】
+
+## 2. Попадание в общий канал
+- Коннектор запускается из `buildUniswapV4`, где в `ctx.Supervisor` ему передаётся `ctx.DataChannel`; именно в этот канал коннектор кладёт `*pb.MarketData` после `emitSpot/emitUSD`.【F:internal/launcher/register_dex.go†L167-L195】
+- Общий канал создаётся в `cmd/screener-core/main.go` и кладётся в `LaunchContext`, чтобы все биржевые/DEX коннекторы пользовались одной очередью сообщений.【F:cmd/screener-core/main.go†L178-L233】
+
+## 3. Запись в Redis
+- Worker pool читает из `dataChannel`, формирует батч `HSET` и пишет в Redis через `redisClient.HSetBatch`. Одновременно счётчики `totalProcessed` и `perExchange[md.Exchange]` увеличиваются для каждой полученной записи, так что любое сообщение, дошедшее до этой точки, попадёт как в метрики, так и в Redis-пайплайн.【F:cmd/screener-core/main.go†L263-L327】
+
+## 4. Где теряются данные
+- События, пришедшие для пулов, отсутствующих в `c.pools`, отбрасываются в `handleSwapEvent` до публикации в канал (см. `storeSwapMetrics` → `return nil`). Это происходит тихо (через `Debugf`) при неподключённых пулах или несовпадении `pool_id`/`PoolId` из источника.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1095-L1146】【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1238-L1243】
+- Даже для известных пулов публикация зависит от успешного преобразования рациональных цен в `float64`. Если `ratToFloat64` возвращает `false` (NaN/Inf/<=0), `updatePricing` завершится без `emitSpot`, и данные снова не попадут в общий канал.【F:internal/dex/Etherium/Uniswap/v4_connector.go†L1205-L1322】
+
+## 5. Рекомендации по диагностике
+1. Включить `log_all_events: true` или поднять лог-левел до `debug`, чтобы увидеть, для каких `pool_id` срабатывает ветка `!ok` или конвертация цен падает.
+2. Сверить список `pool_id` из `ticker_source/geckoterminal_pools.json` с фактическими `PoolId`, которые отдаёт RPC, и исключить записи без валидных адресов (в логе bootstrap видно множество пулов с `pool_addr=-`).
+3. Добавить счётчик ошибок `conversionErrors`/`unknownPool` в метрики, чтобы отслеживать долю отброшенных свопов прямо на коннекторе.
