@@ -1,143 +1,3 @@
-2025/10/08 19:44:08 logger.go:162: 2025-10-08T19:44:08+03:00 [INFO] logger initialized, output=screner.log
-2025/10/08 19:44:08 main.go:64: 2025-10-08T19:44:08+03:00 [INFO] starting Screener Core - multi-exchange with shared channel
-2025/10/08 19:44:08 main.go:84: 2025-10-08T19:44:08+03:00 [INFO] Assets registry loaded: configs/assets/tokens.yaml
-2025/10/08 19:44:08 client.go:17: 2025-10-08T19:44:08+03:00 [INFO] initializing Redis client: addr=localhost:6379 db=0
-2025/10/08 19:44:08 main.go:92: 2025-10-08T19:44:08+03:00 [INFO] Redis client initialized: localhost:6379
-2025/10/08 19:44:08 main.go:102: 2025-10-08T19:44:08+03:00 [INFO] Exchanges from config: gate, bybit, bitget, okx
-2025/10/08 19:44:08 main.go:123: 2025-10-08T19:44:08+03:00 [INFO] Loaded 150 symbols from ticker_source/geckoterminal_pools.json
-2025/10/08 19:44:08 main.go:149: 2025-10-08T19:44:08+03:00 [INFO] Exchange gate prepared 150 symbols (quote=USDT) from ticker_source/geckoterminal_pools.json
-2025/10/08 19:44:08 main.go:165: 2025-10-08T19:44:08+03:00 [INFO] Exchange gate uses shared pools source (150 base)
-2025/10/08 19:44:08 main.go:149: 2025-10-08T19:44:08+03:00 [INFO] Exchange bybit prepared 150 symbols (quote=USDT) from ticker_source/geckoterminal_pools.json
-2025/10/08 19:44:08 main.go:165: 2025-10-08T19:44:08+03:00 [INFO] Exchange bybit uses shared pools source (150 base)
-2025/10/08 19:44:08 main.go:149: 2025-10-08T19:44:08+03:00 [INFO] Exchange bitget prepared 150 symbols (quote=USDT) from ticker_source/geckoterminal_pools.json
-2025/10/08 19:44:08 main.go:165: 2025-10-08T19:44:08+03:00 [INFO] Exchange bitget uses shared pools source (150 base)
-2025/10/08 19:44:08 main.go:149: 2025-10-08T19:44:08+03:00 [INFO] Exchange okx prepared 150 symbols (quote=USDT) from ticker_source/geckoterminal_pools.json
-2025/10/08 19:44:08 main.go:165: 2025-10-08T19:44:08+03:00 [INFO] Exchange okx uses shared pools source (150 base)
-2025/10/08 19:44:08 graph_pricer.go:126: 2025-10-08T19:44:08+03:00 [INFO] pricing: anchors: network=bsc_mainnet stable=1
-2025/10/08 19:44:08 graph_pricer.go:126: 2025-10-08T19:44:08+03:00 [INFO] pricing: anchors: network=ethereum_mainnet stable=5
-2025/10/08 19:44:08 graph_pricer.go:86: 2025-10-08T19:44:08+03:00 [INFO] pricing: assets registry supplied 6 stable anchors
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor TUSD (0x0000000000085d4780b73119b644ae5ecd22b376)
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor USDT (0x55d398326f99059ff775485246999027b3197955)
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
-2025/10/08 19:44:08 main.go:218: 2025-10-08T19:44:08+03:00 [INFO] Graph pricer enabled for DEX connectors: uniswap_v2, uniswap_v3, uniswap_v4
-2025/10/08 19:44:08 gateio.go:30: 2025-10-08T19:44:08+03:00 [INFO] connecting to Gate WS wss://api.gateio.ws/ws/v4/
-2025/10/08 19:44:08 okx.go:30: 2025-10-08T19:44:08+03:00 [INFO] connecting to OKX WS wss://ws.okx.com:8443/ws/v5/public
-2025/10/08 19:44:08 bybit.go:31: 2025-10-08T19:44:08+03:00 [INFO] connecting to Bybit WS wss://stream.bybit.com/v5/public/spot
-2025/10/08 19:44:08 bitget.go:31: 2025-10-08T19:44:08+03:00 [INFO] connecting to Bitget WS wss://ws.bitget.com/v2/ws/public
-2025/10/08 19:44:08 v2_connector.go:1045: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v2: added 3 hard reference pools
-2025/10/08 19:44:08 v4_connector.go:290: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=true
-2025/10/08 19:44:08 register_dex.go:182: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: launch inline_pools=0 pools_path=ticker_source/geckoterminal_pools.json once=false
-2025/10/08 19:44:08 v4_connector.go:380: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: starting connector run
-2025/10/08 19:44:08 v4_connector.go:356: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: loading pool manager ABI from ABI/Uniswap/V4/UniswapV4PoolManager.json
-2025/10/08 19:44:08 v4_connector.go:373: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: ABI loaded events=10
-2025/10/08 19:44:08 v4_connector.go:443: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: bootstrap pools begin path=ticker_source/geckoterminal_pools.json inline=0
-2025/10/08 19:44:08 v4_connector.go:571: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: loading pools from file=ticker_source/geckoterminal_pools.json
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool SKL / WETH 1% addr=0x12CC685eEb95D3fCDfAe0a996e214e51FA6f7548
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool ICP / WETH 0.05% addr=0x4068038AB5490063a3eAd93B3712Ed082e62bD59
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool OBOL / WETH 1% addr=0x57F52C9faa6D40c5163D76b8D7dD81ddB7c95434
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool AIXBT / WETH 0.3% addr=0x41C9687Bf9074E81816C32c1C12fD6fDF950eB81
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool BAT / WETH 0.3% addr=0xAE614a7a56cB79c04Df2aeBA6f5dAB80A39CA78E
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool DOLO / USDC 0.3% addr=0x003896387666C5c11458EEb3F927B72a11b19783
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool LA / WETH 0.3% addr=0x8cDb1395728161d10aC6D886C557064E01703A71
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool TAIKO / WETH 1% addr=0xe92F2Bec2B40908f18C0777c79fD27f8A6894140
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool 1INCH / UNI 1% addr=0x0619062B988576FE2d39b33fF23Fb1a0330c0ac7
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool 1INCH / USDC 1% addr=0x9feBc984504356225405e26833608b17719c82Ae
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool 1INCH / AAVE 1% addr=0xcb6518667F27e8c652aFb47250a2AaC4d4872c3a
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool 1INCH / WETH 1% addr=0xE931b03260B2854e77e8dA8378A1BC017b13cb97
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool WLD / WETH 1% addr=0x841820459769cd629B10a36FD12E603938cc2679
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool NMR / WETH 0.3% addr=0x4b1F895066058662B9fA885E87a4E4159bE0798a
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool LINEA / USDC 0.01% addr=0xc6360A062aD0cEB937198a6E23FE33494F9c80a8
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool UNI / WETH 0.3% addr=0x1d42064Fc4Beb5F8aAF85F4617AE8b3b5B8Bd801
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool UNI / USDT 0.3% addr=0x3470447f3CecfFAc709D3e783A307790b0208d60
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool UNI / WETH 1% addr=0x360b9726186C0F62cc719450685ce70280774Dc8
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool AAVE / UNI 0.3% addr=0x59c38b6775Ded821f010DbD30eCabdCF84E04756
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:546: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 add pool AAVE / UNI 1% addr=0x82bb4Ca79E5a6Bf93064f043eA3Fabf7a9036596
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:549: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 loaded pools=171 source=ticker_source/geckoterminal_pools.json
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:264: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 assets: registry stables added=1 total=6
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:287: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 assets: WETH address=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:419: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 pools=171 ws=wss://eth-mainnet.g.alchemy.com/v2/ebe***B-
-2025/10/08 19:44:08 v4_connector.go:580: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pools file entries=301
-2025/10/08 19:44:08 v4_connector.go:604: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: skip stable pool pair=USDC/USDT pool_id=0x3b1bd35a555160a9b60c7524db56029c2025ab93b69d97d33ca3f1c23b6494ad token0=USDC token1=USDT
-2025/10/08 19:44:08 v4_connector.go:604: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: skip stable pool pair=USDC/USDT pool_id=0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47 token0=USDC token1=USDT
-2025/10/08 19:44:08 v4_connector.go:604: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: skip stable pool pair=USDC/USDT pool_id=0xe018f09af38956affdfeab72c2cefbcd4e6fee44d09df7525ec9dba3e51356a5 token0=USDC token1=USDT
-2025/10/08 19:44:08 v4_connector.go:613: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pools loaded from file=62 skipped_network=8 filter=ethereum
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=DOLO/USD1 id=0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea pool_addr=- hook=- base=DOLO quote=USD1 canon=DOLOUSD1 dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=DOLO/ETH id=0x6f6f24b5a1cd819382379eb032466b8bac7ea0697cfcf31b7350b55ff4f1c472 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=1INCH/USDC id=0x1ff1224be14c0e69c9e0a3da1c986fcbf48abe5365227700624bc39e9fdde81d pool_addr=- hook=- base=1INCH quote=USDC canon=1INCHUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=1INCH/ETH id=0xbdaa11d7b68b914d68ef4e16103b0d3d68648a7e81e0f5feec4862e7c5fed5e9 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=UNI/ETH id=0x053f6a47ccba79e7d5d623173ed6dd5a31cf19c28bae0fb8276f4506295f90da pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=UNI/USDC id=0x9a5c1d2f4a7a7962a63259de6fcc1afb1d0aa1abdf5d19c23d22fd78953c5167 pool_addr=- hook=- base=UNI quote=USDC canon=UNIUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=UNI/USDT id=0xa20defd792341526615afff100c79c27a635e8693d0cb13c8864a3e04180175a pool_addr=- hook=- base=UNI quote=USDT canon=UNIUSDT dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=REZ/USDC id=0xe7e64a776c0c57da08b21758e556a6704857c0a6f566f60f583ffe261b13baef pool_addr=- hook=- base=REZ quote=USDC canon=REZUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=ACX/ETH id=0x2073f11d7fbeb83fbefb37daac5221c5ba02e724be70a25bf17a98d07747b783 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 graph_pricer.go:190: 2025-10-08T19:44:08+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=PAXG/DAI id=0x6924d7319b4d74d2ce3a52e732ba1ba03d0100f848ce819a21be25b3085e39be pool_addr=- hook=- base=PAXG quote=DAI canon=PAXGDAI dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=PAXG/USDC id=0xcc708109490fc52a42a73adc891367b617255164f35eb575fb428b6cd27c2663 pool_addr=- hook=- base=PAXG quote=USDC canon=PAXGUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=WOO/ETH id=0x8ff6c1e698799b6cdc4e556f18ce6f2f0bd24e9f607d2266207aa2be8640760d pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=HIFI/USDC id=0xf2f4ae6a300b38373c35e7610189e0638b8ba29cc09299838027c7a319962796 pool_addr=- hook=- base=HIFI quote=USDC canon=HIFIUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=PLUME/USDC id=0xf0cd01da66753629340436cee3b26dc4a7d63cbee01e2f2d7c8230a8210526cc pool_addr=- hook=- base=PLUME quote=USDC canon=PLUMEUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=USDE/USDT id=0x2bcfb83929d023f4fb608b8d71e881b7ce68c2894b3ccf4fe6ba4f8e5f286333 pool_addr=- hook=0x4440854b2d02c57a0dc5c58b7a884562d875c0c4 base=USDE quote=USDT canon=USDEUSDT dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=USDE/USDT id=0xaae9da4a878406eb1de54efac30e239fd56d54fb8051e59f6fee529bc9609b3b pool_addr=- hook=- base=USDE quote=USDT canon=USDEUSDT dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=USDE/USDT id=0xce93ea3914c62e0008348cf39fd006e130e7c503935fb01d154b971c8663f4fb pool_addr=- hook=0x4440854b2d02c57a0dc5c58b7a884562d875c0c4 base=USDE quote=USDT canon=USDEUSDT dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=PUFFER/ETH id=0x010a8c81f5fdcf9997afede5ff96c2e8329a8de24aa966c534b1f2416dca3305 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=CVX/CRV id=0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3 pool_addr=- hook=- base=CVX quote=CRV canon=CVXCRV dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=LINK/USDC id=0x50ae33c238824aa1937d5d9f1766c487bca39b548f8d957994e8357eeeca3280 pool_addr=- hook=- base=LINK quote=USDC canon=LINKUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=LINK/ETH id=0x65640a77f15c44d43d7e71670ff5b0f7c6a57f08d3d54ddceaac383b70516988 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=LINK/ETH id=0xb2b5618903d74bbac9e9049a035c3827afc4487cde3b994a1568b050f4c8e2e4 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=SKY/ETH id=0xd218ab0acf68208883aad66173f721948a7436811a3e3805dad06140d257894e pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=SKY/USDC id=0xda7fd1810454613a322e91b654cf310d088065fd51be69baea962bec92dfb901 pool_addr=- hook=- base=SKY quote=USDC canon=SKYUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=ENA/ETH id=0x5b29d38ddffd8514f9716cb9fb25f0ad89775c190505b4058953539007a03409 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=MORPHO/ETH id=0xd9f5cbaeb88b7f0d9b0549257ddd4c46f984e2fc4bccf056cc254b9fe3417fff pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=PENDLE/LDO id=0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1 pool_addr=- hook=- base=LDO quote=PENDLE canon=LDOPENDLE dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=LSK/ETH id=0x6af632b8235f1a9d95a816f7a4090736346b763a8ab4e8327017aaae72d0d1d2 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=SYRUP/ETH id=0x29dfcb94b1ab021ca46442d2b1a3ed3d2268fdc985d2fe9a3b67a6963670ec02 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=XAUT/USDT id=0x1169c8b8f6871acd6dd7a402faaa9b0827aa64067b01353a14c0cd337448f46f pool_addr=- hook=- base=XAUT quote=USDT canon=XAUTUSDT dec0=6 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=XAUT/PAXG id=0x4bb2f1067164203bb9007338c523fa7c2fc69bc458c277d285a19650e8ef2239 pool_addr=- hook=- base=PAXG quote=XAUT canon=PAXGXAUT dec0=6 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=XAUT/PAXG id=0x5c1a9a7329913354597817638e615e0ecb38ae13679125eb1a3b5953ed4612d4 pool_addr=- hook=- base=PAXG quote=XAUT canon=PAXGXAUT dec0=6 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=PEPE/ETH id=0x4d2985ed0e6f89fdfea66264f88241db024c75ec656d9b7314ccb759e27d11ca pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=TREE/USDC id=0x63f5342442628ded4f084f6ba32bcec4f6ae3bf45c43c5834704b4beb903eea2 pool_addr=- hook=- base=TREE quote=USDC canon=TREEUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=AAVE/ETH id=0x1c60dc7ce348dc9f1e8992c027350acfda4ba66e2365aa87cbdd98c490185088 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=AAVE/USDC id=0x2187d779d9b173dd7202b38b54dca6eb04d1b32ca261980869195b5b9fa97ef8 pool_addr=- hook=- base=AAVE quote=USDC canon=AAVEUSDC dec0=18 dec1=6
-2025/10/08 19:44:08 v4_connector.go:500: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1 pair=PENDLE/LDO
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=USD1/WLFI id=0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056 pool_addr=- hook=- base=WLFI quote=USD1 canon=WLFIUSD1 dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=EPIC/ETH id=0xec0a57d0ad701e7c54a084f4a69ab633955b6eec9dbef9a7092d78096ff1521b pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=CRO/ETH id=0x3a4f24ef62fa97f3bbf9d606c8bc67b7118fc75b7d83550cbf1dc6edf84766c6 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=8 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=W/ETH id=0x57f3f9fa14196f3208e422899f39581cad2ab5a2f807e3125d3ec91577fa153a pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=RARE/ETH id=0xc5e82ff54924a7232a3e91ca252d505f4e4417afa2b6a8507dfb691182cd0b16 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=ENS/ETH id=0x8f3db1d49246db472f89ff06ad633c2e20a395fb81d549713aa713ffd0366049 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=SPK/ETH id=0x39f748f252ffff5f2cb755824bd46bd4c0720ffcec1ed128b38a1049a0e70496 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=SPK/USDC id=0xcba24593d3978b5052ed11585161eb053d76329da9eb8143b20f55f38b3e5720 pool_addr=- hook=- base=SPK quote=USDC canon=SPKUSDC dec0=6 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=RED/ETH id=0x8faf0d741d6c7b9d3295621339aada1d6a5b925dcb10f780084d604ec2092c93 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=CRYO/BIO id=0x4d83b92449ef7bf2054b09840b78498530b0a9e5a1f9f632c47f7866c29a7711 pool_addr=- hook=- base=BIO quote=CRYO canon=BIOCRYO dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=QBIO/BIO id=0xbaf08f27fcef85bdc00ff005c08981d06f01e35aa5c5cb4631a0bcb2484ae3e3 pool_addr=- hook=- base=QBIO quote=BIO canon=QBIOBIO dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=BIO/ETH id=0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=PSY/BIO id=0xf612b59da31ffddf3a99e7773abd35ef6a031578f0e7c93e0ee5386e66969b09 pool_addr=- hook=- base=PSY quote=BIO canon=PSYBIO dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=NEWT/USDC id=0xb75c64e5f402d2073d9bab8fb1d4b958146ffa8958a1775ab7f6f402ec321129 pool_addr=- hook=- base=NEWT quote=USDC canon=NEWTUSDC dec0=6 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=CRV/ETH id=0x540a21655573a3b1d18812d51660b515cafede7ccb1d978c064ba79360916557 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:500: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3 pair=CVX/CRV
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=WLFI/WBTC id=0x32f7d6ba6aa4e3d889e7e0bd4a9eca60a7e0929ead4b65e202019e8245b3aede pool_addr=- hook=- base=WBTC quote=WLFI canon=WBTCWLFI dec0=18 dec1=8
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=WLFI/USDC id=0x766890448e12eeae7af683ce04cbc4b12d2c3e6ef73536ab84da85f501a8484e pool_addr=- hook=- base=WLFI quote=USDC canon=WLFIUSDC dec0=6 dec1=6
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=WLFI/ETH id=0x7f2869b24d83f03e0438c045ce24fd18045b2b6cdec47cd7b62e67e2284d1be9 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:500: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056 pair=USD1/WLFI
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=COW/ETH id=0xc54493a23ae7d31ebee8a668f1ebf9fd7046ac98670612cc7d9bafd47c7ed963 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=SPX/ETH id=0xdc4b9fc84d439ad20e372e89c40b6ca01883aaacab6d02f8043f043987ac17c4 pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=8 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=INJ/ETH id=0xa6d987fe2e9e671f1b5786508e29b4e5261ade0d7e1ad5ea3139d85c3afc651b pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=ONDO/ETH id=0x3dedf9153bf7ea7a8d784a41562e7ee061f8330b695f70ff534f9f9d3be2363a pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:520: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pool ready pair=ETHFI/ETH id=0x526cc4c56982e84ce640c387c0a5454fc2030d30f7fc77a8bb64d71718edbdaa pool_addr=- hook=- base=ETH quote=ETH canon=ETHETH dec0=18 dec1=18
-2025/10/08 19:44:08 v4_connector.go:528: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: pools missing addresses pool_addr=59 hook_addr=57
-2025/10/08 19:44:08 v4_connector.go:531: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: bootstrap pools done total=59 inline=0 file=62 wanted_only=false
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:571: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 ws connected wss://eth-mainnet.g.alchemy.com/v2/ebe***B-
-2025/10/08 19:44:08 connect_uniswap_v3_all.go:652: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 total subscribe batches=2
-2025/10/08 19:44:08 v4_connector.go:823: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: handshake complete subprotocol=
-2025/10/08 19:44:08 v4_connector.go:406: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: websocket connected to wss://eth-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-
-2025/10/08 19:44:08 v4_connector.go:883: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: subscribe filters addresses=2 pool_ids=59
-2025/10/08 19:44:08 v4_connector.go:897: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: subscribe sent {"jsonrpc":"2.0","id":1,"method":"eth_subscribe","params":["logs",{"address":["0x4440854b2d02c57a0dc5c58b7a884562d875c0c4","0x868031d4cba8b7a8e7a3e97b4dab7fa5120e061a"],"topics":["0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f",["0x010a8c81f5fdcf9997afede5ff96c2e8329a8de24aa966c534b1f2416dca3305","0x053f6a47ccba79e7d5d623173ed6dd5a31cf19c28bae0fb8276f4506295f90da","0x1169c8b8f6871acd6dd7a402faaa9b0827aa64067b01353a14c0cd337448f46f","0x1c60dc7ce348dc9f1e8992c027350acfda4ba66e2365aa87cbdd98c490185088","0x1ff1224be14c0e69c9e0a3da1c986fcbf48abe5365227700624bc39e9fdde81d","0x2073f11d7fbeb83fbefb37daac5221c5ba02e724be70a25bf17a98d07747b783","0x2187d779d9b173dd7202b38b54dca6eb04d1b32ca261980869195b5b9fa97ef8","0x29dfcb94b1ab021ca46442d2b1a3ed3d2268fdc985d2fe9a3b67a6963670ec02","0x2bcfb83929d023f4fb608b8d71e881b7ce68c2894b3ccf4fe6ba4f8e5f286333","0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea","0x32f7d6ba6aa4e3d889e7e0bd4a9eca60a7e0929ead4b65e202019e8245b3aede","0x39f748f252ffff5f2cb755824bd46bd4c0720ffcec1ed128b38a1049a0e70496","0x3a4f24ef62fa97f3bbf9d606c8bc67b7118fc75b7d83550cbf1dc6edf84766c6","0x3dedf9153bf7ea7a8d784a41562e7ee061f8330b695f70ff534f9f9d3be2363a","0x4bb2f1067164203bb9007338c523fa7c2fc69bc458c277d285a19650e8ef2239","0x4d2985ed0e6f89fdfea66264f88241db024c75ec656d9b7314ccb759e27d11ca","0x4d83b92449ef7bf2054b09840b78498530b0a9e5a1f9f632c47f7866c29a7711","0x50ae33c238824aa1937d5d9f1766c487bca39b548f8d957994e8357eeeca3280","0x526cc4c56982e84ce640c387c0a5454fc2030d30f7fc77a8bb64d71718edbdaa","0x540a21655573a3b1d18812d51660b515cafede7ccb1d978c064ba79360916557","0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3","0x57f3f9fa14196f3208e422899f39581cad2ab5a2f807e3125d3ec91577fa153a","0x5b29d38ddffd8514f9716cb9fb25f0ad89775c190505b4058953539007a03409","0x5c1a9a7329913354597817638e615e0ecb38ae13679125eb1a3b5953ed4612d4","0x63f5342442628ded4f084f6ba32bcec4f6ae3bf45c43c5834704b4beb903eea2","0x65640a77f15c44d43d7e71670ff5b0f7c6a57f08d3d54ddceaac383b70516988","0x6924d7319b4d74d2ce3a52e732ba1ba03d0100f848ce819a21be25b3085e39be","0x6af632b8235f1a9d95a816f7a4090736346b763a8ab4e8327017aaae72d0d1d2","0x6f6f24b5a1cd819382379eb032466b8bac7ea0697cfcf31b7350b55ff4f1c472","0x766890448e12eeae7af683ce04cbc4b12d2c3e6ef73536ab84da85f501a8484e","0x7f2869b24d83f03e0438c045ce24fd18045b2b6cdec47cd7b62e67e2284d1be9","0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056","0x8f3db1d49246db472f89ff06ad633c2e20a395fb81d549713aa713ffd0366049","0x8faf0d741d6c7b9d3295621339aada1d6a5b925dcb10f780084d604ec2092c93","0x8ff6c1e698799b6cdc4e556f18ce6f2f0bd24e9f607d2266207aa2be8640760d","0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1","0x9a5c1d2f4a7a7962a63259de6fcc1afb1d0aa1abdf5d19c23d22fd78953c5167","0xa20defd792341526615afff100c79c27a635e8693d0cb13c8864a3e04180175a","0xa6d987fe2e9e671f1b5786508e29b4e5261ade0d7e1ad5ea3139d85c3afc651b","0xaae9da4a878406eb1de54efac30e239fd56d54fb8051e59f6fee529bc9609b3b","0xb2b5618903d74bbac9e9049a035c3827afc4487cde3b994a1568b050f4c8e2e4","0xb75c64e5f402d2073d9bab8fb1d4b958146ffa8958a1775ab7f6f402ec321129","0xbaf08f27fcef85bdc00ff005c08981d06f01e35aa5c5cb4631a0bcb2484ae3e3","0xbdaa11d7b68b914d68ef4e16103b0d3d68648a7e81e0f5feec4862e7c5fed5e9","0xc54493a23ae7d31ebee8a668f1ebf9fd7046ac98670612cc7d9bafd47c7ed963","0xc5e82ff54924a7232a3e91ca252d505f4e4417afa2b6a8507dfb691182cd0b16","0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96","0xcba24593d3978b5052ed11585161eb053d76329da9eb8143b20f55f38b3e5720","0xcc708109490fc52a42a73adc891367b617255164f35eb575fb428b6cd27c2663","0xce93ea3914c62e0008348cf39fd006e130e7c503935fb01d154b971c8663f4fb","0xd218ab0acf68208883aad66173f721948a7436811a3e3805dad06140d257894e","0xd9f5cbaeb88b7f0d9b0549257ddd4c46f984e2fc4bccf056cc254b9fe3417fff","0xda7fd1810454613a322e91b654cf310d088065fd51be69baea962bec92dfb901","0xdc4b9fc84d439ad20e372e89c40b6ca01883aaacab6d02f8043f043987ac17c4","0xe7e64a776c0c57da08b21758e556a6704857c0a6f566f60f583ffe261b13baef","0xec0a57d0ad701e7c54a084f4a69ab633955b6eec9dbef9a7092d78096ff1521b","0xf0cd01da66753629340436cee3b26dc4a7d63cbee01e2f2d7c8230a8210526cc","0xf2f4ae6a300b38373c35e7610189e0638b8ba29cc09299838027c7a319962796","0xf612b59da31ffddf3a99e7773abd35ef6a031578f0e7c93e0ee5386e66969b09"]]}]}
 2025/10/08 19:44:08 v4_connector.go:1098: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v4: subscribe acknowledged id=0xad4bb31cbb2e34670e0b15f34e32e4a3
 2025/10/08 19:44:08 connect_uniswap_v3_all.go:700: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 subscribed id=0xa1250fe2ceffbad49c1bd8119811cb37
 2025/10/08 19:44:08 connect_uniswap_v3_all.go:700: 2025-10-08T19:44:08+03:00 [INFO] uniswap_v3 subscribed id=0xfe0a4ff308841341e102de5454e80780
@@ -650,3 +510,491 @@
 2025/10/08 19:52:07 v2_connector.go:629: 2025-10-08T19:52:07+03:00 [INFO] uniswap_v2: USD BLOCKUSD price=0.02142713 weight=25793121.0502 route=BLOCK->USD1
 2025/10/08 19:52:08 main.go:376: 2025-10-08T19:52:08+03:00 [INFO] metrics: msgs/s~377, redisOps/s~757, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:95815 bybit:21719 gate:11824 okx:33453 uniswap_v2:136 uniswap_v3:908]
 2025/10/08 19:52:13 main.go:376: 2025-10-08T19:52:13+03:00 [INFO] metrics: msgs/s~374, redisOps/s~746, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:96864 bybit:21941 gate:11995 okx:33881 uniswap_v2:136 uniswap_v3:908]
+2025/10/09 15:50:09 logger.go:162: 2025-10-09T15:50:09+03:00 [INFO] logger initialized, output=screner.log
+2025/10/09 15:50:09 main.go:64: 2025-10-09T15:50:09+03:00 [INFO] starting Screener Core - multi-exchange with shared channel
+2025/10/09 15:50:09 main.go:84: 2025-10-09T15:50:09+03:00 [INFO] Assets registry loaded: configs/assets/tokens.yaml
+2025/10/09 15:50:09 client.go:17: 2025-10-09T15:50:09+03:00 [INFO] initializing Redis client: addr=localhost:6379 db=0
+2025/10/09 15:50:09 main.go:92: 2025-10-09T15:50:09+03:00 [INFO] Redis client initialized: localhost:6379
+2025/10/09 15:50:09 main.go:102: 2025-10-09T15:50:09+03:00 [INFO] Exchanges from config: gate, bybit, bitget, okx
+2025/10/09 15:50:09 main.go:123: 2025-10-09T15:50:09+03:00 [INFO] Loaded 150 symbols from ticker_source/geckoterminal_pools.json
+2025/10/09 15:50:09 main.go:149: 2025-10-09T15:50:09+03:00 [INFO] Exchange gate prepared 150 symbols (quote=USDT) from ticker_source/geckoterminal_pools.json
+2025/10/09 15:50:09 main.go:165: 2025-10-09T15:50:09+03:00 [INFO] Exchange gate uses shared pools source (150 base)
+2025/10/09 15:50:09 main.go:149: 2025-10-09T15:50:09+03:00 [INFO] Exchange bybit prepared 150 symbols (quote=USDT) from ticker_source/geckoterminal_pools.json
+2025/10/09 15:50:09 main.go:165: 2025-10-09T15:50:09+03:00 [INFO] Exchange bybit uses shared pools source (150 base)
+2025/10/09 15:50:09 main.go:149: 2025-10-09T15:50:09+03:00 [INFO] Exchange bitget prepared 150 symbols (quote=USDT) from ticker_source/geckoterminal_pools.json
+2025/10/09 15:50:09 main.go:165: 2025-10-09T15:50:09+03:00 [INFO] Exchange bitget uses shared pools source (150 base)
+2025/10/09 15:50:09 main.go:149: 2025-10-09T15:50:09+03:00 [INFO] Exchange okx prepared 150 symbols (quote=USDT) from ticker_source/geckoterminal_pools.json
+2025/10/09 15:50:09 main.go:165: 2025-10-09T15:50:09+03:00 [INFO] Exchange okx uses shared pools source (150 base)
+2025/10/09 15:50:09 graph_pricer.go:126: 2025-10-09T15:50:09+03:00 [INFO] pricing: anchors: network=bsc_mainnet stable=1
+2025/10/09 15:50:09 graph_pricer.go:126: 2025-10-09T15:50:09+03:00 [INFO] pricing: anchors: network=ethereum_mainnet stable=5
+2025/10/09 15:50:09 graph_pricer.go:86: 2025-10-09T15:50:09+03:00 [INFO] pricing: assets registry supplied 6 stable anchors
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor TUSD (0x0000000000085d4780b73119b644ae5ecd22b376)
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor USDT (0x55d398326f99059ff775485246999027b3197955)
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:09 main.go:218: 2025-10-09T15:50:09+03:00 [INFO] Graph pricer enabled for DEX connectors: uniswap_v2, uniswap_v3, uniswap_v4
+2025/10/09 15:50:09 bybit.go:31: 2025-10-09T15:50:09+03:00 [INFO] connecting to Bybit WS wss://stream.bybit.com/v5/public/spot
+2025/10/09 15:50:09 gateio.go:30: 2025-10-09T15:50:09+03:00 [INFO] connecting to Gate WS wss://api.gateio.ws/ws/v4/
+2025/10/09 15:50:09 bitget.go:31: 2025-10-09T15:50:09+03:00 [INFO] connecting to Bitget WS wss://ws.bitget.com/v2/ws/public
+2025/10/09 15:50:09 okx.go:30: 2025-10-09T15:50:09+03:00 [INFO] connecting to OKX WS wss://ws.okx.com:8443/ws/v5/public
+2025/10/09 15:50:09 v2_connector.go:1045: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v2: added 3 hard reference pools
+2025/10/09 15:50:09 v4_connector.go:290: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=true
+2025/10/09 15:50:09 register_dex.go:182: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: launch inline_pools=0 pools_path=ticker_source/geckoterminal_pools.json once=false
+2025/10/09 15:50:09 v4_connector.go:380: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: starting connector run
+2025/10/09 15:50:09 v4_connector.go:356: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: loading pool manager ABI from ABI/Uniswap/V4/UniswapV4PoolManager.json
+2025/10/09 15:50:09 v4_connector.go:373: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: ABI loaded events=10
+2025/10/09 15:50:09 v4_connector.go:443: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: bootstrap pools begin path=ticker_source/geckoterminal_pools.json inline=0
+2025/10/09 15:50:09 v4_connector.go:571: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: loading pools from file=ticker_source/geckoterminal_pools.json
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool SKL / WETH 1% addr=0x12CC685eEb95D3fCDfAe0a996e214e51FA6f7548
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool ICP / WETH 0.05% addr=0x4068038AB5490063a3eAd93B3712Ed082e62bD59
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool OBOL / WETH 1% addr=0x57F52C9faa6D40c5163D76b8D7dD81ddB7c95434
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool AIXBT / WETH 0.3% addr=0x41C9687Bf9074E81816C32c1C12fD6fDF950eB81
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool BAT / WETH 0.3% addr=0xAE614a7a56cB79c04Df2aeBA6f5dAB80A39CA78E
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool DOLO / USDC 0.3% addr=0x003896387666C5c11458EEb3F927B72a11b19783
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool LA / WETH 0.3% addr=0x8cDb1395728161d10aC6D886C557064E01703A71
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool TAIKO / WETH 1% addr=0xe92F2Bec2B40908f18C0777c79fD27f8A6894140
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool 1INCH / UNI 1% addr=0x0619062B988576FE2d39b33fF23Fb1a0330c0ac7
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool 1INCH / USDC 1% addr=0x9feBc984504356225405e26833608b17719c82Ae
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool 1INCH / AAVE 1% addr=0xcb6518667F27e8c652aFb47250a2AaC4d4872c3a
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool 1INCH / WETH 1% addr=0xE931b03260B2854e77e8dA8378A1BC017b13cb97
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool WLD / WETH 1% addr=0x841820459769cd629B10a36FD12E603938cc2679
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool NMR / WETH 0.3% addr=0x4b1F895066058662B9fA885E87a4E4159bE0798a
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool LINEA / USDC 0.01% addr=0xc6360A062aD0cEB937198a6E23FE33494F9c80a8
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool UNI / WETH 0.3% addr=0x1d42064Fc4Beb5F8aAF85F4617AE8b3b5B8Bd801
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool UNI / USDT 0.3% addr=0x3470447f3CecfFAc709D3e783A307790b0208d60
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool UNI / WETH 1% addr=0x360b9726186C0F62cc719450685ce70280774Dc8
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool AAVE / UNI 0.3% addr=0x59c38b6775Ded821f010DbD30eCabdCF84E04756
+2025/10/09 15:50:09 v4_connector.go:580: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pools file entries=301
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:546: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 add pool AAVE / UNI 1% addr=0x82bb4Ca79E5a6Bf93064f043eA3Fabf7a9036596
+2025/10/09 15:50:09 v4_connector.go:604: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip stable pool pair=USDC/USDT pool_id=0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47 token0=USDC token1=USDT
+2025/10/09 15:50:09 v4_connector.go:604: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip stable pool pair=USDC/USDT pool_id=0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47 token0=USDC token1=USDT
+2025/10/09 15:50:09 v4_connector.go:604: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip stable pool pair=USDC/USDT pool_id=0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47 token0=USDC token1=USDT
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:549: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 loaded pools=171 source=ticker_source/geckoterminal_pools.json
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:264: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 assets: registry stables added=1 total=6
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:287: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 assets: WETH address=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:419: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 pools=171 ws=wss://eth-mainnet.g.alchemy.com/v2/ebe***B-
+2025/10/09 15:50:09 v4_connector.go:613: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pools loaded from file=62 skipped_network=8 filter=ethereum
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=DOLO/USD1 id=0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea pool_addr=- hook=- base=DOLO quote=USD1 canon=DOLOUSD1 dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea pair=DOLO/ETH
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=1INCH/USDC id=0x1ff1224be14c0e69c9e0a3da1c986fcbf48abe5365227700624bc39e9fdde81d pool_addr=- hook=- base=1INCH quote=USDC canon=1INCHUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=1INCH/ETH id=0xbdaa11d7b68b914d68ef4e16103b0d3d68648a7e81e0f5feec4862e7c5fed5e9 pool_addr=- hook=- base=ETH quote=1INCH canon=ETH1INCH dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=UNI/ETH id=0x053f6a47ccba79e7d5d623173ed6dd5a31cf19c28bae0fb8276f4506295f90da pool_addr=- hook=- base=ETH quote=UNI canon=ETHUNI dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=UNI/USDC id=0x9a5c1d2f4a7a7962a63259de6fcc1afb1d0aa1abdf5d19c23d22fd78953c5167 pool_addr=- hook=- base=UNI quote=USDC canon=UNIUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=UNI/USDT id=0xa20defd792341526615afff100c79c27a635e8693d0cb13c8864a3e04180175a pool_addr=- hook=- base=UNI quote=USDT canon=UNIUSDT dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=REZ/USDC id=0xe7e64a776c0c57da08b21758e556a6704857c0a6f566f60f583ffe261b13baef pool_addr=- hook=- base=REZ quote=USDC canon=REZUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=ACX/ETH id=0x2073f11d7fbeb83fbefb37daac5221c5ba02e724be70a25bf17a98d07747b783 pool_addr=- hook=- base=ETH quote=ACX canon=ETHACX dec0=18 dec1=18
+2025/10/09 15:50:09 graph_pricer.go:190: 2025-10-09T15:50:09+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=PAXG/DAI id=0x6924d7319b4d74d2ce3a52e732ba1ba03d0100f848ce819a21be25b3085e39be pool_addr=- hook=- base=PAXG quote=DAI canon=PAXGDAI dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=PAXG/USDC id=0xcc708109490fc52a42a73adc891367b617255164f35eb575fb428b6cd27c2663 pool_addr=- hook=- base=PAXG quote=USDC canon=PAXGUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=WOO/ETH id=0x8ff6c1e698799b6cdc4e556f18ce6f2f0bd24e9f607d2266207aa2be8640760d pool_addr=- hook=- base=ETH quote=WOO canon=ETHWOO dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=HIFI/USDC id=0xf2f4ae6a300b38373c35e7610189e0638b8ba29cc09299838027c7a319962796 pool_addr=- hook=- base=HIFI quote=USDC canon=HIFIUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=PLUME/USDC id=0xf0cd01da66753629340436cee3b26dc4a7d63cbee01e2f2d7c8230a8210526cc pool_addr=- hook=- base=PLUME quote=USDC canon=PLUMEUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=USDE/USDT id=0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7 pool_addr=- hook=- base=USDE quote=USDT canon=USDEUSDT dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7 pair=USDE/USDT
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7 pair=USDE/USDT
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=PUFFER/ETH id=0x010a8c81f5fdcf9997afede5ff96c2e8329a8de24aa966c534b1f2416dca3305 pool_addr=- hook=- base=ETH quote=PUFFER canon=ETHPUFFER dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=CVX/CRV id=0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3 pool_addr=- hook=- base=CVX quote=CRV canon=CVXCRV dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=LINK/USDC id=0x50ae33c238824aa1937d5d9f1766c487bca39b548f8d957994e8357eeeca3280 pool_addr=- hook=- base=LINK quote=USDC canon=LINKUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=LINK/ETH id=0xb2b5618903d74bbac9e9049a035c3827afc4487cde3b994a1568b050f4c8e2e4 pool_addr=- hook=- base=ETH quote=LINK canon=ETHLINK dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0xb2b5618903d74bbac9e9049a035c3827afc4487cde3b994a1568b050f4c8e2e4 pair=LINK/ETH
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=SKY/ETH id=0xd218ab0acf68208883aad66173f721948a7436811a3e3805dad06140d257894e pool_addr=- hook=- base=ETH quote=SKY canon=ETHSKY dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=SKY/USDC id=0xda7fd1810454613a322e91b654cf310d088065fd51be69baea962bec92dfb901 pool_addr=- hook=- base=SKY quote=USDC canon=SKYUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=ENA/ETH id=0x5b29d38ddffd8514f9716cb9fb25f0ad89775c190505b4058953539007a03409 pool_addr=- hook=- base=ETH quote=ENA canon=ETHENA dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=MORPHO/ETH id=0xd9f5cbaeb88b7f0d9b0549257ddd4c46f984e2fc4bccf056cc254b9fe3417fff pool_addr=- hook=- base=ETH quote=MORPHO canon=ETHMORPHO dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=PENDLE/LDO id=0xf4522df8ec238015cd11f3b1af87aa15f94af8b1198f2f30a310ddc3068bba6c pool_addr=- hook=- base=LDO quote=PENDLE canon=LDOPENDLE dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=LSK/ETH id=0x6af632b8235f1a9d95a816f7a4090736346b763a8ab4e8327017aaae72d0d1d2 pool_addr=- hook=- base=ETH quote=LSK canon=ETHLSK dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=SYRUP/ETH id=0x29dfcb94b1ab021ca46442d2b1a3ed3d2268fdc985d2fe9a3b67a6963670ec02 pool_addr=- hook=- base=ETH quote=SYRUP canon=ETHSYRUP dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=XAUT/USDT id=0x1169c8b8f6871acd6dd7a402faaa9b0827aa64067b01353a14c0cd337448f46f pool_addr=- hook=- base=XAUT quote=USDT canon=XAUTUSDT dec0=6 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=XAUT/PAXG id=0x4bb2f1067164203bb9007338c523fa7c2fc69bc458c277d285a19650e8ef2239 pool_addr=- hook=- base=PAXG quote=XAUT canon=PAXGXAUT dec0=6 dec1=18
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x4bb2f1067164203bb9007338c523fa7c2fc69bc458c277d285a19650e8ef2239 pair=XAUT/PAXG
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=PEPE/ETH id=0x4d2985ed0e6f89fdfea66264f88241db024c75ec656d9b7314ccb759e27d11ca pool_addr=- hook=- base=ETH quote=1000PEPE canon=ETH1000PEPE dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=TREE/USDC id=0x63f5342442628ded4f084f6ba32bcec4f6ae3bf45c43c5834704b4beb903eea2 pool_addr=- hook=- base=TREE quote=USDC canon=TREEUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=AAVE/ETH id=0x1c60dc7ce348dc9f1e8992c027350acfda4ba66e2365aa87cbdd98c490185088 pool_addr=- hook=- base=ETH quote=AAVE canon=ETHAAVE dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=AAVE/USDC id=0x2187d779d9b173dd7202b38b54dca6eb04d1b32ca261980869195b5b9fa97ef8 pool_addr=- hook=- base=AAVE quote=USDC canon=AAVEUSDC dec0=18 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=PENDLE/LDO id=0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1 pool_addr=- hook=- base=LDO quote=PENDLE canon=LDOPENDLE dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=USD1/WLFI id=0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056 pool_addr=- hook=- base=WLFI quote=USD1 canon=WLFIUSD1 dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=EPIC/ETH id=0xec0a57d0ad701e7c54a084f4a69ab633955b6eec9dbef9a7092d78096ff1521b pool_addr=- hook=- base=ETH quote=EPIC canon=ETHEPIC dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=CRO/ETH id=0x3a4f24ef62fa97f3bbf9d606c8bc67b7118fc75b7d83550cbf1dc6edf84766c6 pool_addr=- hook=- base=ETH quote=CRO canon=ETHCRO dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=W/ETH id=0x57f3f9fa14196f3208e422899f39581cad2ab5a2f807e3125d3ec91577fa153a pool_addr=- hook=- base=ETH quote=W canon=ETHW dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=RARE/ETH id=0xc5e82ff54924a7232a3e91ca252d505f4e4417afa2b6a8507dfb691182cd0b16 pool_addr=- hook=- base=ETH quote=RARE canon=ETHRARE dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=ENS/ETH id=0x8f3db1d49246db472f89ff06ad633c2e20a395fb81d549713aa713ffd0366049 pool_addr=- hook=- base=ETH quote=ENS canon=ETHENS dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=SPK/ETH id=0x39f748f252ffff5f2cb755824bd46bd4c0720ffcec1ed128b38a1049a0e70496 pool_addr=- hook=- base=ETH quote=SPK canon=ETHSPK dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=SPK/USDC id=0xcba24593d3978b5052ed11585161eb053d76329da9eb8143b20f55f38b3e5720 pool_addr=- hook=- base=SPK quote=USDC canon=SPKUSDC dec0=6 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=RED/ETH id=0x8faf0d741d6c7b9d3295621339aada1d6a5b925dcb10f780084d604ec2092c93 pool_addr=- hook=- base=ETH quote=RED canon=ETHRED dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=CRYO/BIO id=0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96 pool_addr=- hook=- base=BIO quote=CRYO canon=BIOCRYO dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96 pair=QBIO/BIO
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96 pair=BIO/ETH
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96 pair=PSY/BIO
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=NEWT/USDC id=0xb75c64e5f402d2073d9bab8fb1d4b958146ffa8958a1775ab7f6f402ec321129 pool_addr=- hook=- base=NEWT quote=USDC canon=NEWTUSDC dec0=6 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=CRV/ETH id=0x540a21655573a3b1d18812d51660b515cafede7ccb1d978c064ba79360916557 pool_addr=- hook=- base=ETH quote=CRV canon=ETHCRV dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x540a21655573a3b1d18812d51660b515cafede7ccb1d978c064ba79360916557 pair=CVX/CRV
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=WLFI/WBTC id=0x32f7d6ba6aa4e3d889e7e0bd4a9eca60a7e0929ead4b65e202019e8245b3aede pool_addr=- hook=- base=WBTC quote=WLFI canon=WBTCWLFI dec0=18 dec1=8
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=WLFI/USDC id=0x766890448e12eeae7af683ce04cbc4b12d2c3e6ef73536ab84da85f501a8484e pool_addr=- hook=- base=WLFI quote=USDC canon=WLFIUSDC dec0=6 dec1=6
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=WLFI/ETH id=0x7f2869b24d83f03e0438c045ce24fd18045b2b6cdec47cd7b62e67e2284d1be9 pool_addr=- hook=- base=ETH quote=WLFI canon=ETHWLFI dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:500: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: skip duplicate pool id=0x7f2869b24d83f03e0438c045ce24fd18045b2b6cdec47cd7b62e67e2284d1be9 pair=USD1/WLFI
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=COW/ETH id=0xc54493a23ae7d31ebee8a668f1ebf9fd7046ac98670612cc7d9bafd47c7ed963 pool_addr=- hook=- base=ETH quote=COW canon=ETHCOW dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=SPX/ETH id=0xdc4b9fc84d439ad20e372e89c40b6ca01883aaacab6d02f8043f043987ac17c4 pool_addr=- hook=- base=ETH quote=SPX canon=ETHSPX dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=INJ/ETH id=0xa6d987fe2e9e671f1b5786508e29b4e5261ade0d7e1ad5ea3139d85c3afc651b pool_addr=- hook=- base=ETH quote=INJ canon=ETHINJ dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=ONDO/ETH id=0x3dedf9153bf7ea7a8d784a41562e7ee061f8330b695f70ff534f9f9d3be2363a pool_addr=- hook=- base=ETH quote=ONDO canon=ETHONDO dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:520: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pool ready pair=ETHFI/ETH id=0x526cc4c56982e84ce640c387c0a5454fc2030d30f7fc77a8bb64d71718edbdaa pool_addr=- hook=- base=ETH quote=ETHFI canon=ETHETHFI dec0=18 dec1=18
+2025/10/09 15:50:09 v4_connector.go:528: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: pools missing addresses pool_addr=52 hook_addr=52
+2025/10/09 15:50:09 v4_connector.go:531: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: bootstrap pools done total=52 inline=0 file=62 wanted_only=false
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:571: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 ws connected wss://eth-mainnet.g.alchemy.com/v2/ebe***B-
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:652: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 total subscribe batches=2
+2025/10/09 15:50:09 v4_connector.go:823: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: handshake complete subprotocol=
+2025/10/09 15:50:09 v4_connector.go:406: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: websocket connected to wss://eth-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-
+2025/10/09 15:50:09 v4_connector.go:883: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: subscribe filters addresses=1 pool_ids=52
+2025/10/09 15:50:09 v4_connector.go:897: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: subscribe sent {"jsonrpc":"2.0","id":1,"method":"eth_subscribe","params":["logs",{"address":["0x868031d4cba8b7a8e7a3e97b4dab7fa5120e061a"],"topics":["0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f",["0x010a8c81f5fdcf9997afede5ff96c2e8329a8de24aa966c534b1f2416dca3305","0x053f6a47ccba79e7d5d623173ed6dd5a31cf19c28bae0fb8276f4506295f90da","0x1169c8b8f6871acd6dd7a402faaa9b0827aa64067b01353a14c0cd337448f46f","0x1c60dc7ce348dc9f1e8992c027350acfda4ba66e2365aa87cbdd98c490185088","0x1ff1224be14c0e69c9e0a3da1c986fcbf48abe5365227700624bc39e9fdde81d","0x2073f11d7fbeb83fbefb37daac5221c5ba02e724be70a25bf17a98d07747b783","0x2187d779d9b173dd7202b38b54dca6eb04d1b32ca261980869195b5b9fa97ef8","0x29dfcb94b1ab021ca46442d2b1a3ed3d2268fdc985d2fe9a3b67a6963670ec02","0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea","0x32f7d6ba6aa4e3d889e7e0bd4a9eca60a7e0929ead4b65e202019e8245b3aede","0x39f748f252ffff5f2cb755824bd46bd4c0720ffcec1ed128b38a1049a0e70496","0x3a4f24ef62fa97f3bbf9d606c8bc67b7118fc75b7d83550cbf1dc6edf84766c6","0x3dedf9153bf7ea7a8d784a41562e7ee061f8330b695f70ff534f9f9d3be2363a","0x4bb2f1067164203bb9007338c523fa7c2fc69bc458c277d285a19650e8ef2239","0x4d2985ed0e6f89fdfea66264f88241db024c75ec656d9b7314ccb759e27d11ca","0x50ae33c238824aa1937d5d9f1766c487bca39b548f8d957994e8357eeeca3280","0x526cc4c56982e84ce640c387c0a5454fc2030d30f7fc77a8bb64d71718edbdaa","0x540a21655573a3b1d18812d51660b515cafede7ccb1d978c064ba79360916557","0x55314bb807349b25a43a2724371a4fb3c5aa6ebe0d823a72645e763d2a261eb3","0x57f3f9fa14196f3208e422899f39581cad2ab5a2f807e3125d3ec91577fa153a","0x5b29d38ddffd8514f9716cb9fb25f0ad89775c190505b4058953539007a03409","0x63bb22f47c7ede6578a25c873e77eb782ec8e4c19778e36ce64d37877b5bd1e7","0x63f5342442628ded4f084f6ba32bcec4f6ae3bf45c43c5834704b4beb903eea2","0x6924d7319b4d74d2ce3a52e732ba1ba03d0100f848ce819a21be25b3085e39be","0x6af632b8235f1a9d95a816f7a4090736346b763a8ab4e8327017aaae72d0d1d2","0x766890448e12eeae7af683ce04cbc4b12d2c3e6ef73536ab84da85f501a8484e","0x7f2869b24d83f03e0438c045ce24fd18045b2b6cdec47cd7b62e67e2284d1be9","0x88e812fe30f379ade34b045bbfa1c355dc6051e83d30a4c2275d67b2775a7056","0x8f3db1d49246db472f89ff06ad633c2e20a395fb81d549713aa713ffd0366049","0x8faf0d741d6c7b9d3295621339aada1d6a5b925dcb10f780084d604ec2092c93","0x8ff6c1e698799b6cdc4e556f18ce6f2f0bd24e9f607d2266207aa2be8640760d","0x96b95de7045475771328339e4c9bf002d6b9b6d415a74694a19604349672f0c1","0x9a5c1d2f4a7a7962a63259de6fcc1afb1d0aa1abdf5d19c23d22fd78953c5167","0xa20defd792341526615afff100c79c27a635e8693d0cb13c8864a3e04180175a","0xa6d987fe2e9e671f1b5786508e29b4e5261ade0d7e1ad5ea3139d85c3afc651b","0xb2b5618903d74bbac9e9049a035c3827afc4487cde3b994a1568b050f4c8e2e4","0xb75c64e5f402d2073d9bab8fb1d4b958146ffa8958a1775ab7f6f402ec321129","0xbdaa11d7b68b914d68ef4e16103b0d3d68648a7e81e0f5feec4862e7c5fed5e9","0xc54493a23ae7d31ebee8a668f1ebf9fd7046ac98670612cc7d9bafd47c7ed963","0xc5e82ff54924a7232a3e91ca252d505f4e4417afa2b6a8507dfb691182cd0b16","0xc8c4ec62ee9aed213a68d3c49b2b64b630a26873c5b003f40db4d357834bfd96","0xcba24593d3978b5052ed11585161eb053d76329da9eb8143b20f55f38b3e5720","0xcc708109490fc52a42a73adc891367b617255164f35eb575fb428b6cd27c2663","0xd218ab0acf68208883aad66173f721948a7436811a3e3805dad06140d257894e","0xd9f5cbaeb88b7f0d9b0549257ddd4c46f984e2fc4bccf056cc254b9fe3417fff","0xda7fd1810454613a322e91b654cf310d088065fd51be69baea962bec92dfb901","0xdc4b9fc84d439ad20e372e89c40b6ca01883aaacab6d02f8043f043987ac17c4","0xe7e64a776c0c57da08b21758e556a6704857c0a6f566f60f583ffe261b13baef","0xec0a57d0ad701e7c54a084f4a69ab633955b6eec9dbef9a7092d78096ff1521b","0xf0cd01da66753629340436cee3b26dc4a7d63cbee01e2f2d7c8230a8210526cc","0xf2f4ae6a300b38373c35e7610189e0638b8ba29cc09299838027c7a319962796","0xf4522df8ec238015cd11f3b1af87aa15f94af8b1198f2f30a310ddc3068bba6c"]]}]}
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:700: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 subscribed id=0x13f2ad1d24d65fd58115c7a045f0a739
+2025/10/09 15:50:09 connect_uniswap_v3_all.go:700: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v3 subscribed id=0x1b64400cb23ae015c393581a1776abec
+2025/10/09 15:50:09 v4_connector.go:1098: 2025-10-09T15:50:09+03:00 [INFO] uniswap_v4: subscribe acknowledged id=0xcc37ca850d7c08e248531c40514ddaf7
+2025/10/09 15:50:10 okx.go:36: 2025-10-09T15:50:10+03:00 [INFO] OKX connected
+2025/10/09 15:50:10 bybit.go:37: 2025-10-09T15:50:10+03:00 [INFO] Bybit connected
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 1/150: 1000000BABYDOGEUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 2/150: 1000000MOGUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 3/150: 1000000PEIPEIUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 4/150: 10000ELONUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 5/150: 10000LADYSUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 6/150: 1000FLOKIUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 7/150: 1000PEPEUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 8/150: 1INCHUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 9/150: AAVEUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 10/150: ACHUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 11/150: ACXUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 12/150: AEVOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 13/150: AIOZUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 14/150: AIXBTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 15/150: ANIMEUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 16/150: API3USDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 17/150: ARBUSDT
+2025/10/09 15:50:10 bitget.go:37: 2025-10-09T15:50:10+03:00 [INFO] Bitget connected
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 18/150: ATHUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 19/150: AUDIOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 20/150: AVAUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 21/150: AVAILUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 22/150: AVNTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 23/150: AXLUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 24/150: BADGERUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 25/150: BANANAUSDT
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000000BABYDOGE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000000MOG-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000000PEIPEI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:10000ELON-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:10000LADYS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000FLOKI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000PEPE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ACX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AIOZ-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AUDIO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AVA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AVAIL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AXL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BEAM-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BRETT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CGPT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:COTI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:COW-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CPOOL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:DOLO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ELX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:EPIC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ERA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ES-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:FORTH-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:GNO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:GTC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:HIFI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:HPOS10I-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ICNT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:IOTX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:JASMY-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 26/150: BATUSDT
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:LA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MNT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MOCA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MVL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:NEWT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:OBOL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:OGN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PAXG-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PLUME-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:POWR-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PRIME-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PUFFER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:QNT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RAD-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RARE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 27/150: BEAMUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 28/150: BICOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 29/150: BIOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 30/150: BRETTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 31/150: CGPTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 32/150: COMPUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 33/150: COTIUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 34/150: COWUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 35/150: CPOOLUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 36/150: CROUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 37/150: CRVUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 38/150: CVXUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 39/150: DOLOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 40/150: DOTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 41/150: EIGENUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 42/150: ELXUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 43/150: ENAUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 44/150: ENSUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 45/150: EPICUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 46/150: ERAUSDT
+2025/10/09 15:50:10 gateio.go:36: 2025-10-09T15:50:10+03:00 [INFO] Gate connected
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 47/150: ESUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 48/150: ETHFIUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 49/150: FORTHUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 50/150: GUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 51/150: GALAUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 52/150: GLMUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 53/150: GNOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 54/150: GRTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 55/150: GTCUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 56/150: HIFIUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 57/150: HPOS10IUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 58/150: ICNTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 59/150: ICPUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 60/150: IDUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 61/150: IMXUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 62/150: INJUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 63/150: IOTXUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 64/150: JASMYUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 65/150: LAUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 66/150: LDOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 67/150: LINEAUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 68/150: LINKUSDT
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RED-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:REQ-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:REZ-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RLC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SHIB1000-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SPX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:STG-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SUPER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SXT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TAIKO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TANSSI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TOKEN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TOWNS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TREE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:USDE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 69/150: LQTYUSDT
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:USUAL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:VANRY-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:VIRTUAL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:XCN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 okx.go:102: 2025-10-09T15:50:10+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ZRC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 70/150: LSKUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 71/150: MANAUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 72/150: MASKUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 73/150: METISUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 74/150: MLNUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 75/150: MNTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 76/150: MOCAUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 77/150: MORPHOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 78/150: MVLUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 79/150: NEARUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 80/150: NEWTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 81/150: NMRUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 82/150: OBOLUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 83/150: OGNUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 84/150: OKBUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 85/150: OMUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 86/150: ONDOUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 87/150: ORBSUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 88/150: PAXGUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 89/150: PENDLEUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 90/150: PEOPLEUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 91/150: PERPUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 92/150: PHAUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 93/150: PLUMEUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 94/150: POWRUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 95/150: PRIMEUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 96/150: PROMPTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 97/150: PUFFERUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 98/150: QNTUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 99/150: RADUSDT
+2025/10/09 15:50:10 register_cex.go:39: 2025-10-09T15:50:10+03:00 [INFO] Bybit subscribe 100/150: RAREUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 101/150: REDUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 102/150: RENDERUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 103/150: REQUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 104/150: RESOLVUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 105/150: REZUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 106/150: RLCUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 107/150: RPLUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 108/150: RSRUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 109/150: SAFEUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 110/150: SANDUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 111/150: SHIB1000USDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 112/150: SKLUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 113/150: SKYUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 114/150: SNTUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 115/150: SNXUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 116/150: SOPHUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 117/150: SPKUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 118/150: SPXUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 119/150: SSVUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 120/150: STGUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 121/150: STORJUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 122/150: SUPERUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 123/150: SUSHIUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 124/150: SWEATUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 125/150: SXTUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 126/150: SYRUPUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 127/150: TAIKOUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 128/150: TANSSIUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 129/150: TOKENUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 130/150: TONUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 131/150: TOWNSUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 132/150: TREEUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 133/150: UNIUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 134/150: USDEUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 135/150: USUALUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 136/150: VANRYUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 137/150: VIRTUALUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 138/150: WUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 139/150: WAXPUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 140/150: WCTUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 141/150: WLDUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 142/150: WLFIUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 143/150: WOOUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 144/150: XAUTUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 145/150: XCNUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 146/150: YFIUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 147/150: ZENTUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 148/150: ZRCUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 149/150: ZROUSDT
+2025/10/09 15:50:11 register_cex.go:39: 2025-10-09T15:50:11+03:00 [INFO] Bybit subscribe 150/150: ZRXUSDT
+2025/10/09 15:50:12 v2_connector.go:1149: 2025-10-09T15:50:12+03:00 [INFO] uniswap_v2: updated decimals addr=0x4507cEf57C46789eF8d1a19EA45f4216bae2B528 symbol=TOKEN decimals=9
+2025/10/09 15:50:14 main.go:376: 2025-10-09T15:50:14+03:00 [INFO] metrics: msgs/s~123, redisOps/s~219, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:208 bybit:134 gate:33 okx:239]
+2025/10/09 15:50:15 graph_pricer.go:190: 2025-10-09T15:50:15+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:15 graph_pricer.go:190: 2025-10-09T15:50:15+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:15 connect_uniswap_v3_all.go:1362: 2025-10-09T15:50:15+03:00 [INFO] uniswap_v3 wethusd=4398.832768 stable=USDC src=USDC / WETH 0.01%
+2025/10/09 15:50:15 v2_connector.go:1149: 2025-10-09T15:50:15+03:00 [INFO] uniswap_v2: updated decimals addr=0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC symbol=STORJ decimals=8
+2025/10/09 15:50:16 graph_pricer.go:190: 2025-10-09T15:50:16+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:16 graph_pricer.go:190: 2025-10-09T15:50:16+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:16 v2_connector.go:1149: 2025-10-09T15:50:16+03:00 [INFO] uniswap_v2: updated decimals addr=0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E symbol=FLOKI decimals=9
+2025/10/09 15:50:16 graph_pricer.go:190: 2025-10-09T15:50:16+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:16 graph_pricer.go:190: 2025-10-09T15:50:16+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:16 graph_pricer.go:190: 2025-10-09T15:50:16+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/09 15:50:16 graph_pricer.go:190: 2025-10-09T15:50:16+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:16 graph_pricer.go:190: 2025-10-09T15:50:16+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/09 15:50:17 graph_pricer.go:190: 2025-10-09T15:50:17+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:17 v2_connector.go:1149: 2025-10-09T15:50:17+03:00 [INFO] uniswap_v2: updated decimals addr=0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C symbol=SPX decimals=8
+2025/10/09 15:50:17 graph_pricer.go:190: 2025-10-09T15:50:17+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:17 graph_pricer.go:190: 2025-10-09T15:50:17+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:17 graph_pricer.go:190: 2025-10-09T15:50:17+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
+2025/10/09 15:50:17 graph_pricer.go:190: 2025-10-09T15:50:17+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:17 graph_pricer.go:190: 2025-10-09T15:50:17+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
+2025/10/09 15:50:17 graph_pricer.go:190: 2025-10-09T15:50:17+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:18 graph_pricer.go:190: 2025-10-09T15:50:18+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:18 graph_pricer.go:190: 2025-10-09T15:50:18+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:18 graph_pricer.go:190: 2025-10-09T15:50:18+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/09 15:50:18 graph_pricer.go:190: 2025-10-09T15:50:18+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/09 15:50:18 graph_pricer.go:190: 2025-10-09T15:50:18+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:18 graph_pricer.go:190: 2025-10-09T15:50:18+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:18 graph_pricer.go:190: 2025-10-09T15:50:18+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:18 graph_pricer.go:190: 2025-10-09T15:50:18+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
+2025/10/09 15:50:18 bitget.go:126: 2025-10-09T15:50:18+03:00 [INFO] [WARN] Bitget errors aggregated last 5s: 30006=0, 30001=20
+2025/10/09 15:50:19 main.go:376: 2025-10-09T15:50:19+03:00 [INFO] metrics: msgs/s~246, redisOps/s~515, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:782 bybit:297 gate:111 okx:578 uniswap_v3:74]
+2025/10/09 15:50:24 main.go:376: 2025-10-09T15:50:24+03:00 [INFO] metrics: msgs/s~207, redisOps/s~416, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:1364 bybit:443 gate:177 okx:820 uniswap_v3:74]
+2025/10/09 15:50:25 v2_connector.go:629: 2025-10-09T15:50:25+03:00 [INFO] uniswap_v2: USD WETHUSD price=4398.34838635 weight=29193.0689 route=WETH->USDC
+2025/10/09 15:50:25 v2_connector.go:629: 2025-10-09T15:50:25+03:00 [INFO] uniswap_v2: USD SPXUSD price=1.50242400 weight=6249.7317 route=SPX->WETH->USDC
+2025/10/09 15:50:25 v2_connector.go:629: 2025-10-09T15:50:25+03:00 [INFO] uniswap_v2: USD USD1USD price=1.00000000 weight=179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.0000 route=USD1
+2025/10/09 15:50:25 v2_connector.go:629: 2025-10-09T15:50:25+03:00 [INFO] uniswap_v2: USD BLOCKUSD price=0.02119973 weight=25972596.3768 route=BLOCK->USD1
+2025/10/09 15:50:29 main.go:376: 2025-10-09T15:50:29+03:00 [INFO] metrics: msgs/s~229, redisOps/s~452, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:1994 bybit:594 gate:263 okx:1068 uniswap_v2:6 uniswap_v3:98]
+2025/10/09 15:50:34 main.go:376: 2025-10-09T15:50:34+03:00 [INFO] metrics: msgs/s~207, redisOps/s~419, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:2578 bybit:731 gate:321 okx:1325 uniswap_v2:6 uniswap_v3:98]
+2025/10/09 15:50:37 v2_connector.go:629: 2025-10-09T15:50:37+03:00 [INFO] uniswap_v2: USD WETHUSD price=4400.43954477 weight=5.2987 route=WETH->USDC
+2025/10/09 15:50:37 v2_connector.go:629: 2025-10-09T15:50:37+03:00 [INFO] uniswap_v2: USD SPXUSD price=1.50440429 weight=5.2987 route=SPX->WETH->USDC
+2025/10/09 15:50:37 v2_connector.go:629: 2025-10-09T15:50:37+03:00 [INFO] uniswap_v2: USD PEIPEIUSD price=0.00000003 weight=5.2987 route=PEIPEI->WETH->USDC
+2025/10/09 15:50:37 v2_connector.go:629: 2025-10-09T15:50:37+03:00 [INFO] uniswap_v2: USD WETHUSD price=4400.43954477 weight=5.2987 route=WETH->USDC
+2025/10/09 15:50:39 main.go:376: 2025-10-09T15:50:39+03:00 [INFO] metrics: msgs/s~222, redisOps/s~443, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:3203 bybit:881 gate:401 okx:1563 uniswap_v2:12 uniswap_v3:110]
+2025/10/09 15:50:44 main.go:376: 2025-10-09T15:50:44+03:00 [INFO] metrics: msgs/s~237, redisOps/s~476, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:3841 bybit:1056 gate:486 okx:1851 uniswap_v2:12 uniswap_v3:110]
+2025/10/09 15:50:49 v2_connector.go:629: 2025-10-09T15:50:49+03:00 [INFO] uniswap_v2: USD WETHUSD price=4398.24744271 weight=46250193.5479 route=WETH->USDT
+2025/10/09 15:50:49 v2_connector.go:629: 2025-10-09T15:50:49+03:00 [INFO] uniswap_v2: USD USDTUSD price=1.00000000 weight=179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.0000 route=USDT
+2025/10/09 15:50:49 main.go:376: 2025-10-09T15:50:49+03:00 [INFO] metrics: msgs/s~194, redisOps/s~390, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:4382 bybit:1182 gate:566 okx:2062 uniswap_v2:15 uniswap_v3:118]
+2025/10/09 15:50:49 graph_pricer.go:190: 2025-10-09T15:50:49+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:49 graph_pricer.go:190: 2025-10-09T15:50:49+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:49 graph_pricer.go:190: 2025-10-09T15:50:49+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:50:49 graph_pricer.go:190: 2025-10-09T15:50:49+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:49 graph_pricer.go:190: 2025-10-09T15:50:49+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/09 15:50:49 graph_pricer.go:190: 2025-10-09T15:50:49+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:49 graph_pricer.go:190: 2025-10-09T15:50:49+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/09 15:50:49 graph_pricer.go:190: 2025-10-09T15:50:49+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:50:54 main.go:376: 2025-10-09T15:50:54+03:00 [INFO] metrics: msgs/s~267, redisOps/s~532, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:5041 bybit:1376 gate:689 okx:2401 uniswap_v2:15 uniswap_v3:138]
+2025/10/09 15:50:59 main.go:376: 2025-10-09T15:50:59+03:00 [INFO] metrics: msgs/s~217, redisOps/s~420, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:5662 bybit:1509 gate:763 okx:2660 uniswap_v2:15 uniswap_v3:138]
+2025/10/09 15:51:01 v2_connector.go:629: 2025-10-09T15:51:01+03:00 [INFO] uniswap_v2: USD USDCUSD price=1.00000000 weight=179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.0000 route=USDC
+2025/10/09 15:51:01 v2_connector.go:629: 2025-10-09T15:51:01+03:00 [INFO] uniswap_v2: USD WETHUSD price=4398.24744271 weight=46250193.5479 route=WETH->USDT
+2025/10/09 15:51:01 graph_pricer.go:190: 2025-10-09T15:51:01+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:51:01 graph_pricer.go:190: 2025-10-09T15:51:01+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/09 15:51:02 graph_pricer.go:190: 2025-10-09T15:51:02+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:51:02 graph_pricer.go:190: 2025-10-09T15:51:02+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:51:04 main.go:376: 2025-10-09T15:51:04+03:00 [INFO] metrics: msgs/s~236, redisOps/s~488, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:6276 bybit:1681 gate:858 okx:2915 uniswap_v2:18 uniswap_v3:178]
+2025/10/09 15:51:09 main.go:376: 2025-10-09T15:51:09+03:00 [INFO] metrics: msgs/s~216, redisOps/s~422, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:6905 bybit:1801 gate:939 okx:3166 uniswap_v2:18 uniswap_v3:178]
+2025/10/09 15:51:14 main.go:376: 2025-10-09T15:51:14+03:00 [INFO] metrics: msgs/s~218, redisOps/s~445, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:7535 bybit:1936 gate:992 okx:3412 uniswap_v2:18 uniswap_v3:206]
+2025/10/09 15:51:19 main.go:376: 2025-10-09T15:51:19+03:00 [INFO] metrics: msgs/s~202, redisOps/s~398, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:8109 bybit:2074 gate:1048 okx:3655 uniswap_v2:18 uniswap_v3:206]
+2025/10/09 15:51:24 main.go:376: 2025-10-09T15:51:24+03:00 [INFO] metrics: msgs/s~223, redisOps/s~452, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:8693 bybit:2251 gate:1122 okx:3933 uniswap_v2:18 uniswap_v3:206]
+2025/10/09 15:51:26 graph_pricer.go:190: 2025-10-09T15:51:26+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:51:26 graph_pricer.go:190: 2025-10-09T15:51:26+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:51:29 main.go:376: 2025-10-09T15:51:29+03:00 [INFO] metrics: msgs/s~228, redisOps/s~455, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:9318 bybit:2384 gate:1195 okx:4224 uniswap_v2:18 uniswap_v3:226]
+2025/10/09 15:51:34 main.go:376: 2025-10-09T15:51:34+03:00 [INFO] metrics: msgs/s~221, redisOps/s~444, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:9939 bybit:2536 gate:1257 okx:4494 uniswap_v2:18 uniswap_v3:226]
+2025/10/09 15:51:39 main.go:376: 2025-10-09T15:51:39+03:00 [INFO] metrics: msgs/s~206, redisOps/s~410, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:10568 bybit:2629 gate:1318 okx:4741 uniswap_v2:18 uniswap_v3:226]
+2025/10/09 15:51:41 v2_connector.go:629: 2025-10-09T15:51:41+03:00 [INFO] uniswap_v2: USD WETHUSD price=4398.24744271 weight=46250193.5479 route=WETH->USDT
+2025/10/09 15:51:41 v2_connector.go:629: 2025-10-09T15:51:41+03:00 [INFO] uniswap_v2: USD SPXUSD price=1.50407938 weight=8900354.3373 route=SPX->WETH->USDT
+2025/10/09 15:51:44 main.go:376: 2025-10-09T15:51:44+03:00 [INFO] metrics: msgs/s~210, redisOps/s~421, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:11190 bybit:2760 gate:1368 okx:4969 uniswap_v2:21 uniswap_v3:242]
+2025/10/09 15:51:49 main.go:376: 2025-10-09T15:51:49+03:00 [INFO] metrics: msgs/s~202, redisOps/s~408, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:11736 bybit:2920 gate:1437 okx:5206 uniswap_v2:21 uniswap_v3:242]
+2025/10/09 15:51:49 v2_connector.go:629: 2025-10-09T15:51:49+03:00 [INFO] uniswap_v2: USD SNXUSD price=1.10591984 weight=140502.8002 route=SNX->WETH->USDT
+2025/10/09 15:51:49 v2_connector.go:629: 2025-10-09T15:51:49+03:00 [INFO] uniswap_v2: USD WETHUSD price=4398.24744271 weight=46250193.5479 route=WETH->USDT
+2025/10/09 15:51:54 main.go:376: 2025-10-09T15:51:54+03:00 [INFO] metrics: msgs/s~209, redisOps/s~414, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:12290 bybit:3048 gate:1508 okx:5460 uniswap_v2:24 uniswap_v3:278]
+2025/10/09 15:51:59 main.go:376: 2025-10-09T15:51:59+03:00 [INFO] metrics: msgs/s~185, redisOps/s~373, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:12828 bybit:3165 gate:1560 okx:5676 uniswap_v2:24 uniswap_v3:278]
+2025/10/09 15:52:02 graph_pricer.go:190: 2025-10-09T15:52:02+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:52:02 graph_pricer.go:190: 2025-10-09T15:52:02+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/09 15:52:04 main.go:376: 2025-10-09T15:52:04+03:00 [INFO] metrics: msgs/s~255, redisOps/s~500, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:13425 bybit:3404 gate:1649 okx:5991 uniswap_v2:24 uniswap_v3:314]
+2025/10/09 15:52:09 main.go:376: 2025-10-09T15:52:09+03:00 [INFO] metrics: msgs/s~244, redisOps/s~496, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:14033 bybit:3590 gate:1744 okx:6321 uniswap_v2:24 uniswap_v3:314]
+2025/10/09 15:52:12 bitget.go:137: 2025-10-09T15:52:12+03:00 [ERROR] Bitget read error: websocket: close 1006 (abnormal closure): unexpected EOF
+2025/10/09 15:52:12 bitget.go:86: 2025-10-09T15:52:12+03:00 [INFO] Bitget ReadLoop exiting
+2025/10/09 15:52:12 bitget.go:198: 2025-10-09T15:52:12+03:00 [INFO] closing Bitget client
+2025/10/09 15:52:12 main.go:37: 2025-10-09T15:52:12+03:00 [ERROR] Bitget exited with error: Bitget out channel closed
+2025/10/09 15:52:12 main.go:51: 2025-10-09T15:52:12+03:00 [INFO] restarting Bitget after 1s
+2025/10/09 15:52:13 bitget.go:31: 2025-10-09T15:52:13+03:00 [INFO] connecting to Bitget WS wss://ws.bitget.com/v2/ws/public
+2025/10/09 15:52:14 main.go:376: 2025-10-09T15:52:14+03:00 [INFO] metrics: msgs/s~200, redisOps/s~402, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:14389 bybit:3779 gate:1828 okx:6652 uniswap_v2:24 uniswap_v3:354]
+2025/10/09 15:52:14 bitget.go:37: 2025-10-09T15:52:14+03:00 [INFO] Bitget connected
+2025/10/09 15:52:18 bitget.go:211: 2025-10-09T15:52:18+03:00 [ERROR] Bitget ping error: use of closed network connection
+2025/10/09 15:52:19 main.go:376: 2025-10-09T15:52:19+03:00 [INFO] metrics: msgs/s~153, redisOps/s~304, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:14724 bybit:3946 gate:1867 okx:6878 uniswap_v2:24 uniswap_v3:354]
+2025/10/09 15:52:22 main.go:390: 2025-10-09T15:52:22+03:00 [INFO] Shutting down...
+2025/10/09 15:52:22 main.go:45: 2025-10-09T15:52:22+03:00 [INFO] Bybit stop requested
+2025/10/09 15:52:22 main.go:45: 2025-10-09T15:52:22+03:00 [INFO] uniswap_v4 stop requested
+2025/10/09 15:52:22 main.go:45: 2025-10-09T15:52:22+03:00 [INFO] uniswap_v3 stop requested
+2025/10/09 15:52:22 main.go:37: 2025-10-09T15:52:22+03:00 [ERROR] uniswap_v4 exited with error: context canceled
+2025/10/09 15:52:22 main.go:45: 2025-10-09T15:52:22+03:00 [INFO] uniswap_v2 stop requested
+2025/10/09 15:52:22 main.go:45: 2025-10-09T15:52:22+03:00 [INFO] OKX stop requested
+2025/10/09 15:52:22 main.go:45: 2025-10-09T15:52:22+03:00 [INFO] Bitget stop requested
+2025/10/09 15:52:22 main.go:45: 2025-10-09T15:52:22+03:00 [INFO] Gate stop requested
+2025/10/09 15:52:22 okx.go:134: 2025-10-09T15:52:22+03:00 [INFO] closing OKX client
+2025/10/09 15:52:22 bybit.go:123: 2025-10-09T15:52:22+03:00 [INFO] closing Bybit client
+2025/10/09 15:52:22 bitget.go:198: 2025-10-09T15:52:22+03:00 [INFO] closing Bitget client
+2025/10/09 15:52:22 gateio.go:129: 2025-10-09T15:52:22+03:00 [INFO] closing Gate client
+2025/10/09 15:52:22 gateio.go:64: 2025-10-09T15:52:22+03:00 [ERROR] Gate read error: read tcp 10.28.4.2:48018->54.250.138.38:443: use of closed network connection
+2025/10/09 15:52:22 main.go:37: 2025-10-09T15:52:22+03:00 [ERROR] uniswap_v2 exited with error: context canceled
+2025/10/09 15:52:22 connect_uniswap_v3_all.go:381: 2025-10-09T15:52:22+03:00 [INFO] uniswap_v3 connector stopped, emitted=180 reconnects=0
+2025/10/09 15:52:22 okx.go:90: 2025-10-09T15:52:22+03:00 [ERROR] OKX read error: read tcp 10.28.4.2:40528->172.64.144.82:8443: use of closed network connection
+2025/10/09 15:52:22 main.go:37: 2025-10-09T15:52:22+03:00 [ERROR] OKX exited with error: OKX out channel closed
+2025/10/09 15:52:22 bybit.go:63: 2025-10-09T15:52:22+03:00 [ERROR] Bybit read error: read tcp 10.28.4.2:58904->108.156.22.66:443: use of closed network connection
+2025/10/09 15:52:22 main.go:37: 2025-10-09T15:52:22+03:00 [ERROR] Bybit exited with error: Bybit out channel closed
+2025/10/09 15:52:22 bitget.go:137: 2025-10-09T15:52:22+03:00 [ERROR] Bitget read error: read tcp 10.28.4.2:35428->13.33.235.58:443: use of closed network connection
+2025/10/09 15:52:22 main.go:37: 2025-10-09T15:52:22+03:00 [ERROR] Bitget exited with error: Bitget out channel closed
+2025/10/09 15:52:22 main.go:37: 2025-10-09T15:52:22+03:00 [ERROR] Gate exited with error: Gate out channel closed
+2025/10/09 15:52:22 gateio.go:58: 2025-10-09T15:52:22+03:00 [INFO] Gate ReadLoop exiting
+2025/10/09 15:52:22 main.go:37: 2025-10-09T15:52:22+03:00 [ERROR] uniswap_v3 exited with error: context canceled
+2025/10/09 15:52:22 okx.go:66: 2025-10-09T15:52:22+03:00 [INFO] OKX ReadLoop exiting
+2025/10/09 15:52:22 bybit.go:57: 2025-10-09T15:52:22+03:00 [INFO] Bybit ReadLoop for Bybit exiting
+2025/10/09 15:52:22 bitget.go:86: 2025-10-09T15:52:22+03:00 [INFO] Bitget ReadLoop exiting
