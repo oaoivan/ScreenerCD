@@ -10,27 +10,36 @@ import (
 	"time"
 )
 
-const maxLogLines = 1000
+const (
+	maxLogLines   = 1000
+	logBufferSize = 64 * 1024
+)
 
 var (
 	// Level controls logging verbosity: "debug", "info", "error"
-	Level   = "info"
-	Logger  *log.Logger
-	logFile *os.File
+	Level     = "info"
+	Logger    *log.Logger
+	logWriter *lineLimitedWriter
 )
 
+// lineLimitedWriter keeps only the freshest maxLines lines in the log file.
 type lineLimitedWriter struct {
 	file     *os.File
 	maxLines int
 	mu       sync.Mutex
+	buffer   []byte
 }
 
 func newLineLimitedWriter(path string, maxLines int) (*lineLimitedWriter, error) {
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0o666)
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0o666)
 	if err != nil {
 		return nil, err
 	}
-	llw := &lineLimitedWriter{file: f, maxLines: maxLines}
+	llw := &lineLimitedWriter{
+		file:     f,
+		maxLines: maxLines,
+		buffer:   make([]byte, logBufferSize),
+	}
 	if err := llw.trimUnlocked(); err != nil {
 		_ = f.Close()
 		return nil, err
@@ -41,13 +50,16 @@ func newLineLimitedWriter(path string, maxLines int) (*lineLimitedWriter, error)
 func (w *lineLimitedWriter) Write(p []byte) (int, error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
+
+	if _, err := w.file.Seek(0, io.SeekEnd); err != nil {
+		return 0, err
+	}
+
 	n, err := w.file.Write(p)
 	if err != nil {
 		return n, err
 	}
-	if err := w.trimUnlocked(); err != nil {
-		return n, err
-	}
+	_ = w.trimLocked()
 	return n, nil
 }
 
@@ -64,6 +76,12 @@ func (w *lineLimitedWriter) Sync() error {
 }
 
 func (w *lineLimitedWriter) trimUnlocked() error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.trimLocked()
+}
+
+func (w *lineLimitedWriter) trimLocked() error {
 	info, err := w.file.Stat()
 	if err != nil {
 		return err
@@ -73,25 +91,39 @@ func (w *lineLimitedWriter) trimUnlocked() error {
 		return nil
 	}
 
+	buf := w.buffer
+	if len(buf) == 0 {
+		buf = make([]byte, logBufferSize)
+		w.buffer = buf
+	}
+
 	var (
-		offset             = size
-		newlineCount       = 0
-		cutoff       int64 = 0
+		offset       = size
+		newlineCount = 0
+		cutoff       int64
 	)
-	const bufSize = 8192
-	buf := make([]byte, bufSize)
 
 	for offset > 0 && newlineCount <= w.maxLines {
-		readSize := bufSize
-		if int64(readSize) > offset {
-			readSize = int(offset)
+		chunk := int64(len(buf))
+		if chunk > offset {
+			chunk = offset
 		}
-		offset -= int64(readSize)
-		if _, err := w.file.ReadAt(buf[:readSize], offset); err != nil {
+		offset -= chunk
+		intChunk := int(chunk)
+		if intChunk == 0 {
+			break
+		}
+		data := buf[:intChunk]
+		n, err := w.file.ReadAt(data, offset)
+		if err != nil && err != io.EOF {
 			return err
 		}
-		for i := readSize - 1; i >= 0; i-- {
-			if buf[i] == '\n' {
+		if n <= 0 {
+			continue
+		}
+		data = data[:n]
+		for i := len(data) - 1; i >= 0; i-- {
+			if data[i] == '\n' {
 				newlineCount++
 				if newlineCount > w.maxLines {
 					cutoff = offset + int64(i) + 1
@@ -104,30 +136,50 @@ func (w *lineLimitedWriter) trimUnlocked() error {
 		}
 	}
 
-	if newlineCount <= w.maxLines || cutoff == 0 {
+	if cutoff == 0 {
 		return nil
 	}
 
-	tailLen := size - cutoff
-	tail := make([]byte, tailLen)
-	if _, err := w.file.ReadAt(tail, cutoff); err != nil {
-		return err
+	tailSize := size - cutoff
+	if tailSize < 0 {
+		tailSize = 0
 	}
 
-	if err := w.file.Truncate(0); err != nil {
+	readOffset := cutoff
+	writeOffset := int64(0)
+	for readOffset < size {
+		chunk := int64(len(buf))
+		remaining := size - readOffset
+		if chunk > remaining {
+			chunk = remaining
+		}
+		intChunk := int(chunk)
+		if intChunk == 0 {
+			break
+		}
+		data := buf[:intChunk]
+		n, err := w.file.ReadAt(data, readOffset)
+		if err != nil && err != io.EOF {
+			return err
+		}
+		if n <= 0 {
+			break
+		}
+		data = data[:n]
+		if _, err := w.file.WriteAt(data, writeOffset); err != nil {
+			return err
+		}
+		readOffset += int64(n)
+		writeOffset += int64(n)
+	}
+
+	if err := w.file.Truncate(tailSize); err != nil {
 		return err
 	}
-	if _, err := w.file.Seek(0, io.SeekStart); err != nil {
+	if _, err := w.file.Seek(0, io.SeekEnd); err != nil {
 		return err
 	}
-	if _, err := w.file.Write(tail); err != nil {
-		return err
-	}
-	if err := w.file.Sync(); err != nil {
-		return err
-	}
-	_, err = w.file.Seek(0, io.SeekEnd)
-	return err
+	return w.file.Sync()
 }
 
 func init() {
@@ -139,11 +191,10 @@ func init() {
 		log.Fatalf("failed to create log dir: %v", err)
 	}
 	logPath := "screner.log"
-	limitedWriter, err := newLineLimitedWriter(logPath, maxLogLines)
+	logWriter, err = newLineLimitedWriter(logPath, maxLogLines)
 	if err != nil {
 		log.Fatalf("error opening log file: %v", err)
 	}
-	logFile = limitedWriter.file
 
 	logToStdout := true
 	if env := strings.TrimSpace(os.Getenv("SCR_LOG_STDOUT")); env != "" {
@@ -156,7 +207,7 @@ func init() {
 	if logToStdout {
 		writers = append(writers, os.Stdout)
 	}
-	writers = append(writers, limitedWriter)
+	writers = append(writers, logWriter)
 	mw := io.MultiWriter(writers...)
 	Logger = log.New(mw, "", log.Ldate|log.Ltime|log.Lshortfile)
 	Infof("logger initialized, output=%s", logPath)
@@ -196,9 +247,9 @@ func Errorf(formatStr string, v ...interface{}) {
 // Fatalf logs fatal messages and exits the application
 func Fatalf(formatStr string, v ...interface{}) {
 	Logger.Output(2, format("[FATAL] "+formatStr, v...))
-	if logFile != nil {
-		_ = logFile.Sync()
-		_ = logFile.Close()
+	if logWriter != nil {
+		_ = logWriter.Sync()
+		_ = logWriter.Close()
 	}
 	os.Exit(1)
 }

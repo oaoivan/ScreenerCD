@@ -2,7 +2,7 @@
 
 ## 0. Итог и фикс
 - На шаге подписки WS использовался адрес PoolManager из `.env` (`POOLMANAGER_V4=0x868031d4cba8b7a8e7a3e97b4dab7fa5120e061a`), для которого `eth_getCode` возвращает `0x`, то есть контракт отсутствует. Подтверждение — запрос к Alchemy (`eth_getCode`) в `curl` показал пустой байткод.
-- Реальный PoolManager для сетки Ethereum, фигурирующий в `ticker_source/geckoterminal_pools.json`, — `0x000000000004444c5dc75cb358380d2e3de08a90`. Именно этот адрес выдаёт полноценный байткод (`eth_getCode` → длинный hex).
+- Реальный PoolManager для сетки Ethereum, фигурирующий в `ticker_source/base_pools.json`, — `0x000000000004444c5dc75cb358380d2e3de08a90`. Именно этот адрес выдаёт полноценный байткод (`eth_getCode` → длинный hex).
 - Из-за подписки на «пустой» адрес коннектор не получал ни одного события `Swap`, поэтому пайплайн дальше (store→pricing→Redis) оставался пустым.
 - Обновил `.env` (`POOLMANAGER_V4`) на корректный адрес. После перезапуска сервиса ожидаем появление строк `uniswap_v4: swap…`/`pricing update…` и рост `perExchange["uniswap_v4"]` в `metrics`, что подтвердит попадание данных в Redis.
 

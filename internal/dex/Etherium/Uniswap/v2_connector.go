@@ -865,6 +865,7 @@ type geckoPoolFile struct {
 }
 
 type geckoPool struct {
+	AMMVersion  string     `json:"amm_version"`
 	Dex         string     `json:"dex"`
 	Network     string     `json:"network"`
 	PairName    string     `json:"pair_name"`
@@ -891,13 +892,13 @@ var (
 	}
 )
 
-// LoadPoolsFromGecko парсит geckoterminal JSON и возвращает набор пулов Uniswap V2 с дефолтным реестром токенов.
-func LoadPoolsFromGecko(path string) ([]PoolConfig, error) {
-	return LoadPoolsFromGeckoWithRegistry(path, nil)
+// LoadPoolsFromSource parses pools JSON (legacy GeckoTerminal or base_pools.json) and returns Uniswap V2 pools using the default registry.
+func LoadPoolsFromSource(path string) ([]PoolConfig, error) {
+	return LoadPoolsFromSourceWithRegistry(path, nil)
 }
 
-// LoadPoolsFromGeckoWithRegistry аналогичен LoadPoolsFromGecko, но позволяет передать внешний реестр токенов.
-func LoadPoolsFromGeckoWithRegistry(path string, registry *TokenRegistry) ([]PoolConfig, error) {
+// LoadPoolsFromSourceWithRegistry allows passing an explicit token registry for pool normalization.
+func LoadPoolsFromSourceWithRegistry(path string, registry *TokenRegistry) ([]PoolConfig, error) {
 	if registry == nil {
 		registry = NewTokenRegistry(nil, "")
 	}
@@ -914,7 +915,10 @@ func LoadPoolsFromGeckoWithRegistry(path string, registry *TokenRegistry) ([]Poo
 	result := make([]PoolConfig, 0, len(file.Entries))
 	seen := make(map[common.Address]bool)
 	for _, entry := range file.Entries {
-		if !strings.EqualFold(entry.Dex, "uniswap_v2") {
+		if !matchesAMMVersion(entry.AMMVersion, entry.Dex, "v2") {
+			continue
+		}
+		if !isUniswapDex(entry.Dex) {
 			continue
 		}
 		if !strings.Contains(strings.ToLower(entry.Network), "eth") {
@@ -1046,6 +1050,16 @@ func LoadPoolsFromGeckoWithRegistry(path string, registry *TokenRegistry) ([]Poo
 	}
 
 	return result, nil
+}
+
+// LoadPoolsFromGecko is kept for backward compatibility.
+func LoadPoolsFromGecko(path string) ([]PoolConfig, error) {
+	return LoadPoolsFromSource(path)
+}
+
+// LoadPoolsFromGeckoWithRegistry is kept for backward compatibility.
+func LoadPoolsFromGeckoWithRegistry(path string, registry *TokenRegistry) ([]PoolConfig, error) {
+	return LoadPoolsFromSourceWithRegistry(path, registry)
 }
 
 // AdjustPoolsOrdering проверяет фактический порядок token0/token1 через RPC и при необходимости переставляет метаданные.

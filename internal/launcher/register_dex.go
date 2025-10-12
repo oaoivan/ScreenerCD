@@ -88,7 +88,7 @@ func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 	}
 	path := dexCfg.ResolvePoolsPath(sharedPools)
 	registry := uniswap.NewTokenRegistry(assetsProvider, dexCfg.Network)
-	pools, err := uniswap.LoadPoolsFromGeckoWithRegistry(path, registry)
+	pools, err := uniswap.LoadPoolsFromSourceWithRegistry(path, registry)
 	if err != nil {
 		return uniswap.Config{}, err
 	}

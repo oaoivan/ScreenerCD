@@ -5,7 +5,7 @@ api_key: ""
 secret: ""
 
 shared_pools:
-  file: "ticker_source/geckoterminal_pools.json"
+  file: "ticker_source/base_pools.json"
   env: "GECKO_POOLS_JSON"
 
 assets_registry:
@@ -19,8 +19,8 @@ exchange_configs:
   - name: "okx"
 
 redis: 
-  host: "localhost"
-  port: 6379
+  host: "127.0.0.1"
+  port: 6380
 
 logging: 
   level: "info"
@@ -67,7 +67,7 @@ dex_configs:
     log_all_events: false
     stop_on_ack_error: false
     pools_source:
-      file: "ticker_source/geckoterminal_pools.json"
+      file: "ticker_source/base_pools.json"
       env: "GECKO_POOLS_JSON"
       gecko_dex: "uniswap_v3"
       gecko_network: "ethereum"
@@ -84,7 +84,7 @@ dex_configs:
     log_all_events: true                                          # включает детальный лог raw-фреймов
     stop_on_ack_error: true                                       # аварийно останавливаемся, если ack вернул ошибку
     pools_source:
-      file: "ticker_source/geckoterminal_pools.json"             # общий список пулов, фильтруемый по dex/network
+      file: "ticker_source/base_pools.json"             # общий список пулов, фильтруемый по dex/network
       env: "GECKO_POOLS_JSON"
       gecko_dex: "uniswap_v4"
       gecko_network: "ethereum"

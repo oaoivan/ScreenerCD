@@ -239,7 +239,7 @@ func (r *RedisConfig) RedisAddress() string {
 		return fmt.Sprintf("%s:%d", r.Host, r.Port)
 	}
 	// fallback
-	return "localhost:6379"
+	return "127.0.0.1:6380"
 }
 
 func LoadConfig(filePath string) (*Config, error) {

@@ -19,6 +19,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gorilla/websocket"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/util"
@@ -27,13 +28,14 @@ import (
 
 const (
 	poolManagerABIPath  = "ABI/Uniswap/V4/UniswapV4PoolManager.json"
-	defaultPoolsPath    = "ticker_source/geckoterminal_pools.json"
+	defaultPoolsPath    = "ticker_source/base_pools.json"
 	defaultExchangeName = "uniswap_v4"
 )
 
 var (
 	twoPow192       = new(big.Int).Lsh(big.NewInt(1), 192)
 	pow10Cache      sync.Map
+	poolKeyHashArgs = mustBuildPoolKeyArgs()
 	errOnceComplete = errors.New("uniswap_v4: once completed")
 	errStablePool   = errors.New("uniswap_v4: stable-stable pool skipped")
 )
@@ -87,19 +89,26 @@ type PoolMeta struct {
 
 // GeckoEntry описывает запись GeckoTerminal с параметрами пула.
 type GeckoEntry struct {
+	AMMVersion string `json:"amm_version"`
 	Dex        string `json:"dex"`
 	Network    string `json:"network"`
 	lastUpdate time.Time
 	PairName   string       `json:"pair_name"`
 	PoolID     string       `json:"pool_id"`
 	PoolAddr   string       `json:"pool_address"`
+	PoolMgr    string       `json:"pool_manager"`
 	Token0     GeckoToken   `json:"token0"`
 	Token1     GeckoToken   `json:"token1"`
 	PoolKey    GeckoPoolKey `json:"pool_key"`
 }
 
 type GeckoPoolKey struct {
-	Hooks string `json:"hooks"`
+	Currency0   string         `json:"currency0"`
+	Currency1   string         `json:"currency1"`
+	Fee         geckoIntOrText `json:"fee"`
+	TickSpacing geckoIntOrText `json:"tickSpacing"`
+	Hooks       string         `json:"hooks"`
+	Status      string         `json:"status"`
 }
 
 // GeckoToken описывает структуру токена из GeckoTerminal.
@@ -586,7 +595,10 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 		if err := ctxErr(ctx); err != nil {
 			return nil, err
 		}
-		if !strings.EqualFold(entry.Dex, "uniswap_v4") {
+		if !matchesAMMVersion(entry.AMMVersion, entry.Dex, "v4") {
+			continue
+		}
+		if !isUniswapDex(entry.Dex) {
 			continue
 		}
 		if networkFilter != "" && !strings.EqualFold(entry.Network, networkFilter) {
@@ -601,7 +613,7 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 		pool, err := c.poolFromGecko(entry)
 		if err != nil {
 			if errors.Is(err, errStablePool) {
-				util.Infof("uniswap_v4: skip stable pool pair=%s pool_id=%s token0=%s token1=%s", normalizePairName(entry.PairName, entry.Token0.Symbol, entry.Token1.Symbol), strings.TrimSpace(entry.PoolID), strings.ToUpper(strings.TrimSpace(entry.Token0.Symbol)), strings.ToUpper(strings.TrimSpace(entry.Token1.Symbol)))
+				util.Infof("uniswap_v4: skip stable pool pair=%s pool_id=%s token0=%s token1=%s", normalizePairName(entry.PairName, entry.Token0.Symbol, entry.Token1.Symbol), safePoolIDHex(entry), strings.ToUpper(strings.TrimSpace(entry.Token0.Symbol)), strings.ToUpper(strings.TrimSpace(entry.Token1.Symbol)))
 				continue
 			}
 			util.Errorf("uniswap_v4: skip pool %s: %v", entry.PairName, err)
@@ -616,11 +628,10 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 
 // poolFromGecko конвертирует запись GeckoTerminal в конфиг пула V4.
 func (c *V4Connector) poolFromGecko(entry GeckoEntry) (V4PoolConfig, error) {
-	poolID := strings.TrimSpace(entry.PoolID)
-	if !strings.HasPrefix(poolID, "0x") || len(poolID) != 66 {
-		return V4PoolConfig{}, fmt.Errorf("invalid pool_id=%s", entry.PoolID)
+	pid, err := derivePoolID(entry)
+	if err != nil {
+		return V4PoolConfig{}, fmt.Errorf("pool_id: %w", err)
 	}
-	pid := common.HexToHash(poolID)
 
 	token0, err := c.buildTokenMeta(entry.Token0.Address, entry.Token0.Symbol, int(entry.Token0.Decimals))
 	if err != nil {
@@ -665,6 +676,91 @@ func parseOptionalAddress(raw string) common.Address {
 		return common.Address{}
 	}
 	return common.HexToAddress(addr)
+}
+
+func mustBuildPoolKeyArgs() abi.Arguments {
+	addrType, err := abi.NewType("address", "", nil)
+	if err != nil {
+		panic(err)
+	}
+	uint24Type, err := abi.NewType("uint24", "", nil)
+	if err != nil {
+		panic(err)
+	}
+	int24Type, err := abi.NewType("int24", "", nil)
+	if err != nil {
+		panic(err)
+	}
+	return abi.Arguments{
+		{Type: addrType},
+		{Type: addrType},
+		{Type: uint24Type},
+		{Type: int24Type},
+		{Type: addrType},
+	}
+}
+
+func derivePoolID(entry GeckoEntry) (common.Hash, error) {
+	if hash, ok := parseExistingPoolID(entry.PoolID); ok {
+		return hash, nil
+	}
+	currency0, err := parseCurrencyAddress(entry.PoolKey.Currency0)
+	if err != nil {
+		return common.Hash{}, fmt.Errorf("currency0: %w", err)
+	}
+	currency1, err := parseCurrencyAddress(entry.PoolKey.Currency1)
+	if err != nil {
+		return common.Hash{}, fmt.Errorf("currency1: %w", err)
+	}
+	fee := int(entry.PoolKey.Fee)
+	if fee <= 0 {
+		return common.Hash{}, fmt.Errorf("invalid pool_key fee=%d", fee)
+	}
+	tickSpacing := int(entry.PoolKey.TickSpacing)
+	if tickSpacing == 0 {
+		return common.Hash{}, fmt.Errorf("invalid pool_key tickSpacing=%d", tickSpacing)
+	}
+	packed, err := poolKeyHashArgs.Pack(
+		currency0,
+		currency1,
+		big.NewInt(int64(fee)),
+		big.NewInt(int64(tickSpacing)),
+		parseOptionalAddress(entry.PoolKey.Hooks),
+	)
+	if err != nil {
+		return common.Hash{}, err
+	}
+	return crypto.Keccak256Hash(packed), nil
+}
+
+func parseExistingPoolID(raw string) (common.Hash, bool) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return common.Hash{}, false
+	}
+	bytes := common.FromHex(raw)
+	if len(bytes) != common.HashLength {
+		return common.Hash{}, false
+	}
+	return common.BytesToHash(bytes), true
+}
+
+func parseCurrencyAddress(raw string) (common.Address, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return common.Address{}, fmt.Errorf("empty currency address")
+	}
+	if !strings.HasPrefix(strings.ToLower(raw), "0x") || !common.IsHexAddress(raw) {
+		return common.Address{}, fmt.Errorf("invalid currency address=%s", raw)
+	}
+	return common.HexToAddress(raw), nil
+}
+
+func safePoolIDHex(entry GeckoEntry) string {
+	if hash, err := derivePoolID(entry); err == nil {
+		return hash.Hex()
+	}
+	return strings.TrimSpace(entry.PoolID)
 }
 
 // buildTokenMeta нормализует токен из JSON и обогащает его через реестр.

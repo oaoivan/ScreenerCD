@@ -1,6 +1,6 @@
 package uniswap
 
-// Подписка на ВСЕ Uniswap V3 пулы (ETH сеть) из geckoterminal_pools.json одним WS подключением Alchemy.
+// Подписка на ВСЕ Uniswap V3 пулы (ETH сеть) из base_pools.json одним WS подключением Alchemy.
 // Цель: стрим всех Swap/Sync-подобных событий (в V3 – Swap) для проверки формулы цены.
 // Минимальная версия: логирует sqrtPriceX96 и выводит price(token1/token0) и inverse без нормализации по decimals (если ещё не загружены).
 // При первом событии пула — лениво подтягиваем token0/token1 metadata (symbol, decimals) через eth_call по тому же WS.
@@ -81,6 +81,7 @@ func (v *v3IntOrString) UnmarshalJSON(b []byte) error {
 }
 
 type v3GeckoPool struct {
+	AMMVersion  string `json:"amm_version"`
 	Dex         string `json:"dex"`
 	PairName    string `json:"pair_name"`
 	PoolID      string `json:"pool_id"`
@@ -501,7 +502,10 @@ func v3LoadPools(cfg V3Config) error {
 	v3Pools = make(map[common.Address]*v3PoolMeta)
 	added := 0
 	for _, e := range f.Entries {
-		if dexFilter != "" && !strings.EqualFold(e.Dex, dexFilter) {
+		if !matchesAMMVersion(e.AMMVersion, e.Dex, "v3") {
+			continue
+		}
+		if dexFilter != "" && !dexMatches(e.Dex, dexFilter) {
 			continue
 		}
 		if networkFilter != "" && !strings.Contains(strings.ToLower(e.Network), networkFilter) {

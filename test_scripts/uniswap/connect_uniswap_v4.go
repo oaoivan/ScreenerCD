@@ -214,7 +214,7 @@ func loadABI() error {
 func loadPools() error {
 	path := os.Getenv("GECKO_POOLS_JSON")
 	if path == "" {
-		path = "ticker_source/geckoterminal_pools.json"
+		path = "ticker_source/base_pools.json"
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {

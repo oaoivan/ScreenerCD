@@ -128,11 +128,11 @@
 - **3.1.1.** Добавить в `configs/screener-core.yaml` пример секции `dex_configs` для `uniswap_v4` с обязательными полями и комментариями.
 - **3.1.2.** Расширить `internal/config/config.go`, чтобы `DexConfig` понимал новые поля (например, `max_meta_workers`, `swap_only`, `stop_on_ack_error`, если они актуальны для V4).
 - **3.1.3.** Обновить `internal/config` для валидации значений V4 (непустой `ws_url`, корректные пути к пулам, диапазоны для батчей и таймаутов).
-- **3.1.4.** Если V4 использует GeckoTerminal JSON, расширить `ticker_source/geckoterminal_pools.json` или добавить отдельный файл с пулов и описать формат (PoolManager address, tokens, decimals).
+- **3.1.4.** Если V4 использует GeckoTerminal JSON, расширить `ticker_source/base_pools.json` или добавить отдельный файл с пулов и описать формат (PoolManager address, tokens, decimals).
 
 ### Итог по шагу 3.1.4
 
-- Сохраняем основной источник `ticker_source/geckoterminal_pools.json`: в нём уже присутствуют записи `dex="uniswap_v4"` с полями `pool_id`, `pair_name`, `token{0,1}` и блоком `pool_key` (fee, tickSpacing, hooks).
+- Сохраняем основной источник `ticker_source/base_pools.json`: в нём уже присутствуют записи `dex="uniswap_v4"` с полями `pool_id`, `pair_name`, `token{0,1}` и блоком `pool_key` (fee, tickSpacing, hooks).
 - Коннектор V4 (тестовый `connect_uniswap_v4.go`) подтягивает адрес PoolManager из окружения `POOLMANAGER_V4`, поэтому дополнительных полей в JSON не требуется; в production-конфиге `pool_manager` зададим в `dex_configs`.
 - Для фильтрации используем поля `dex`, `network` и `pair_name`; WantedPairs остаются в конфиге и не требуют изменения структуры JSON.
 - При необходимости расширить метаданные можно добавлять новые ключи — существующие коннекторы (V2/V3) их игнорируют благодаря строгим Go-структурам.

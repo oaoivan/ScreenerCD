@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	pools, err := uniswap.LoadPoolsFromGecko("ticker_source/geckoterminal_pools.json")
+	pools, err := uniswap.LoadPoolsFromSource("ticker_source/base_pools.json")
 	if err != nil {
 		log.Fatal(err)
 	}

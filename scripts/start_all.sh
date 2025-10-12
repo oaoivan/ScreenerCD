@@ -4,8 +4,8 @@
 # - --docker-all: run everything via docker compose (redis + screener-core)
 #
 # Environment overrides:
-#   REDIS_HOST (default: localhost)
-#   REDIS_PORT (default: 6379)
+#   REDIS_HOST (default: 127.0.0.1)
+#   REDIS_PORT (default: 6380)
 #
 # Exit codes: 0 ok, non-zero on failure. Verbose logging always on.
 
@@ -20,8 +20,8 @@ LOG_FILE="$ROOT_DIR/screner.log"
 APP_BIN="$ROOT_DIR/build/screener-core"
 APP_SRC="./cmd/screener-core"
 
-REDIS_HOST="${REDIS_HOST:-localhost}"
-REDIS_PORT="${REDIS_PORT:-6379}"
+REDIS_HOST="${REDIS_HOST:-127.0.0.1}"
+REDIS_PORT="${REDIS_PORT:-6380}"
 
 DOCKER_ALL=0
 NO_BUILD=0
