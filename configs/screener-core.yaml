@@ -26,10 +26,13 @@ logging:
   level: "info"
   file: "logs/screener.log"
 
-# DEX connectors configuration
+# DEX connectors configuration (каждая запись может повторять name для разных сетей)
 dex_configs:
   - name: "uniswap_v2"
+    dex_alias: "uniswap_v2"
     network: "ethereum"
+    network_id: "ethereum"
+    chain_id: 1
     ws_url: "wss://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
     http_url: "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
     subscribe_batch: 120
@@ -57,7 +60,10 @@ dex_configs:
         canonical_pair: "WETHUSDT"
 
   - name: "uniswap_v3"
+    dex_alias: "uniswap_v3"
     network: "ethereum"
+    network_id: "ethereum"
+    chain_id: 1
     ws_url: "wss://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
     http_url: "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
     subscribe_batch: 150
@@ -71,9 +77,16 @@ dex_configs:
       env: "GECKO_POOLS_JSON"
       gecko_dex: "uniswap_v3"
       gecko_network: "ethereum"
+      dexes: ["uniswap_v3"]
+      networks: ["ethereum"]
+      wanted_pairs_by_network:
+        ethereum: ["WETHUSDC"]
 
   - name: "uniswap_v4"
+    dex_alias: "uniswap_v4"
     network: "ethereum"
+    network_id: "ethereum"
+    chain_id: 1
     pool_manager: "${POOLMANAGER_V4}"                            # адрес PoolManager для выбранной сети
     ws_url: "wss://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"         # публичный WS провайдер (Alchemy, Infura и т.д.)
     http_url: "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"    # HTTP endpoint для eth_call / metadata
@@ -88,7 +101,28 @@ dex_configs:
       env: "GECKO_POOLS_JSON"
       gecko_dex: "uniswap_v4"
       gecko_network: "ethereum"
+      dexes: ["uniswap_v4"]
+      networks: ["ethereum"]
     wanted_pairs_only: false                                      # подписываемся на все доступные пулы из источника
+
+  # Пример второго инстанса Uniswap V3 на другой сети (закомментирован до готовности инфраструктуры)
+  # - name: "uniswap_v3"
+  #   dex_alias: "uniswap_v3"
+  #   network: "base"
+  #   network_id: "base-mainnet"
+  #   chain_id: 8453
+  #   ws_url: "wss://base-mainnet.g.alchemy.com/v2/${ALCHEMY_BASE_KEY}"
+  #   http_url: "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_BASE_KEY}"
+  #   subscribe_batch: 150
+  #   ping_interval: 25
+  #   max_meta_workers: 8
+  #   swap_only: true
+  #   pools_source:
+  #     file: "ticker_source/base_pools.json"
+  #     dexes: ["uniswap_v3"]
+  #     networks: ["base"]
+  #     gecko_dex: "uniswap_v3"
+  #     gecko_network: "base"
 
 # Performance tuning
 data_channel_buffer: 8192         # 8k–32k в зависимости от нагрузки

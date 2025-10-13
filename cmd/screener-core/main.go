@@ -210,9 +210,9 @@ func main() {
 	var pricer pricing.Pricer
 	if len(pricerRequiredBy) > 0 {
 		fallbackAnchors := []pricing.TokenInfo{
-			{Address: common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"), Symbol: "USDC", Decimals: 6},
-			{Address: common.HexToAddress("0xdac17f958d2ee523a2206206994597c13d831ec7"), Symbol: "USDT", Decimals: 6},
-			{Address: common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f"), Symbol: "DAI", Decimals: 18},
+			{Address: common.HexToAddress("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"), Symbol: "USDC", Decimals: 6, DexAlias: "global", Bridge: "USDC"},
+			{Address: common.HexToAddress("0xdac17f958d2ee523a2206206994597c13d831ec7"), Symbol: "USDT", Decimals: 6, DexAlias: "global", Bridge: "USDT"},
+			{Address: common.HexToAddress("0x6b175474e89094c44da98b954eedeac495271d0f"), Symbol: "DAI", Decimals: 18, DexAlias: "global", Bridge: "DAI"},
 		}
 		pricer = pricing.NewGraphPricerFromAssets(assetProvider, nil, fallbackAnchors)
 		util.Infof("Graph pricer enabled for DEX connectors: %s", strings.Join(pricerRequiredBy, ", "))
@@ -295,20 +295,21 @@ func main() {
 						flush()
 						return
 					}
+					networkSegment := util.NormalizeNetworkName(md.Network, uint64(md.ChainID))
 					// Raw key (как было)
-					keyRaw := fmt.Sprintf("price:%s:%s", md.Exchange, md.Symbol)
-					entryRaw := []interface{}{keyRaw, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol}
+					keyRaw := fmt.Sprintf("price:%s:%s:%s", networkSegment, md.Exchange, md.Symbol)
+					entryRaw := []interface{}{keyRaw, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol, "network", networkSegment, "chain_id", md.ChainID}
 					batch = append(batch, entryRaw)
 
 					// Canonical key для арбитража (нормализуем спот-символ)
 					canon := util.NormalizeSpotSymbol(md.Exchange, md.Symbol)
-					keyCanon := fmt.Sprintf("price_canon:%s:%s", canon, md.Exchange)
-					entryCanon := []interface{}{keyCanon, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol}
+					keyCanon := fmt.Sprintf("price_canon:%s:%s:%s", networkSegment, canon, md.Exchange)
+					entryCanon := []interface{}{keyCanon, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol, "network", networkSegment, "chain_id", md.ChainID}
 					batch = append(batch, entryCanon)
 					// metrics: processed messages
 					atomic.AddInt64(&totalProcessed, 1)
 					mu.Lock()
-					perExchange[md.Exchange]++
+					perExchange[fmt.Sprintf("%s@%s", md.Exchange, networkSegment)]++
 					mu.Unlock()
 					if len(batch) >= pipelineSize {
 						flush()

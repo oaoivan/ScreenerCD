@@ -17,6 +17,10 @@ type TokenInfo struct {
 	Address  common.Address
 	Symbol   string
 	Decimals int
+	DexAlias string
+	Network  string
+	ChainID  uint64
+	Bridge   string
 }
 
 // Result содержит итоговую USD-котировку и метаданные маршрута.
@@ -48,6 +52,7 @@ type GraphPricer struct {
 	edges   map[string]map[string]edge
 	symbols map[string]string
 	stables map[string]bool
+	bridges map[string]map[string]struct{}
 	maxHops int
 }
 
@@ -57,12 +62,43 @@ const (
 	equalWeightEpsilon = 1e-6
 )
 
+func normalizeNamespace(value string) string {
+	return strings.ToLower(strings.TrimSpace(value))
+}
+
+func canonicalSymbol(symbol string) string {
+	return strings.ToUpper(strings.TrimSpace(symbol))
+}
+
+func bridgeGroup(raw string) string {
+	return strings.ToUpper(strings.TrimSpace(raw))
+}
+
+func graphKey(info TokenInfo) (string, string) {
+	addr := normalizeAddr(info.Address)
+	if addr == "" {
+		return "", ""
+	}
+	dex := normalizeNamespace(info.DexAlias)
+	network := normalizeNamespace(info.Network)
+	parts := make([]string, 0, 3)
+	if dex != "" {
+		parts = append(parts, dex)
+	}
+	if network != "" {
+		parts = append(parts, network)
+	}
+	parts = append(parts, addr)
+	return strings.Join(parts, "|"), addr
+}
+
 // NewGraphPricer создаёт графовый агрегатор с предопределёнными стейблами.
 func newGraphPricer() *GraphPricer {
 	return &GraphPricer{
 		edges:   make(map[string]map[string]edge),
 		symbols: make(map[string]string),
 		stables: make(map[string]bool),
+		bridges: make(map[string]map[string]struct{}),
 		maxHops: defaultMaxHops,
 	}
 }
@@ -137,6 +173,9 @@ func anchorsFromProvider(provider *assets.Provider, networks []string) []TokenIn
 				Address:  token.Address,
 				Symbol:   token.Symbol,
 				Decimals: int(token.Decimals),
+				Network:  network,
+				ChainID:  token.ChainID,
+				Bridge:   token.CanonicalSymbol(),
 			}
 		}
 	}
@@ -160,34 +199,42 @@ func anchorsFromProvider(provider *assets.Provider, networks []string) []TokenIn
 
 // RegisterToken сохраняет символ токена для отображения маршрутов.
 func (g *GraphPricer) RegisterToken(token TokenInfo) {
-	addr := normalizeAddr(token.Address)
-	if addr == "" {
+	key, addr := graphKey(token)
+	if key == "" {
 		return
 	}
-	symbol := strings.ToUpper(strings.TrimSpace(token.Symbol))
+	symbol := canonicalSymbol(token.Symbol)
 	if symbol == "" {
-		symbol = addr
+		symbol = strings.ToUpper(addr)
 	}
+	bridge := bridgeGroup(token.Bridge)
 	g.mu.Lock()
-	g.symbols[addr] = symbol
+	g.symbols[key] = symbol
+	if bridge != "" {
+		g.linkBridgeLocked(bridge, key)
+	}
 	g.mu.Unlock()
 }
 
 // RegisterStable помечает токен как USD-якорь.
 func (g *GraphPricer) RegisterStable(token TokenInfo) {
-	addr := normalizeAddr(token.Address)
-	if addr == "" {
+	key, addr := graphKey(token)
+	if key == "" {
 		return
 	}
-	symbol := strings.ToUpper(strings.TrimSpace(token.Symbol))
+	symbol := canonicalSymbol(token.Symbol)
 	if symbol == "" {
-		symbol = addr
+		symbol = strings.ToUpper(addr)
 	}
+	bridge := bridgeGroup(token.Bridge)
 	g.mu.Lock()
-	g.symbols[addr] = symbol
-	g.stables[addr] = true
+	g.symbols[key] = symbol
+	g.stables[key] = true
+	if bridge != "" {
+		g.linkBridgeLocked(bridge, key)
+	}
 	g.mu.Unlock()
-	util.Infof("pricing: stable anchor %s (%s)", symbol, addr)
+	util.Infof("pricing: stable anchor %s (%s)", symbol, key)
 }
 
 // UpdatePair обновляет цену перехода между токенами (a -> b) и обратное направление.
@@ -202,9 +249,9 @@ func (g *GraphPricer) UpdatePair(a TokenInfo, b TokenInfo, priceAB float64, weig
 		ts = time.Now()
 	}
 
-	addrA := normalizeAddr(a.Address)
-	addrB := normalizeAddr(b.Address)
-	if addrA == "" || addrB == "" {
+	keyA, _ := graphKey(a)
+	keyB, _ := graphKey(b)
+	if keyA == "" || keyB == "" {
 		return
 	}
 
@@ -214,28 +261,28 @@ func (g *GraphPricer) UpdatePair(a TokenInfo, b TokenInfo, priceAB float64, weig
 	g.mu.Lock()
 	defer g.mu.Unlock()
 
-	g.setEdgeLocked(addrA, addrB, priceAB, weight, ts)
+	g.setEdgeLocked(keyA, keyB, priceAB, weight, ts)
 	inv := 1.0 / priceAB
 	if inv > 0 && !math.IsInf(inv, 0) && !math.IsNaN(inv) {
-		g.setEdgeLocked(addrB, addrA, inv, weight, ts)
+		g.setEdgeLocked(keyB, keyA, inv, weight, ts)
 	}
-	util.Debugf("pricing: update %s -> %s price=%.10f weight=%.4f", g.symbolUnsafe(addrA), g.symbolUnsafe(addrB), priceAB, weight)
+	util.Debugf("pricing: update %s -> %s price=%.10f weight=%.4f", g.symbolUnsafe(keyA), g.symbolUnsafe(keyB), priceAB, weight)
 }
 
 // ResolveUSD ищет кратчайший маршрут до стейблкоина и возвращает USD-котировку.
 func (g *GraphPricer) ResolveUSD(token TokenInfo) (Result, bool) {
-	addr := normalizeAddr(token.Address)
-	if addr == "" {
+	startKey, _ := graphKey(token)
+	if startKey == "" {
 		return Result{}, false
 	}
 
 	g.mu.RLock()
 	defer g.mu.RUnlock()
 
-	if g.stables[addr] {
+	if g.stables[startKey] {
 		return Result{
 			Price:     1.0,
-			Route:     []string{g.symbolUnsafe(addr)},
+			Route:     []string{g.symbolUnsafe(startKey)},
 			Weight:    math.MaxFloat64,
 			UpdatedAt: time.Now(),
 		}, true
@@ -252,13 +299,13 @@ func (g *GraphPricer) ResolveUSD(token TokenInfo) (Result, bool) {
 
 	visited := make(map[string]visitInfo)
 	queue := []queueItem{{
-		addr:   addr,
+		addr:   startKey,
 		price:  1.0,
 		weight: math.MaxFloat64,
-		path:   []string{addr},
+		path:   []string{startKey},
 		hops:   0,
 	}}
-	visited[addr] = visitInfo{weight: math.MaxFloat64, hops: 0}
+	visited[startKey] = visitInfo{weight: math.MaxFloat64, hops: 0}
 
 	best := Result{Weight: -1}
 	found := false
@@ -375,11 +422,36 @@ func (g *GraphPricer) setEdgeLocked(from, to string, price float64, weight float
 	neighbors[to] = edge{price: price, weight: weight, updatedAt: ts}
 }
 
+// linkBridgeLocked создаёт двунаправленные связи 1:1 между участниками bridge-группы.
+func (g *GraphPricer) linkBridgeLocked(group, key string) {
+	if group == "" || key == "" {
+		return
+	}
+	nodes, ok := g.bridges[group]
+	if !ok {
+		nodes = make(map[string]struct{})
+		g.bridges[group] = nodes
+	}
+	now := time.Now()
+	for existing := range nodes {
+		if existing == key {
+			continue
+		}
+		g.setEdgeLocked(existing, key, 1.0, math.MaxFloat64, now)
+		g.setEdgeLocked(key, existing, 1.0, math.MaxFloat64, now)
+	}
+	nodes[key] = struct{}{}
+}
+
 func (g *GraphPricer) symbolUnsafe(addr string) string {
 	if sym, ok := g.symbols[addr]; ok {
 		return sym
 	}
-	return addr
+	parts := strings.Split(addr, "|")
+	if len(parts) == 0 {
+		return addr
+	}
+	return parts[len(parts)-1]
 }
 
 func (g *GraphPricer) symbolPath(path []string) []string {

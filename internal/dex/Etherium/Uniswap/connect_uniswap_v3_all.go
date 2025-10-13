@@ -217,6 +217,8 @@ var (
 	v3OutChan        chan<- *pb.MarketData
 	v3OutMu          sync.RWMutex
 	v3ExchangeName   = "uniswap_v3"
+	v3NetworkName    = ""
+	v3ChainID        uint64
 	v3Pricer         pricing.Pricer
 	v3PricerMu       sync.RWMutex
 	v3MessageCount   uint64
@@ -245,7 +247,7 @@ func v3InitAssets(reg *TokenRegistry) {
 	provided := reg != nil
 	if reg == nil {
 		util.Debugf("uniswap_v3 assets: registry nil, using defaults")
-		reg = NewTokenRegistry(nil, "")
+		reg = NewTokenRegistry(nil, RegistryOptions{})
 	}
 	v3Registry = reg
 	lookup := v3FallbackStableSet()
@@ -311,11 +313,15 @@ func v3IsStableSymbol(symbol string) bool {
 
 type V3Config struct {
 	Exchange       string
+	Network        string
+	ChainID        uint64
 	WSURL          string
 	HTTPURL        string
 	PoolsPath      string
 	DexFilter      string
+	DexFilters     []string
 	NetworkFilter  string
+	NetworkFilters []string
 	BatchSize      int
 	PingInterval   time.Duration
 	StopOnAckError bool
@@ -323,6 +329,7 @@ type V3Config struct {
 	DecodeSwapOnly bool
 	MaxMetaWorkers int
 	Registry       *TokenRegistry
+	WantedPairs    []string
 }
 
 type V3Connector struct {
@@ -388,6 +395,17 @@ func v3Run(ctx context.Context, cfg V3Config, out chan<- *pb.MarketData, pricer 
 	}
 	v3ExchangeName = strings.ToLower(name)
 
+	networkName := strings.TrimSpace(cfg.Network)
+	if networkName == "" && cfg.Registry != nil {
+		networkName = cfg.Registry.NetworkName()
+	}
+	v3NetworkName = strings.ToLower(networkName)
+	chainID := cfg.ChainID
+	if chainID == 0 && cfg.Registry != nil {
+		chainID = cfg.Registry.ChainID()
+	}
+	v3ChainID = chainID
+
 	v3BatchSize = cfg.BatchSize
 	if v3BatchSize <= 0 {
 		v3BatchSize = v3BatchSizeDefault
@@ -417,7 +435,7 @@ func v3Run(ctx context.Context, cfg V3Config, out chan<- *pb.MarketData, pricer 
 	v3WETHUSDStable = ""
 	v3WethMu.Unlock()
 
-	util.Infof("uniswap_v3 pools=%d ws=%s", len(v3Pools), v3Mask(v3WSURL))
+	util.Infof("uniswap_v3: start exchange=%s network=%s chain_id=%d pools=%d ws=%s", v3ExchangeName, v3NetworkName, v3ChainID, len(v3Pools), v3Mask(v3WSURL))
 	return v3RunLoop(ctx)
 }
 
@@ -493,11 +511,23 @@ func v3LoadPools(cfg V3Config) error {
 	if err := json.Unmarshal(b, &f); err != nil {
 		return err
 	}
-	dexFilter := strings.TrimSpace(cfg.DexFilter)
-	if dexFilter == "" {
-		dexFilter = "uniswap_v3"
+	dexFilters := cfg.DexFilters
+	if len(dexFilters) == 0 {
+		trimmed := strings.TrimSpace(cfg.DexFilter)
+		if trimmed != "" {
+			dexFilters = []string{trimmed}
+		}
 	}
-	networkFilter := strings.ToLower(strings.TrimSpace(cfg.NetworkFilter))
+	if len(dexFilters) == 0 {
+		dexFilters = []string{"uniswap_v3"}
+	}
+	networkFilters := cfg.NetworkFilters
+	if len(networkFilters) == 0 {
+		trimmed := strings.TrimSpace(cfg.NetworkFilter)
+		if trimmed != "" {
+			networkFilters = []string{trimmed}
+		}
+	}
 
 	v3Pools = make(map[common.Address]*v3PoolMeta)
 	added := 0
@@ -505,10 +535,10 @@ func v3LoadPools(cfg V3Config) error {
 		if !matchesAMMVersion(e.AMMVersion, e.Dex, "v3") {
 			continue
 		}
-		if dexFilter != "" && !dexMatches(e.Dex, dexFilter) {
+		if len(dexFilters) > 0 && !dexMatchesAny(e.Dex, dexFilters) {
 			continue
 		}
-		if networkFilter != "" && !strings.Contains(strings.ToLower(e.Network), networkFilter) {
+		if len(networkFilters) > 0 && !networkMatchesAny(e.Network, networkFilters) {
 			continue
 		}
 		addrHex := e.PoolID
@@ -888,11 +918,14 @@ func v3Publish(symbol string, value *big.Rat) {
 		Symbol:    strings.ToUpper(strings.TrimSpace(symbol)),
 		Price:     f64,
 		Timestamp: time.Now().UnixMilli(),
+		Network:   v3NetworkName,
+		ChainID:   uint32(v3ChainID),
 	}
 	count := atomic.AddUint64(&v3MessageCount, 1)
 	if count%500 == 0 {
 		util.Infof("uniswap_v3 emitted %d market data messages", count)
 	}
+	util.Debugf("uniswap_v3: emit symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", md.Symbol, md.Price, md.Exchange, md.Network, v3ChainID)
 	out <- md
 }
 
@@ -923,12 +956,29 @@ func v3RegisterToken(meta v3TokenMeta) {
 		return
 	}
 	if pricer := v3CurrentPricer(); pricer != nil {
-		info := pricing.TokenInfo{Address: meta.Address, Symbol: meta.Symbol, Decimals: int(meta.Dec)}
+		info := v3MakeTokenInfo(meta)
 		pricer.RegisterToken(info)
 		if v3IsStableSymbol(meta.Symbol) {
 			pricer.RegisterStable(info)
 		}
 	}
+}
+
+func v3MakeTokenInfo(meta v3TokenMeta) pricing.TokenInfo {
+	info := pricing.TokenInfo{
+		Address:  meta.Address,
+		Symbol:   meta.Symbol,
+		Decimals: int(meta.Dec),
+		DexAlias: v3ExchangeName,
+		Network:  v3NetworkName,
+		ChainID:  v3ChainID,
+	}
+	if v3IsStableSymbol(meta.Symbol) {
+		info.Bridge = strings.ToUpper(strings.TrimSpace(meta.Symbol))
+	} else if meta.Address == v3WETHAddress {
+		info.Bridge = "WETH"
+	}
+	return info
 }
 
 func v3UpdatePricing(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat, amount0, amount1 *big.Int) {
@@ -939,8 +989,8 @@ func v3UpdatePricing(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat, amount0, a
 	if pricer == nil {
 		return
 	}
-	info0 := pricing.TokenInfo{Address: pm.Token0.Address, Symbol: pm.Token0.Symbol, Decimals: int(pm.Token0.Dec)}
-	info1 := pricing.TokenInfo{Address: pm.Token1.Address, Symbol: pm.Token1.Symbol, Decimals: int(pm.Token1.Dec)}
+	info0 := v3MakeTokenInfo(pm.Token0)
+	info1 := v3MakeTokenInfo(pm.Token1)
 	now := time.Now()
 	weight := v3CalcWeight(amount0, amount1, pm.Token0.Dec, pm.Token1.Dec)
 	if val, ok := v3RatToFloat(price1Per0); ok {
@@ -982,10 +1032,13 @@ func v3EmitUSDWithPricer(pricer pricing.Pricer, info pricing.TokenInfo, ts time.
 		Symbol:    marketSymbol,
 		Price:     res.Price,
 		Timestamp: ts.UnixMilli(),
+		Network:   v3NetworkName,
+		ChainID:   uint32(v3ChainID),
 	}
 	out <- md
+	util.Debugf("uniswap_v3: emit usd symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", marketSymbol, res.Price, md.Exchange, md.Network, v3ChainID)
 	if len(res.Route) > 0 && v3LogAllEvents {
-		util.Infof("uniswap_v3 usd %s price=%.8f weight=%.4f route=%s", marketSymbol, res.Price, res.Weight, strings.Join(res.Route, "->"))
+		util.Infof("uniswap_v3 usd %s price=%.8f weight=%.4f network=%s chain_id=%d route=%s", marketSymbol, res.Price, res.Weight, md.Network, md.ChainID, strings.Join(res.Route, "->"))
 	}
 }
 

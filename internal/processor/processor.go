@@ -1,58 +1,66 @@
 package processor
 
 import (
-    "context"
-    "fmt"
-    "time"
+	"context"
+	"fmt"
+	"time"
 
-    "github.com/go-redis/redis/v8"
-    "your_project/internal/redisclient"
-    "your_project/pkg/protobuf"
+	"github.com/yourusername/screner/internal/redisclient"
+	"github.com/yourusername/screner/internal/util"
+	pb "github.com/yourusername/screner/pkg/protobuf"
 )
 
+// Processor отвечает за приём рыночных данных и запись агрегатов в Redis.
 type Processor struct {
-    redisClient *redis.Client
-    ctx         context.Context
+	redis *redisclient.RedisClient
+	ctx   context.Context
 }
 
-func NewProcessor(redisClient *redis.Client) *Processor {
-    return &Processor{
-        redisClient: redisClient,
-        ctx:         context.Background(),
-    }
+// NewProcessor создаёт обработчик с заданным Redis клиентом.
+func NewProcessor(redisClient *redisclient.RedisClient) *Processor {
+	ctx := context.Background()
+	return &Processor{redis: redisClient, ctx: ctx}
 }
 
-func (p *Processor) ProcessMarketData(marketData *protobuf.MarketData) {
-    // Save market data to Redis
-    key := fmt.Sprintf("price:%s:%s", marketData.Exchange, marketData.Symbol)
-    err := p.redisClient.HSet(p.ctx, key, "price", marketData.Price, "timestamp", marketData.Timestamp).Err()
-    if err != nil {
-        fmt.Printf("Error saving market data to Redis: %v\n", err)
-        return
-    }
-
-    // Logic to calculate arbitrage opportunities can be added here
-    // For example, compare prices from different exchanges and log opportunities
+// ProcessMarketData сохраняет рыночные данные в Redis.
+func (p *Processor) ProcessMarketData(marketData *pb.MarketData) {
+	if p == nil || p.redis == nil || marketData == nil {
+		return
+	}
+	networkSegment := util.NormalizeNetworkName(marketData.Network, uint64(marketData.ChainID))
+	key := fmt.Sprintf("price:%s:%s:%s", networkSegment, marketData.Exchange, marketData.Symbol)
+	if err := p.redis.HSet(key,
+		"price", marketData.Price,
+		"timestamp", marketData.Timestamp,
+		"exchange", marketData.Exchange,
+		"symbol", marketData.Symbol,
+		"network", networkSegment,
+		"chain_id", marketData.ChainID,
+	); err != nil {
+		util.Errorf("processor: redis hset key=%s exchange=%s network=%s chain=%d err=%v", key, marketData.Exchange, marketData.Network, marketData.ChainID, err)
+	}
 }
 
+// Start демонстрирует циклическую обработку данных (пока заглушка для интеграции).
 func (p *Processor) Start() {
-    // This method can be used to start listening for market data from exchanges
-    // and process it accordingly
-    ticker := time.NewTicker(1 * time.Second)
-    defer ticker.Stop()
+	if p == nil {
+		return
+	}
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
 
-    for {
-        select {
-        case <-ticker.C:
-            // Simulate receiving market data
-            // In a real application, this would come from a channel or WebSocket
-            marketData := &protobuf.MarketData{
-                Exchange: "example_exchange",
-                Symbol:   "BTC-USDT",
-                Price:    50000.0,
-                Timestamp: time.Now().Unix(),
-            }
-            p.ProcessMarketData(marketData)
-        }
-    }
+	for {
+		select {
+		case <-ticker.C:
+			data := &pb.MarketData{
+				Exchange:  "example_exchange",
+				Symbol:    "BTC-USDT",
+				Price:     50000.0,
+				Timestamp: time.Now().Unix(),
+				Network:   "example_network",
+				ChainID:   0,
+			}
+			p.ProcessMarketData(data)
+		}
+	}
 }

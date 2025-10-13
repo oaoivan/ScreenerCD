@@ -71,8 +71,8 @@
 	- Все `MarketData` пушим в `ctx.DataChannel` (общий буфер Screener Core).
 
 5. **Redis пайплайн**
-	- Воркеры `cmd/screener-core/main.go` читают канал, формируют `price:uniswap_v4:<symbol>` и `price_canon:<canon>:uniswap_v4`, выполняют `HSetBatch`.
-	- Канонизация символов остаётся на воркерах через `util.NormalizeSpotSymbol`.
+	- Воркеры `cmd/screener-core/main.go` читают канал, формируют `price:<network>:uniswap_v4:<symbol>` и `price_canon:<network>:<canon>:uniswap_v4`, выполняют `HSetBatch`.
+	- Канонизация символов остаётся на воркерах через `util.NormalizeSpotSymbol`, а сегмент сети нормализуется `util.NormalizeNetworkName`, что позволяет параллельно вести несколько сетей.
 
 6. **Мониторинг и логирование**
 	- Коннектор шлёт расширенные логи по событиям, ack и USD-деривации (управляется `LogAllEvents`).

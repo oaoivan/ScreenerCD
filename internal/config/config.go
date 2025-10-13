@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -53,6 +54,9 @@ type Config struct {
 type DexConfig struct {
 	Name            string          `yaml:"name"`
 	Network         string          `yaml:"network"`
+	NetworkID       string          `yaml:"network_id"`
+	ChainID         uint64          `yaml:"chain_id"`
+	DexAlias        string          `yaml:"dex_alias"`
 	WSURL           string          `yaml:"ws_url"`
 	HTTPURL         string          `yaml:"http_url"`
 	SubscribeBatch  int             `yaml:"subscribe_batch"`
@@ -70,6 +74,39 @@ type DexConfig struct {
 	WantedPairs     []string        `yaml:"wanted_pairs"`
 	WantedPairsOnly bool            `yaml:"wanted_pairs_only"`
 	Once            bool            `yaml:"once"`
+
+	// Computed helpers (not serialized)
+	resolvedNetworkID string `yaml:"-"`
+	resolvedDexAlias  string `yaml:"-"`
+}
+
+// EffectiveDexAlias возвращает нормализованный алиас DEX для использования в ключах и логах.
+func (d DexConfig) EffectiveDexAlias() string {
+	if d.resolvedDexAlias != "" {
+		return d.resolvedDexAlias
+	}
+	alias := strings.TrimSpace(d.DexAlias)
+	if alias == "" {
+		alias = strings.TrimSpace(d.Name)
+	}
+	return strings.ToLower(alias)
+}
+
+// EffectiveNetworkID возвращает нормализованный идентификатор сети.
+func (d DexConfig) EffectiveNetworkID() string {
+	if d.resolvedNetworkID != "" {
+		return d.resolvedNetworkID
+	}
+	net := strings.TrimSpace(d.NetworkID)
+	if net == "" {
+		net = strings.TrimSpace(d.Network)
+	}
+	return strings.ToLower(net)
+}
+
+// ChainIDValue возвращает chain id (0, если не задан).
+func (d DexConfig) ChainIDValue() uint64 {
+	return d.ChainID
 }
 
 const (
@@ -106,6 +143,26 @@ func (d *DexConfig) applyDefaults() {
 	if d.PingInterval <= 0 {
 		d.PingInterval = 25
 	}
+	d.DexAlias = strings.TrimSpace(d.DexAlias)
+	d.NetworkID = strings.TrimSpace(d.NetworkID)
+	d.Network = strings.TrimSpace(d.Network)
+	d.Name = strings.TrimSpace(d.Name)
+	if strings.TrimSpace(d.DexAlias) == "" {
+		d.resolvedDexAlias = strings.ToLower(strings.TrimSpace(d.Name))
+	} else {
+		d.resolvedDexAlias = strings.ToLower(strings.TrimSpace(d.DexAlias))
+	}
+	if strings.TrimSpace(d.NetworkID) == "" {
+		d.resolvedNetworkID = strings.ToLower(strings.TrimSpace(d.Network))
+	} else {
+		d.resolvedNetworkID = strings.ToLower(strings.TrimSpace(d.NetworkID))
+	}
+	if d.resolvedNetworkID == "" {
+		d.resolvedNetworkID = strings.ToLower(strings.TrimSpace(d.Network))
+	}
+	if d.resolvedDexAlias == "" {
+		d.resolvedDexAlias = strings.ToLower(strings.TrimSpace(d.Name))
+	}
 	if strings.EqualFold(d.Name, "uniswap_v4") && d.MaxMetaWorkers <= 0 {
 		d.MaxMetaWorkers = 4
 	}
@@ -118,6 +175,12 @@ func (d DexConfig) Validate() error {
 	}
 	if strings.TrimSpace(d.Network) == "" {
 		return fmt.Errorf("network is required")
+	}
+	if strings.TrimSpace(d.DexAlias) != "" && strings.ContainsAny(d.DexAlias, " ") {
+		return fmt.Errorf("dex_alias must not contain spaces")
+	}
+	if strings.TrimSpace(d.NetworkID) != "" && strings.ContainsAny(d.NetworkID, " ") {
+		return fmt.Errorf("network_id must not contain spaces")
 	}
 	if strings.TrimSpace(d.WSURL) == "" {
 		return fmt.Errorf("ws_url is required")
@@ -187,17 +250,120 @@ func (fs FileSource) Resolve() string {
 
 // PoolsSource задаёт параметры внешнего списка пулов, например GeckoTerminal JSON.
 type PoolsSource struct {
-	File          string   `yaml:"file"`
-	Env           string   `yaml:"env"`
-	GeckoDex      string   `yaml:"gecko_dex"`
-	GeckoNetwork  string   `yaml:"gecko_network"`
-	IncludeStable bool     `yaml:"include_stable"`
-	WantedPairs   []string `yaml:"wanted_pairs"`
+	File          string              `yaml:"file"`
+	Env           string              `yaml:"env"`
+	GeckoDex      string              `yaml:"gecko_dex"`
+	GeckoNetwork  string              `yaml:"gecko_network"`
+	Dexes         []string            `yaml:"dexes"`
+	Networks      []string            `yaml:"networks"`
+	IncludeStable bool                `yaml:"include_stable"`
+	WantedPairs   []string            `yaml:"wanted_pairs"`
+	WantedByNet   map[string][]string `yaml:"wanted_pairs_by_network"`
 }
 
 // Resolve возвращает итоговый путь к файлу пулов с учётом env и подстановок.
 func (ps PoolsSource) Resolve() string {
 	return FileSource{File: ps.File, Env: ps.Env}.Resolve()
+}
+
+// DexFilters возвращает нормализованный список фильтров по названию DEX.
+func (ps PoolsSource) DexFilters() []string {
+	seen := make(map[string]struct{})
+	add := func(raw string) {
+		trimmed := strings.TrimSpace(raw)
+		if trimmed == "" {
+			return
+		}
+		key := strings.ToLower(trimmed)
+		if _, ok := seen[key]; ok {
+			return
+		}
+		seen[key] = struct{}{}
+	}
+	add(ps.GeckoDex)
+	for _, dex := range ps.Dexes {
+		add(dex)
+	}
+	if len(seen) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(seen))
+	for key := range seen {
+		out = append(out, key)
+	}
+	sort.Strings(out)
+	return out
+}
+
+// NetworkFilters возвращает нормализованный список фильтров сетей.
+func (ps PoolsSource) NetworkFilters() []string {
+	seen := make(map[string]struct{})
+	add := func(raw string) {
+		trimmed := strings.TrimSpace(raw)
+		if trimmed == "" {
+			return
+		}
+		key := strings.ToLower(trimmed)
+		if _, ok := seen[key]; ok {
+			return
+		}
+		seen[key] = struct{}{}
+	}
+	add(ps.GeckoNetwork)
+	for _, n := range ps.Networks {
+		add(n)
+	}
+	if len(seen) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(seen))
+	for key := range seen {
+		out = append(out, key)
+	}
+	sort.Strings(out)
+	return out
+}
+
+// WantedPairsFor возвращает канонический список пар для указной сети (и глобальных).
+func (ps PoolsSource) WantedPairsFor(network string) []string {
+	seen := make(map[string]struct{})
+	add := func(list []string) {
+		for _, raw := range list {
+			trimmed := strings.TrimSpace(raw)
+			if trimmed == "" {
+				continue
+			}
+			upper := strings.ToUpper(trimmed)
+			if _, ok := seen[upper]; ok {
+				continue
+			}
+			seen[upper] = struct{}{}
+		}
+	}
+	add(ps.WantedPairs)
+	if len(ps.WantedByNet) > 0 {
+		nKey := strings.ToLower(strings.TrimSpace(network))
+		for rawKey, pairs := range ps.WantedByNet {
+			if strings.TrimSpace(rawKey) == "" {
+				continue
+			}
+			if nKey == "" {
+				continue
+			}
+			if strings.ToLower(strings.TrimSpace(rawKey)) == nKey {
+				add(pairs)
+			}
+		}
+	}
+	if len(seen) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(seen))
+	for pair := range seen {
+		out = append(out, pair)
+	}
+	sort.Strings(out)
+	return out
 }
 
 func (c *Config) ResolveAssetsRegistryPath() string {
@@ -306,6 +472,8 @@ func LoadConfig(filePath string) (*Config, error) {
 func (c *Config) Validate() error {
 	globalAssetsPath := strings.TrimSpace(c.ResolveAssetsRegistryPath())
 	requiresV4 := false
+	dupKeys := make(map[string]struct{})
+	sharedPoolsPath := strings.TrimSpace(c.ResolveSharedPoolsPath())
 	for i := range c.DexConfigs {
 		if err := c.DexConfigs[i].Validate(); err != nil {
 			name := strings.TrimSpace(c.DexConfigs[i].Name)
@@ -321,6 +489,24 @@ func (c *Config) Validate() error {
 			dexAssetsPath := strings.TrimSpace(c.DexConfigs[i].AssetsPath)
 			if dexAssetsPath == "" && globalAssetsPath == "" {
 				return fmt.Errorf("dex config %s: assets registry path required for uniswap_v4", c.DexConfigs[i].Name)
+			}
+		}
+
+		effectiveNetwork := c.DexConfigs[i].EffectiveNetworkID()
+		if effectiveNetwork == "" {
+			effectiveNetwork = strings.ToLower(strings.TrimSpace(c.DexConfigs[i].Network))
+		}
+		effectiveName := strings.ToLower(strings.TrimSpace(c.DexConfigs[i].Name))
+		dupKey := effectiveName + "|" + effectiveNetwork
+		if _, exists := dupKeys[dupKey]; exists {
+			return fmt.Errorf("dex config %s: duplicate name+network combination %s/%s", c.DexConfigs[i].Name, effectiveName, effectiveNetwork)
+		}
+		dupKeys[dupKey] = struct{}{}
+
+		if len(c.DexConfigs[i].Pools) == 0 {
+			poolsPath := strings.TrimSpace(c.DexConfigs[i].ResolvePoolsPath(sharedPoolsPath))
+			if poolsPath == "" {
+				return fmt.Errorf("dex config %s: pools or pools_source/pools_file must be provided", c.DexConfigs[i].Name)
 			}
 		}
 	}

@@ -28,6 +28,8 @@ type Config struct {
 	WSURL              string
 	HTTPURL            string
 	Exchange           string
+	Network            string
+	ChainID            uint64
 	Pools              []PoolConfig
 	SubscribeBatchSize int
 	PingInterval       time.Duration
@@ -77,38 +79,83 @@ type TokenRegistry struct {
 	stableBySymbol map[string]TokenMeta
 	nativeBySymbol map[string]TokenMeta
 	wethAddr       string
+	chainID        uint64
+	network        string
+}
+
+// RegistryOptions задаёт параметры выбора сети для построения токенного справочника.
+type RegistryOptions struct {
+	Network   string
+	NetworkID string
+	ChainID   uint64
 }
 
 // NewTokenRegistry строит справочник токенов из провайдера активов с резервным набором адресов.
-func NewTokenRegistry(provider *assets.Provider, network string) *TokenRegistry {
+func NewTokenRegistry(provider *assets.Provider, opts RegistryOptions) *TokenRegistry {
+	opts.Network = strings.TrimSpace(opts.Network)
+	opts.NetworkID = strings.TrimSpace(opts.NetworkID)
 	reg := &TokenRegistry{
 		byAddress:      make(map[string]TokenMeta),
 		stableBySymbol: make(map[string]TokenMeta),
 		nativeBySymbol: make(map[string]TokenMeta),
-	}
-
-	addNetworkTokens := func(net string) {
-		if net == "" {
-			return
-		}
-		for _, token := range provider.TokensByNetwork(net, assets.TokenTypeStable) {
-			reg.addStable(token.Symbol, token.Address, int(token.Decimals))
-		}
-		for _, token := range provider.TokensByNetwork(net, assets.TokenTypeNative) {
-			// Wrapped нативы помечаем как WETH-эквиваленты.
-			markWETH := token.Wrapped || strings.EqualFold(token.Symbol, "WETH")
-			reg.addNative(token.Symbol, token.Address, int(token.Decimals), markWETH)
-		}
+		chainID:        opts.ChainID,
 	}
 
 	if provider != nil {
-		trimmed := strings.TrimSpace(network)
-		if trimmed != "" {
-			addNetworkTokens(trimmed)
-		} else {
+		loadNetwork := func(identifier string) bool {
+			id := strings.TrimSpace(identifier)
+			if id == "" {
+				return false
+			}
+			stable := provider.TokensByNetwork(id, assets.TokenTypeStable)
+			native := provider.TokensByNetwork(id, assets.TokenTypeNative)
+			if len(stable) == 0 && len(native) == 0 {
+				return false
+			}
+			if catalog, ok := provider.ResolveNetworkCatalog(id); ok {
+				reg.network = catalog.Name
+				if opts.ChainID == 0 {
+					reg.chainID = catalog.Chain
+				}
+				provider.RegisterNetworkAlias(catalog.Name, id)
+			}
+			for _, token := range stable {
+				reg.addStable(token.Symbol, token.Address, int(token.Decimals))
+			}
+			for _, token := range native {
+				markWETH := token.Wrapped || strings.EqualFold(token.Symbol, "WETH")
+				reg.addNative(token.Symbol, token.Address, int(token.Decimals), markWETH)
+			}
+			return true
+		}
+
+		loaded := false
+		if !loaded && opts.NetworkID != "" {
+			loaded = loadNetwork(opts.NetworkID)
+		}
+		if !loaded && opts.Network != "" {
+			loaded = loadNetwork(opts.Network)
+		}
+		if !loaded && opts.ChainID != 0 {
+			for _, token := range provider.TokensByChain(opts.ChainID, assets.TokenTypeStable) {
+				reg.addStable(token.Symbol, token.Address, int(token.Decimals))
+			}
+			for _, token := range provider.TokensByChain(opts.ChainID, assets.TokenTypeNative) {
+				markWETH := token.Wrapped || strings.EqualFold(token.Symbol, "WETH")
+				reg.addNative(token.Symbol, token.Address, int(token.Decimals), markWETH)
+			}
+			if len(reg.stableBySymbol) > 0 {
+				reg.chainID = opts.ChainID
+				if catalog, ok := provider.ResolveNetworkByChain(opts.ChainID); ok {
+					reg.network = catalog.Name
+				}
+				loaded = true
+			}
+		}
+		if !loaded {
 			for _, net := range provider.NetworkNames() {
-				addNetworkTokens(net)
-				if len(reg.stableBySymbol) > 0 && reg.wethAddr != "" {
+				if loadNetwork(net) {
+					loaded = true
 					break
 				}
 			}
@@ -127,6 +174,22 @@ func NewTokenRegistry(provider *assets.Provider, network string) *TokenRegistry 
 	}
 
 	return reg
+}
+
+// ChainID возвращает ChainID сети, для которой построен справочник (0, если не обнаружено).
+func (r *TokenRegistry) ChainID() uint64 {
+	if r == nil {
+		return 0
+	}
+	return r.chainID
+}
+
+// NetworkName возвращает нормализованное имя сети, известное справочнику.
+func (r *TokenRegistry) NetworkName() string {
+	if r == nil {
+		return ""
+	}
+	return strings.ToLower(strings.TrimSpace(r.network))
 }
 
 func (r *TokenRegistry) addStable(symbol string, addr common.Address, decimals int) {
@@ -280,6 +343,8 @@ type Connector struct {
 
 // NewConnector создаёт коннектор с заданной конфигурацией и транспортом.
 func NewConnector(cfg Config, dialer Dialer, pricer pricing.Pricer) *Connector {
+	cfg.Exchange = strings.ToLower(strings.TrimSpace(cfg.Exchange))
+	cfg.Network = strings.ToLower(strings.TrimSpace(cfg.Network))
 	return &Connector{cfg: cfg, dialer: dialer, pricer: pricer}
 }
 
@@ -300,19 +365,36 @@ func (c *Connector) registerPoolTokens(pool PoolConfig) {
 		return
 	}
 	if (pool.Token0.Address != common.Address{}) {
-		info := pricing.TokenInfo{Address: pool.Token0.Address, Symbol: pool.Token0.Symbol, Decimals: pool.Token0.Decimals}
+		info := c.makeTokenInfo(pool.Token0)
 		c.pricer.RegisterToken(info)
 		if pool.Token0.IsStable {
 			c.pricer.RegisterStable(info)
 		}
 	}
 	if (pool.Token1.Address != common.Address{}) {
-		info := pricing.TokenInfo{Address: pool.Token1.Address, Symbol: pool.Token1.Symbol, Decimals: pool.Token1.Decimals}
+		info := c.makeTokenInfo(pool.Token1)
 		c.pricer.RegisterToken(info)
 		if pool.Token1.IsStable {
 			c.pricer.RegisterStable(info)
 		}
 	}
+}
+
+func (c *Connector) makeTokenInfo(meta TokenMeta) pricing.TokenInfo {
+	info := pricing.TokenInfo{
+		Address:  meta.Address,
+		Symbol:   meta.Symbol,
+		Decimals: meta.Decimals,
+		DexAlias: c.exchangeName(),
+		Network:  c.networkName(),
+		ChainID:  c.cfg.ChainID,
+	}
+	if meta.IsStable {
+		info.Bridge = strings.ToUpper(strings.TrimSpace(meta.Symbol))
+	} else if meta.IsWETH {
+		info.Bridge = "WETH"
+	}
+	return info
 }
 
 // Run запускает приём цен и публикует их в общий канал Screener Core.
@@ -323,6 +405,8 @@ func (c *Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error {
 	if c.dialer == nil {
 		return errors.New("uniswap v2: dialer is nil")
 	}
+
+	util.Infof("uniswap_v2: starting run exchange=%s network=%s chain_id=%d pools=%d", c.exchangeName(), c.networkName(), c.cfg.ChainID, len(c.cfg.Pools))
 
 	pools := c.cfg.Pools
 	if adjusted, err := AdjustPoolsOrdering(ctx, c.cfg.HTTPURL, pools); err != nil {
@@ -520,10 +604,19 @@ func (c *Connector) handleRaw(raw []byte, out chan<- *pb.MarketData) error {
 }
 
 func (c *Connector) exchangeName() string {
-	if strings.TrimSpace(c.cfg.Exchange) != "" {
-		return c.cfg.Exchange
+	name := strings.TrimSpace(c.cfg.Exchange)
+	if name != "" {
+		return name
 	}
 	return "uniswap_v2"
+}
+
+func (c *Connector) networkName() string {
+	network := strings.TrimSpace(c.cfg.Network)
+	if network != "" {
+		return network
+	}
+	return ""
 }
 
 const pingMessageType = 0x9
@@ -584,8 +677,8 @@ func (c *Connector) updatePricing(meta PoolConfig, snap *poolSnapshot, out chan<
 	if snap == nil || snap.Price == nil || c.pricer == nil {
 		return
 	}
-	info0 := pricing.TokenInfo{Address: meta.Token0.Address, Symbol: meta.Token0.Symbol, Decimals: meta.Token0.Decimals}
-	info1 := pricing.TokenInfo{Address: meta.Token1.Address, Symbol: meta.Token1.Symbol, Decimals: meta.Token1.Decimals}
+	info0 := c.makeTokenInfo(meta.Token0)
+	info1 := c.makeTokenInfo(meta.Token1)
 	price := new(big.Rat).Set(snap.Price)
 	var price1Per0, price0Per1 *big.Rat
 	if meta.BaseIsToken0 {
@@ -626,7 +719,7 @@ func (c *Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo) {
 		if route == "" {
 			route = "direct"
 		}
-		util.Infof("uniswap_v2: USD %s price=%.8f weight=%.4f route=%s", marketSymbol, res.Price, res.Weight, route)
+		util.Infof("uniswap_v2: USD %s price=%.8f weight=%.4f route=%s network=%s chain_id=%d", marketSymbol, res.Price, res.Weight, route, c.networkName(), c.cfg.ChainID)
 	}
 }
 
@@ -680,8 +773,11 @@ func (c *Connector) emitFloat(out chan<- *pb.MarketData, symbol string, value fl
 		Symbol:    symbol,
 		Price:     value,
 		Timestamp: time.Now().UnixMilli(),
+		Network:   c.networkName(),
+		ChainID:   uint32(c.cfg.ChainID),
 	}
 	out <- md
+	util.Debugf("uniswap_v2: emit symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", symbol, value, md.Exchange, md.Network, c.cfg.ChainID)
 	return true
 }
 
@@ -900,7 +996,7 @@ func LoadPoolsFromSource(path string) ([]PoolConfig, error) {
 // LoadPoolsFromSourceWithRegistry allows passing an explicit token registry for pool normalization.
 func LoadPoolsFromSourceWithRegistry(path string, registry *TokenRegistry) ([]PoolConfig, error) {
 	if registry == nil {
-		registry = NewTokenRegistry(nil, "")
+		registry = NewTokenRegistry(nil, RegistryOptions{})
 	}
 
 	data, err := os.ReadFile(path)

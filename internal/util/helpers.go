@@ -1,6 +1,9 @@
 package util
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 var exchangeAliases = map[string]string{
 	"gate":      "gate",
@@ -59,6 +62,28 @@ func NormalizeSpotSymbol(exchange, raw string) string {
 	s = strings.ReplaceAll(s, ".", "")
 	s = strings.TrimSpace(s)
 	return s
+}
+
+// NormalizeNetworkName приводит имя сети к безопасному для ключей виду.
+// Пустая строка заменяется на chain-идентификатор или "global".
+func NormalizeNetworkName(network string, chainID uint64) string {
+	clean := strings.ToLower(strings.TrimSpace(network))
+	clean = strings.ReplaceAll(clean, "\\", "/")
+	replacements := []string{" ", "/", "::", ":"}
+	for _, item := range replacements {
+		clean = strings.ReplaceAll(clean, item, "_")
+	}
+	for strings.Contains(clean, "__") {
+		clean = strings.ReplaceAll(clean, "__", "_")
+	}
+	clean = strings.Trim(clean, "_")
+	if clean == "" && chainID > 0 {
+		clean = fmt.Sprintf("chain-%d", chainID)
+	}
+	if clean == "" {
+		clean = "global"
+	}
+	return clean
 }
 
 // AttachQuote формирует пары BASE+QUOTE (например, BTC + USDT -> BTCUSDT).

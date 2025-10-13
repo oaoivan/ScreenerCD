@@ -44,6 +44,9 @@ var (
 type V4Config struct {
 	Exchange        string
 	Network         string
+	ChainID         uint64
+	NetworkFilters  []string
+	DexFilters      []string
 	WSURL           string
 	HTTPURL         string
 	PoolManager     common.Address
@@ -223,11 +226,28 @@ func (c *V4Connector) registerToken(meta TokenMeta) {
 	if _, loaded := c.registered.LoadOrStore(meta.Address, struct{}{}); loaded {
 		return
 	}
-	info := pricing.TokenInfo{Address: meta.Address, Symbol: meta.Symbol, Decimals: meta.Decimals}
+	info := c.makeTokenInfo(meta)
 	c.pricer.RegisterToken(info)
 	if meta.IsStable {
 		c.pricer.RegisterStable(info)
 	}
+}
+
+func (c *V4Connector) makeTokenInfo(meta TokenMeta) pricing.TokenInfo {
+	info := pricing.TokenInfo{
+		Address:  meta.Address,
+		Symbol:   meta.Symbol,
+		Decimals: meta.Decimals,
+		DexAlias: c.exchangeName(),
+		Network:  c.networkName(),
+		ChainID:  c.cfg.ChainID,
+	}
+	if meta.IsStable {
+		info.Bridge = strings.ToUpper(strings.TrimSpace(meta.Symbol))
+	} else if meta.IsWETH {
+		info.Bridge = "WETH"
+	}
+	return info
 }
 
 // V4Connector отвечает за подписку, парсинг и публикацию котировок V4.
@@ -277,6 +297,9 @@ func NewV4Connector(cfg V4Config, pricer pricing.Pricer) (*V4Connector, error) {
 	}
 	cfg.Exchange = strings.ToLower(strings.TrimSpace(cfg.Exchange))
 	cfg.Network = strings.ToLower(strings.TrimSpace(cfg.Network))
+	if cfg.ChainID == 0 && cfg.Registry != nil {
+		cfg.ChainID = cfg.Registry.ChainID()
+	}
 	if cfg.Exchange == "" {
 		cfg.Exchange = defaultExchangeName
 	}
@@ -296,7 +319,7 @@ func NewV4Connector(cfg V4Config, pricer pricing.Pricer) (*V4Connector, error) {
 		return nil, fmt.Errorf("uniswap_v4: pool_manager address is required")
 	}
 
-	util.Infof("uniswap_v4: init exchange=%s network=%s pools_inline=%d wanted_only=%v swap_only=%v", cfg.Exchange, cfg.Network, len(cfg.Pools), cfg.WantedPairsOnly, cfg.SwapOnly)
+	util.Infof("uniswap_v4: init exchange=%s network=%s chain_id=%d pools_inline=%d wanted_only=%v swap_only=%v", cfg.Exchange, cfg.Network, cfg.ChainID, len(cfg.Pools), cfg.WantedPairsOnly, cfg.SwapOnly)
 
 	return &V4Connector{
 		cfg:    cfg,
@@ -311,6 +334,10 @@ func (c *V4Connector) exchangeName() string {
 		return defaultExchangeName
 	}
 	return name
+}
+
+func (c *V4Connector) networkName() string {
+	return strings.ToLower(strings.TrimSpace(c.cfg.Network))
 }
 
 func (c *V4Connector) tokenSymbol(meta TokenMeta) string {
@@ -349,6 +376,8 @@ func (c *V4Connector) emitSpot(out chan<- *pb.MarketData, base TokenMeta, quote 
 		Symbol:    symbol,
 		Price:     price,
 		Timestamp: ts.UnixMilli(),
+		Network:   c.networkName(),
+		ChainID:   uint32(c.cfg.ChainID),
 	}
 	out <- md
 	if c.cfg.LogAllEvents {
@@ -356,8 +385,9 @@ func (c *V4Connector) emitSpot(out chan<- *pb.MarketData, base TokenMeta, quote 
 		if symbol != upperRaw {
 			util.Infof("uniswap_v4: spot symbol normalized raw=%s normalized=%s exchange=%s", upperRaw, symbol, md.Exchange)
 		}
-		util.Infof("uniswap_v4: spot %s price=%.10f exchange=%s", symbol, price, md.Exchange)
+		util.Infof("uniswap_v4: spot %s price=%.10f exchange=%s network=%s chain_id=%d", symbol, price, md.Exchange, md.Network, c.cfg.ChainID)
 	}
+	util.Debugf("uniswap_v4: emit symbol=%s price=%.10f exchange=%s network=%s chain_id=%d", symbol, price, md.Exchange, md.Network, c.cfg.ChainID)
 }
 
 func (c *V4Connector) ensureABI() error {
@@ -589,8 +619,15 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 	util.Infof("uniswap_v4: pools file entries=%d", len(payload.Entries))
 
 	result := make([]V4PoolConfig, 0, len(payload.Entries))
-	networkFilter := strings.TrimSpace(c.cfg.Network)
+	networkFilters := c.cfg.NetworkFilters
+	if len(networkFilters) == 0 {
+		if net := strings.TrimSpace(c.cfg.Network); net != "" {
+			networkFilters = []string{net}
+		}
+	}
+	dexFilters := c.cfg.DexFilters
 	skippedNetwork := 0
+	skippedDex := 0
 	for _, entry := range payload.Entries {
 		if err := ctxErr(ctx); err != nil {
 			return nil, err
@@ -598,10 +635,15 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 		if !matchesAMMVersion(entry.AMMVersion, entry.Dex, "v4") {
 			continue
 		}
-		if !isUniswapDex(entry.Dex) {
+		if len(dexFilters) > 0 {
+			if !dexMatchesAny(entry.Dex, dexFilters) {
+				skippedDex++
+				continue
+			}
+		} else if !isUniswapDex(entry.Dex) {
 			continue
 		}
-		if networkFilter != "" && !strings.EqualFold(entry.Network, networkFilter) {
+		if len(networkFilters) > 0 && !networkMatchesAny(entry.Network, networkFilters) {
 			skippedNetwork++
 			continue
 		}
@@ -622,7 +664,7 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 		result = append(result, pool)
 	}
 
-	util.Infof("uniswap_v4: pools loaded from file=%d skipped_network=%d filter=%s", len(result), skippedNetwork, networkFilter)
+	util.Infof("uniswap_v4: pools loaded=%d skipped_network=%d skipped_dex=%d filters_network=%v filters_dex=%v", len(result), skippedNetwork, skippedDex, networkFilters, dexFilters)
 	return result, nil
 }
 
@@ -1421,8 +1463,8 @@ func (c *V4Connector) updatePricing(meta V4PoolConfig, price1Float float64, pric
 	if weight <= 0 || math.IsNaN(weight) || math.IsInf(weight, 0) {
 		weight = 1e-9
 	}
-	info0 := pricing.TokenInfo{Address: meta.Token0.Address, Symbol: meta.Token0.Symbol, Decimals: meta.Token0.Decimals}
-	info1 := pricing.TokenInfo{Address: meta.Token1.Address, Symbol: meta.Token1.Symbol, Decimals: meta.Token1.Decimals}
+	info0 := c.makeTokenInfo(meta.Token0)
+	info1 := c.makeTokenInfo(meta.Token1)
 	updated := false
 	if price1Valid && price1Float > 0 {
 		c.pricer.UpdatePair(info0, info1, price1Float, weight, ts)
@@ -1482,6 +1524,8 @@ func (c *V4Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo,
 		Symbol:    marketSymbol,
 		Price:     res.Price,
 		Timestamp: ts.UnixMilli(),
+		Network:   c.networkName(),
+		ChainID:   uint32(c.cfg.ChainID),
 	}
 	out <- md
 	if c.cfg.LogAllEvents {
@@ -1493,8 +1537,9 @@ func (c *V4Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo,
 		if route == "" {
 			route = "direct"
 		}
-		util.Infof("uniswap_v4: usd %s price=%.8f weight=%.6f route=%s", marketSymbol, res.Price, res.Weight, route)
+		util.Infof("uniswap_v4: usd %s price=%.8f weight=%.6f route=%s network=%s chain_id=%d", marketSymbol, res.Price, res.Weight, route, md.Network, c.cfg.ChainID)
 	}
+	util.Debugf("uniswap_v4: emit usd symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", marketSymbol, res.Price, md.Exchange, md.Network, c.cfg.ChainID)
 }
 func parseAck(raw []byte) (*SubAck, bool) {
 	var ack SubAck

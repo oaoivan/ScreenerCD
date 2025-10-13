@@ -8,6 +8,8 @@ message MarketData {
     string symbol = 2;   // The trading pair symbol (e.g., BTC-USDT)
     double price = 3;    // The price of the asset
     int64 timestamp = 4; // The timestamp of the data
+    string network = 5;  // The blockchain network (e.g., ethereum, base)
+    uint32 chain_id = 6; // Optional EVM chain ID when applicable
 }
 
 // ArbitrageOpportunity represents an arbitrage opportunity between exchanges.

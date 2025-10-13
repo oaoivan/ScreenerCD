@@ -20,6 +20,22 @@ func init() {
 	Register("uniswap_v4", buildUniswapV4)
 }
 
+// buildSupervisorName формирует уникальное имя процесса супервизора с учётом сети и chain id.
+func buildSupervisorName(exchange, network string, chainID uint64) string {
+	base := strings.ToLower(strings.TrimSpace(exchange))
+	if base == "" {
+		base = "dex"
+	}
+	cleanNet := util.NormalizeNetworkName(network, chainID)
+	if cleanNet == "" && chainID > 0 {
+		cleanNet = fmt.Sprintf("chain-%d", chainID)
+	}
+	if cleanNet == "" {
+		return base
+	}
+	return fmt.Sprintf("%s:%s", base, cleanNet)
+}
+
 func buildUniswapV2(ctx LaunchContext, _ string, _ []string, dexCfg *config.DexConfig) error {
 	if ctx.Pricer == nil {
 		return fmt.Errorf("uniswap_v2: pricer not configured")
@@ -30,11 +46,9 @@ func buildUniswapV2(ctx LaunchContext, _ string, _ []string, dexCfg *config.DexC
 	}
 	dialer := gorillaDialer{}
 	connector := uniswap.NewConnector(uv2Cfg, dialer, ctx.Pricer)
-	name := uv2Cfg.Exchange
-	if name == "" {
-		name = "uniswap_v2"
-	}
-	ctx.Supervisor(name, func() error {
+	instanceName := buildSupervisorName(uv2Cfg.Exchange, uv2Cfg.Network, uv2Cfg.ChainID)
+	util.Infof("uniswap_v2: launch exchange=%s network=%s chain_id=%d pools=%d", uv2Cfg.Exchange, uv2Cfg.Network, uv2Cfg.ChainID, len(uv2Cfg.Pools))
+	ctx.Supervisor(instanceName, func() error {
 		cCtx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
@@ -58,11 +72,9 @@ func buildUniswapV3(ctx LaunchContext, _ string, _ []string, dexCfg *config.DexC
 		return err
 	}
 	connector := uniswap.NewV3Connector(v3Cfg, ctx.Pricer)
-	name := v3Cfg.Exchange
-	if name == "" {
-		name = "uniswap_v3"
-	}
-	ctx.Supervisor(name, func() error {
+	instanceName := buildSupervisorName(v3Cfg.Exchange, v3Cfg.Network, v3Cfg.ChainID)
+	util.Infof("uniswap_v3: launch exchange=%s network=%s chain_id=%d pools_source=%s", v3Cfg.Exchange, v3Cfg.Network, v3Cfg.ChainID, v3Cfg.PoolsPath)
+	ctx.Supervisor(instanceName, func() error {
 		cCtx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
@@ -87,7 +99,11 @@ func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 		return uniswap.Config{}, fmt.Errorf("uniswap_v2: http_url empty")
 	}
 	path := dexCfg.ResolvePoolsPath(sharedPools)
-	registry := uniswap.NewTokenRegistry(assetsProvider, dexCfg.Network)
+	registry := uniswap.NewTokenRegistry(assetsProvider, uniswap.RegistryOptions{
+		Network:   dexCfg.Network,
+		NetworkID: dexCfg.NetworkID,
+		ChainID:   dexCfg.ChainIDValue(),
+	})
 	pools, err := uniswap.LoadPoolsFromSourceWithRegistry(path, registry)
 	if err != nil {
 		return uniswap.Config{}, err
@@ -103,10 +119,20 @@ func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 	if ping <= 0 {
 		ping = 25
 	}
+	networkID := strings.ToLower(dexCfg.EffectiveNetworkID())
+	if networkID == "" {
+		networkID = strings.ToLower(strings.TrimSpace(dexCfg.Network))
+	}
+	exchangeAlias := strings.ToLower(dexCfg.EffectiveDexAlias())
+	if exchangeAlias == "" {
+		exchangeAlias = strings.ToLower(strings.TrimSpace(dexCfg.Name))
+	}
 	return uniswap.Config{
 		WSURL:              wsURL,
 		HTTPURL:            httpURL,
-		Exchange:           dexCfg.Name,
+		Exchange:           exchangeAlias,
+		Network:            networkID,
+		ChainID:            dexCfg.ChainIDValue(),
 		Pools:              pools,
 		SubscribeBatchSize: batch,
 		PingInterval:       ping * time.Second,
@@ -124,14 +150,44 @@ func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 		return uniswap.V3Config{}, fmt.Errorf("uniswap_v3: pools path empty")
 	}
 	ps := dexCfg.PoolsSource
-	registry := uniswap.NewTokenRegistry(assetsProvider, dexCfg.Network)
+	registry := uniswap.NewTokenRegistry(assetsProvider, uniswap.RegistryOptions{
+		Network:   dexCfg.Network,
+		NetworkID: dexCfg.NetworkID,
+		ChainID:   dexCfg.ChainIDValue(),
+	})
+	dexFilters := ps.DexFilters()
+	if len(dexFilters) == 0 && strings.TrimSpace(ps.GeckoDex) != "" {
+		dexFilters = []string{strings.ToLower(strings.TrimSpace(ps.GeckoDex))}
+	}
+	networkFilters := ps.NetworkFilters()
+	if len(networkFilters) == 0 {
+		if net := dexCfg.EffectiveNetworkID(); net != "" {
+			networkFilters = []string{strings.ToLower(net)}
+		}
+	}
+	wantedFromSource := ps.WantedPairsFor(dexCfg.EffectiveNetworkID())
+	exchangeName := strings.TrimSpace(dexCfg.DexAlias)
+	if exchangeName == "" {
+		exchangeName = strings.TrimSpace(dexCfg.Name)
+	}
+	if exchangeName == "" {
+		exchangeName = "uniswap_v3"
+	}
+	canonicalNetwork := strings.ToLower(dexCfg.EffectiveNetworkID())
+	if canonicalNetwork == "" {
+		canonicalNetwork = strings.ToLower(strings.TrimSpace(dexCfg.Network))
+	}
 	cfg := uniswap.V3Config{
-		Exchange:       dexCfg.Name,
+		Exchange:       strings.ToLower(exchangeName),
+		Network:        canonicalNetwork,
+		ChainID:        dexCfg.ChainIDValue(),
 		WSURL:          wsURL,
 		HTTPURL:        httpURL,
 		PoolsPath:      path,
 		DexFilter:      ps.GeckoDex,
+		DexFilters:     dexFilters,
 		NetworkFilter:  ps.GeckoNetwork,
+		NetworkFilters: networkFilters,
 		BatchSize:      dexCfg.SubscribeBatch,
 		PingInterval:   time.Duration(dexCfg.PingInterval) * time.Second,
 		StopOnAckError: dexCfg.StopOnAckError,
@@ -139,12 +195,19 @@ func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 		DecodeSwapOnly: dexCfg.SwapOnly,
 		MaxMetaWorkers: dexCfg.MaxMetaWorkers,
 		Registry:       registry,
+		WantedPairs:    mergeWantedPairs(dexCfg.WantedPairs, wantedFromSource),
 	}
 	if cfg.BatchSize <= 0 {
 		cfg.BatchSize = 150
 	}
 	if cfg.PingInterval <= 0 {
 		cfg.PingInterval = 25 * time.Second
+	}
+	if cfg.DexFilter == "" && len(dexFilters) > 0 {
+		cfg.DexFilter = dexFilters[0]
+	}
+	if cfg.NetworkFilter == "" && len(networkFilters) > 0 {
+		cfg.NetworkFilter = networkFilters[0]
 	}
 	return cfg, nil
 }
@@ -174,14 +237,11 @@ func buildUniswapV4(ctx LaunchContext, _ string, _ []string, dexCfg *config.DexC
 		return err
 	}
 
-	name := v4Cfg.Exchange
-	if name == "" {
-		name = "uniswap_v4"
-	}
+	instanceName := buildSupervisorName(v4Cfg.Exchange, v4Cfg.Network, v4Cfg.ChainID)
 
-	util.Infof("uniswap_v4: launch inline_pools=%d pools_path=%s once=%v", len(v4Cfg.Pools), v4Cfg.PoolsPath, v4Cfg.Once)
+	util.Infof("uniswap_v4: launch exchange=%s network=%s chain_id=%d inline_pools=%d pools_path=%s once=%v", v4Cfg.Exchange, v4Cfg.Network, v4Cfg.ChainID, len(v4Cfg.Pools), v4Cfg.PoolsPath, v4Cfg.Once)
 
-	ctx.Supervisor(name, func() error {
+	ctx.Supervisor(instanceName, func() error {
 		cCtx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
@@ -219,7 +279,19 @@ func buildUniswapV4Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 		return uniswap.V4Config{}, fmt.Errorf("uniswap_v4: invalid pool_manager")
 	}
 
-	registry := uniswap.NewTokenRegistry(assetsProvider, dexCfg.Network)
+	registry := uniswap.NewTokenRegistry(assetsProvider, uniswap.RegistryOptions{
+		Network:   dexCfg.Network,
+		NetworkID: dexCfg.NetworkID,
+		ChainID:   dexCfg.ChainIDValue(),
+	})
+	dexFilters := dexCfg.PoolsSource.DexFilters()
+	networkFilters := dexCfg.PoolsSource.NetworkFilters()
+	if len(networkFilters) == 0 {
+		if net := dexCfg.EffectiveNetworkID(); net != "" {
+			networkFilters = []string{strings.ToLower(net)}
+		}
+	}
+	wantedFromSource := dexCfg.PoolsSource.WantedPairsFor(dexCfg.EffectiveNetworkID())
 
 	inlinePools, err := convertDexPoolsToV4(dexCfg.Pools, registry)
 	if err != nil {
@@ -229,14 +301,25 @@ func buildUniswapV4Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 	sharedPath := strings.TrimSpace(sharedPools)
 	path := dexCfg.ResolvePoolsPath(sharedPath)
 
-	exchangeName := strings.TrimSpace(dexCfg.Name)
+	exchangeName := strings.TrimSpace(dexCfg.DexAlias)
+	if exchangeName == "" {
+		exchangeName = strings.TrimSpace(dexCfg.Name)
+	}
 	if exchangeName == "" {
 		exchangeName = "uniswap_v4"
 	}
+	canonicalNetwork := dexCfg.EffectiveNetworkID()
+	if canonicalNetwork == "" {
+		canonicalNetwork = strings.TrimSpace(dexCfg.Network)
+	}
+	canonicalNetwork = strings.ToLower(canonicalNetwork)
 
 	cfg := uniswap.V4Config{
 		Exchange:        strings.ToLower(exchangeName),
-		Network:         strings.ToLower(strings.TrimSpace(dexCfg.Network)),
+		Network:         canonicalNetwork,
+		ChainID:         dexCfg.ChainIDValue(),
+		NetworkFilters:  networkFilters,
+		DexFilters:      dexFilters,
 		WSURL:           wsURL,
 		HTTPURL:         httpURL,
 		PoolManager:     common.HexToAddress(manager),
@@ -253,7 +336,7 @@ func buildUniswapV4Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 		Registry:        registry,
 	}
 
-	cfg.WantedPairs = mergeWantedPairs(dexCfg.WantedPairs, dexCfg.PoolsSource.WantedPairs)
+	cfg.WantedPairs = mergeWantedPairs(dexCfg.WantedPairs, wantedFromSource)
 	if cfg.SubscribeBatch <= 0 {
 		cfg.SubscribeBatch = 150
 	}
