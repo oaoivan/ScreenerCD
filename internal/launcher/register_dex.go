@@ -104,7 +104,36 @@ func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 		NetworkID: dexCfg.NetworkID,
 		ChainID:   dexCfg.ChainIDValue(),
 	})
-	pools, err := uniswap.LoadPoolsFromSourceWithRegistry(path, registry)
+	ps := dexCfg.PoolsSource
+	appendUnique := func(list []string, val string) []string {
+		trimmed := strings.ToLower(strings.TrimSpace(val))
+		if trimmed == "" {
+			return list
+		}
+		for _, existing := range list {
+			if existing == trimmed {
+				return list
+			}
+		}
+		return append(list, trimmed)
+	}
+	networkFilters := ps.NetworkFilters()
+	if len(networkFilters) == 0 {
+		networkFilters = appendUnique(networkFilters, dexCfg.EffectiveNetworkID())
+		networkFilters = appendUnique(networkFilters, dexCfg.Network)
+		if registry != nil {
+			networkFilters = appendUnique(networkFilters, registry.NetworkName())
+		}
+	}
+	wantedFromSource := ps.WantedPairsFor(dexCfg.EffectiveNetworkID())
+	wantedPairs := mergeWantedPairs(dexCfg.WantedPairs, wantedFromSource)
+	options := uniswap.PoolSourceOptions{
+		NetworkFilters: networkFilters,
+		WantedPairs:    wantedPairs,
+		IncludeStable:  ps.IncludeStable,
+		AMMVersions:    ps.AMMFilters(),
+	}
+	pools, err := uniswap.LoadPoolsFromSourceWithOptions(path, registry, options)
 	if err != nil {
 		return uniswap.Config{}, err
 	}
@@ -196,6 +225,7 @@ func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 		MaxMetaWorkers: dexCfg.MaxMetaWorkers,
 		Registry:       registry,
 		WantedPairs:    mergeWantedPairs(dexCfg.WantedPairs, wantedFromSource),
+		AMMVersions:    ps.AMMFilters(),
 	}
 	if cfg.BatchSize <= 0 {
 		cfg.BatchSize = 150
@@ -320,6 +350,7 @@ func buildUniswapV4Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 		ChainID:         dexCfg.ChainIDValue(),
 		NetworkFilters:  networkFilters,
 		DexFilters:      dexFilters,
+		AMMVersions:     dexCfg.PoolsSource.AMMFilters(),
 		WSURL:           wsURL,
 		HTTPURL:         httpURL,
 		PoolManager:     common.HexToAddress(manager),

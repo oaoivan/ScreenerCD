@@ -37,27 +37,32 @@ dex_configs:
     http_url: "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
     subscribe_batch: 120
     ping_interval: 25
-    pools:
-      - address: "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc"
-        pair_name: "USDC/WETH"
-        token0_symbol: "USDC"
-        token1_symbol: "WETH"
-        token0_address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-        token1_address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-        token0_decimals: 6
-        token1_decimals: 18
-        base_is_token0: false
-        canonical_pair: "WETHUSDC"
-      - address: "0x0d4a11d5EEaaC28EC3F61d100daf4d40471f1852"
-        pair_name: "WETH/USDT"
-        token0_symbol: "WETH"
-        token1_symbol: "USDT"
-        token0_address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-        token1_address: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
-        token0_decimals: 18
-        token1_decimals: 6
-        base_is_token0: true
-        canonical_pair: "WETHUSDT"
+    pools_source:
+      file: "ticker_source/base_pools.json"
+      env: "GECKO_POOLS_JSON"
+      gecko_dex: "uniswap"
+      gecko_network: "ethereum"
+      networks: ["ethereum"]
+      amm_versions: ["v2"]
+      include_stable: true
+
+  - name: "uniswap_v2"
+    dex_alias: "uniswap_v2"
+    network: "bsc"
+    network_id: "bsc-mainnet"
+    chain_id: 56
+    ws_url: "wss://bnb-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    http_url: "https://bnb-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    subscribe_batch: 150
+    ping_interval: 25
+    pools_source:
+      file: "ticker_source/base_pools.json"
+      env: "GECKO_POOLS_JSON"
+      gecko_dex: "uniswap"
+      gecko_network: "binance-smart-chain"
+      networks: ["binance-smart-chain"]
+      amm_versions: ["v2"]
+      include_stable: true
 
   - name: "uniswap_v3"
     dex_alias: "uniswap_v3"
@@ -77,10 +82,29 @@ dex_configs:
       env: "GECKO_POOLS_JSON"
       gecko_dex: "uniswap_v3"
       gecko_network: "ethereum"
-      dexes: ["uniswap_v3"]
       networks: ["ethereum"]
-      wanted_pairs_by_network:
-        ethereum: ["WETHUSDC"]
+      amm_versions: ["v3"]
+
+  - name: "uniswap_v3"
+    dex_alias: "uniswap_v3"
+    network: "bsc"
+    network_id: "bsc-mainnet"
+    chain_id: 56
+    ws_url: "wss://bnb-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    http_url: "https://bnb-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    subscribe_batch: 150
+    ping_interval: 25
+    max_meta_workers: 8
+    swap_only: true
+    log_all_events: false
+    stop_on_ack_error: false
+    pools_source:
+      file: "ticker_source/base_pools.json"
+      env: "GECKO_POOLS_JSON"
+      gecko_dex: "uniswap_v3"
+      gecko_network: "bsc"
+      networks: ["binance-smart-chain"]
+      amm_versions: ["v3"]
 
   - name: "uniswap_v4"
     dex_alias: "uniswap_v4"
@@ -101,9 +125,32 @@ dex_configs:
       env: "GECKO_POOLS_JSON"
       gecko_dex: "uniswap_v4"
       gecko_network: "ethereum"
-      dexes: ["uniswap_v4"]
       networks: ["ethereum"]
+      amm_versions: ["v4"]
     wanted_pairs_only: false                                      # подписываемся на все доступные пулы из источника
+
+  - name: "uniswap_v4"
+    dex_alias: "uniswap_v4"
+    network: "bsc"
+    network_id: "bsc-mainnet"
+    chain_id: 56
+    pool_manager: "${POOLMANAGER_V4_BSC}"
+    ws_url: "wss://bnb-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    http_url: "https://bnb-mainnet.g.alchemy.com/v2/ebe6XDskLuIVCgDO1NlB-"
+    subscribe_batch: 150
+    ping_interval: 25
+    max_meta_workers: 8
+    swap_only: true
+    log_all_events: true
+    stop_on_ack_error: true
+    pools_source:
+      file: "ticker_source/base_pools.json"
+      env: "GECKO_POOLS_JSON"
+      gecko_dex: "uniswap-v4-bsc"
+      gecko_network: "binance-smart-chain"
+      networks: ["binance-smart-chain"]
+      amm_versions: ["v4"]
+    wanted_pairs_only: false
 
   # Пример второго инстанса Uniswap V3 на другой сети (закомментирован до готовности инфраструктуры)
   # - name: "uniswap_v3"
@@ -115,7 +162,6 @@ dex_configs:
   #   http_url: "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_BASE_KEY}"
   #   subscribe_batch: 150
   #   ping_interval: 25
-  #   max_meta_workers: 8
   #   swap_only: true
   #   pools_source:
   #     file: "ticker_source/base_pools.json"

@@ -256,6 +256,7 @@ type PoolsSource struct {
 	GeckoNetwork  string              `yaml:"gecko_network"`
 	Dexes         []string            `yaml:"dexes"`
 	Networks      []string            `yaml:"networks"`
+	AMMVersions   []string            `yaml:"amm_versions"`
 	IncludeStable bool                `yaml:"include_stable"`
 	WantedPairs   []string            `yaml:"wanted_pairs"`
 	WantedByNet   map[string][]string `yaml:"wanted_pairs_by_network"`
@@ -283,6 +284,33 @@ func (ps PoolsSource) DexFilters() []string {
 	add(ps.GeckoDex)
 	for _, dex := range ps.Dexes {
 		add(dex)
+	}
+	if len(seen) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(seen))
+	for key := range seen {
+		out = append(out, key)
+	}
+	sort.Strings(out)
+	return out
+}
+
+// AMMFilters возвращает нормализованный список версий AMM.
+func (ps PoolsSource) AMMFilters() []string {
+	seen := make(map[string]struct{})
+	for _, raw := range ps.AMMVersions {
+		trimmed := strings.TrimSpace(strings.ToLower(raw))
+		if trimmed == "" {
+			continue
+		}
+		if !strings.HasPrefix(trimmed, "v") {
+			trimmed = "v" + trimmed
+		}
+		if _, ok := seen[trimmed]; ok {
+			continue
+		}
+		seen[trimmed] = struct{}{}
 	}
 	if len(seen) == 0 {
 		return nil

@@ -47,6 +47,7 @@ type V4Config struct {
 	ChainID         uint64
 	NetworkFilters  []string
 	DexFilters      []string
+	AMMVersions     []string
 	WSURL           string
 	HTTPURL         string
 	PoolManager     common.Address
@@ -625,22 +626,15 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 			networkFilters = []string{net}
 		}
 	}
-	dexFilters := c.cfg.DexFilters
+	ammFilters := c.cfg.AMMVersions
 	skippedNetwork := 0
-	skippedDex := 0
+	skippedAMM := 0
 	for _, entry := range payload.Entries {
 		if err := ctxErr(ctx); err != nil {
 			return nil, err
 		}
-		if !matchesAMMVersion(entry.AMMVersion, entry.Dex, "v4") {
-			continue
-		}
-		if len(dexFilters) > 0 {
-			if !dexMatchesAny(entry.Dex, dexFilters) {
-				skippedDex++
-				continue
-			}
-		} else if !isUniswapDex(entry.Dex) {
+		if len(ammFilters) > 0 && !matchesAnyAMMVersion(entry.AMMVersion, ammFilters) {
+			skippedAMM++
 			continue
 		}
 		if len(networkFilters) > 0 && !networkMatchesAny(entry.Network, networkFilters) {
@@ -664,7 +658,7 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 		result = append(result, pool)
 	}
 
-	util.Infof("uniswap_v4: pools loaded=%d skipped_network=%d skipped_dex=%d filters_network=%v filters_dex=%v", len(result), skippedNetwork, skippedDex, networkFilters, dexFilters)
+	util.Infof("uniswap_v4: pools loaded=%d skipped_network=%d skipped_amm=%d filters_network=%v filters_amm=%v", len(result), skippedNetwork, skippedAMM, networkFilters, ammFilters)
 	return result, nil
 }
 
@@ -744,6 +738,11 @@ func mustBuildPoolKeyArgs() abi.Arguments {
 
 func derivePoolID(entry GeckoEntry) (common.Hash, error) {
 	if hash, ok := parseExistingPoolID(entry.PoolID); ok {
+		return hash, nil
+	}
+	if hash, ok := parseExistingPoolID(entry.PoolAddr); ok {
+		// Gecko для BSC может возвращать pool_address как 32-байтовый poolId,
+		// используем его, если явный PoolID отсутствует.
 		return hash, nil
 	}
 	currency0, err := parseCurrencyAddress(entry.PoolKey.Currency0)

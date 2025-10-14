@@ -28,6 +28,7 @@ type lineLimitedWriter struct {
 	maxLines int
 	mu       sync.Mutex
 	buffer   []byte
+	lines    []int64
 }
 
 func newLineLimitedWriter(path string, maxLines int) (*lineLimitedWriter, error) {
@@ -40,7 +41,7 @@ func newLineLimitedWriter(path string, maxLines int) (*lineLimitedWriter, error)
 		maxLines: maxLines,
 		buffer:   make([]byte, logBufferSize),
 	}
-	if err := llw.trimUnlocked(); err != nil {
+	if err := llw.rebuildOffsets(); err != nil {
 		_ = f.Close()
 		return nil, err
 	}
@@ -51,7 +52,8 @@ func (w *lineLimitedWriter) Write(p []byte) (int, error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
-	if _, err := w.file.Seek(0, io.SeekEnd); err != nil {
+	end, err := w.file.Seek(0, io.SeekEnd)
+	if err != nil {
 		return 0, err
 	}
 
@@ -59,7 +61,13 @@ func (w *lineLimitedWriter) Write(p []byte) (int, error) {
 	if err != nil {
 		return n, err
 	}
-	_ = w.trimLocked()
+	w.appendOffsetsLocked(p[:n], end)
+	if err := w.ensureLimitLocked(); err != nil {
+		return n, err
+	}
+	if err := w.file.Sync(); err != nil {
+		return n, err
+	}
 	return n, nil
 }
 
@@ -75,19 +83,17 @@ func (w *lineLimitedWriter) Sync() error {
 	return w.file.Sync()
 }
 
-func (w *lineLimitedWriter) trimUnlocked() error {
+func (w *lineLimitedWriter) rebuildOffsets() error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
-	return w.trimLocked()
-}
 
-func (w *lineLimitedWriter) trimLocked() error {
+	w.lines = w.lines[:0]
 	info, err := w.file.Stat()
 	if err != nil {
 		return err
 	}
 	size := info.Size()
-	if size <= 0 {
+	if size == 0 {
 		return nil
 	}
 
@@ -98,51 +104,81 @@ func (w *lineLimitedWriter) trimLocked() error {
 	}
 
 	var (
-		offset       = size
-		newlineCount = 0
-		cutoff       int64
+		pos int64
 	)
-
-	for offset > 0 && newlineCount <= w.maxLines {
+	for pos < size {
 		chunk := int64(len(buf))
-		if chunk > offset {
-			chunk = offset
+		remaining := size - pos
+		if chunk > remaining {
+			chunk = remaining
 		}
-		offset -= chunk
 		intChunk := int(chunk)
 		if intChunk == 0 {
 			break
 		}
 		data := buf[:intChunk]
-		n, err := w.file.ReadAt(data, offset)
+		n, err := w.file.ReadAt(data, pos)
 		if err != nil && err != io.EOF {
 			return err
 		}
-		if n <= 0 {
-			continue
-		}
-		data = data[:n]
-		for i := len(data) - 1; i >= 0; i-- {
+		for i := 0; i < n; i++ {
 			if data[i] == '\n' {
-				newlineCount++
-				if newlineCount > w.maxLines {
-					cutoff = offset + int64(i) + 1
-					break
-				}
+				w.lines = append(w.lines, pos+int64(i))
 			}
 		}
-		if cutoff != 0 {
+		pos += int64(n)
+		if err == io.EOF {
 			break
 		}
 	}
+	return w.ensureLimitLocked()
+}
 
-	if cutoff == 0 {
+func (w *lineLimitedWriter) appendOffsetsLocked(p []byte, base int64) {
+	for i, b := range p {
+		if b == '\n' {
+			w.lines = append(w.lines, base+int64(i))
+		}
+	}
+}
+
+func (w *lineLimitedWriter) ensureLimitLocked() error {
+	if len(w.lines) <= w.maxLines {
 		return nil
 	}
+	excess := len(w.lines) - w.maxLines
+	cutoff := w.lines[excess-1] + 1
+	if err := w.compactLocked(cutoff); err != nil {
+		return err
+	}
+	for i := excess; i < len(w.lines); i++ {
+		w.lines[i-excess] = w.lines[i] - cutoff
+	}
+	w.lines = w.lines[:len(w.lines)-excess]
+	return nil
+}
 
-	tailSize := size - cutoff
-	if tailSize < 0 {
-		tailSize = 0
+func (w *lineLimitedWriter) compactLocked(cutoff int64) error {
+	info, err := w.file.Stat()
+	if err != nil {
+		return err
+	}
+	size := info.Size()
+	if cutoff <= 0 {
+		return nil
+	}
+	if cutoff >= size {
+		if err := w.file.Truncate(0); err != nil {
+			return err
+		}
+		_, err = w.file.Seek(0, io.SeekEnd)
+		return err
+	}
+
+	buf := w.buffer
+	if len(buf) == 0 {
+		buf = make([]byte, logBufferSize)
+		w.buffer = buf
 	}
 
 	readOffset := cutoff
@@ -165,21 +201,21 @@ func (w *lineLimitedWriter) trimLocked() error {
 		if n <= 0 {
 			break
 		}
-		data = data[:n]
-		if _, err := w.file.WriteAt(data, writeOffset); err != nil {
+		if _, err := w.file.WriteAt(data[:n], writeOffset); err != nil {
 			return err
 		}
 		readOffset += int64(n)
 		writeOffset += int64(n)
+		if err == io.EOF {
+			break
+		}
 	}
 
-	if err := w.file.Truncate(tailSize); err != nil {
+	if err := w.file.Truncate(size - cutoff); err != nil {
 		return err
 	}
-	if _, err := w.file.Seek(0, io.SeekEnd); err != nil {
-		return err
-	}
-	return w.file.Sync()
+	_, err = w.file.Seek(0, io.SeekEnd)
+	return err
 }
 
 func init() {

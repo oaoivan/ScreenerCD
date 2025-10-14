@@ -42,10 +42,6 @@ const (
 	v3ReconnectMax           = 30 * time.Second
 )
 
-var (
-	v3PingInterval = v3PingIntervalDefault
-)
-
 // --- Структуры входного файла GeckoTerminal ---
 type v3IntOrString int
 
@@ -188,47 +184,122 @@ type v3PoolMeta struct {
 	Verified    bool
 }
 
-// Глобальные
 const v3FallbackWETHHex = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-
-var (
-	v3Pools          = make(map[common.Address]*v3PoolMeta)
-	v3BatchSize      int
-	v3ABI            abi.ABI
-	v3EventBySig     = make(map[common.Hash]abi.Event)
-	v3TwoPow192      = new(big.Int).Lsh(big.NewInt(1), 192)
-	v3WSURL          string
-	v3StopOnErrAck   bool
-	v3LogAllEvents   bool
-	v3DecodeSwapOnly bool
-	v3HTTPURL        string
-	v3HTTPClient     = &http.Client{Timeout: 10 * time.Second}
-	v3TokenCache     = make(map[common.Address]v3TokenMeta)
-	v3TokenMu        sync.RWMutex
-	v3Pow10Cache     = make(map[uint8]*big.Int)
-	v3Pow10Mu        sync.RWMutex
-	v3Registry       *TokenRegistry
-	v3WETHAddress    = common.HexToAddress(v3FallbackWETHHex)
-	v3StableLookup   map[string]struct{}
-	v3WETHUSD        *big.Rat
-	v3WETHUSDStable  string
-	v3WethMu         sync.RWMutex
-	v3MetaSem        = make(chan struct{}, 8) // ограничение параллельных metadata fetch
-	v3OutChan        chan<- *pb.MarketData
-	v3OutMu          sync.RWMutex
-	v3ExchangeName   = "uniswap_v3"
-	v3NetworkName    = ""
-	v3ChainID        uint64
-	v3Pricer         pricing.Pricer
-	v3PricerMu       sync.RWMutex
-	v3MessageCount   uint64
-	v3ReconnectCount uint64
-)
 
 var v3FallbackStableSymbols = []string{"USDC", "USDT", "DAI", "TUSD", "FDUSD"}
 
-func init() {
-	v3StableLookup = v3FallbackStableSet()
+type v3Engine struct {
+	ctx context.Context
+	cfg V3Config
+
+	exchange  string
+	network   string
+	chainID   uint64
+	logPrefix string
+
+	pricer pricing.Pricer
+
+	abi        abi.ABI
+	eventBySig map[common.Hash]abi.Event
+	twoPow192  *big.Int
+
+	pools      map[common.Address]*v3PoolMeta
+	tokenCache map[common.Address]v3TokenMeta
+	tokenMu    sync.RWMutex
+	pow10Cache map[uint8]*big.Int
+	pow10Mu    sync.RWMutex
+
+	httpClient *http.Client
+	wsURL      string
+	httpURL    string
+
+	pingInterval   time.Duration
+	batchSize      int
+	stopOnAckErr   bool
+	logAllEvents   bool
+	decodeSwapOnly bool
+
+	out chan<- *pb.MarketData
+
+	registry     *TokenRegistry
+	stableLookup map[string]struct{}
+	wethAddress  common.Address
+	wethUSD      *big.Rat
+	wethStable   string
+	wethMu       sync.RWMutex
+
+	metaSem chan struct{}
+
+	messageCount   uint64
+	reconnectCount uint64
+}
+
+func newV3Engine(ctx context.Context, cfg V3Config, pr pricing.Pricer, out chan<- *pb.MarketData) (*v3Engine, error) {
+	if out == nil {
+		return nil, fmt.Errorf("uniswap_v3: out channel is nil")
+	}
+
+	e := &v3Engine{
+		ctx:          ctx,
+		cfg:          cfg,
+		pricer:       pr,
+		out:          out,
+		eventBySig:   make(map[common.Hash]abi.Event),
+		twoPow192:    new(big.Int).Lsh(big.NewInt(1), 192),
+		pools:        make(map[common.Address]*v3PoolMeta),
+		tokenCache:   make(map[common.Address]v3TokenMeta),
+		pow10Cache:   make(map[uint8]*big.Int),
+		httpClient:   &http.Client{Timeout: 10 * time.Second},
+		stableLookup: v3FallbackStableSet(),
+	}
+
+	if cfg.MaxMetaWorkers > 0 {
+		e.metaSem = make(chan struct{}, cfg.MaxMetaWorkers)
+	} else {
+		e.metaSem = make(chan struct{}, 8)
+	}
+
+	if cfg.BatchSize > 0 {
+		e.batchSize = cfg.BatchSize
+	} else {
+		e.batchSize = v3BatchSizeDefault
+	}
+
+	if cfg.PingInterval > 0 {
+		e.pingInterval = cfg.PingInterval
+	} else {
+		e.pingInterval = v3PingIntervalDefault
+	}
+
+	e.stopOnAckErr = cfg.StopOnAckError
+	e.logAllEvents = cfg.LogAllEvents
+	e.decodeSwapOnly = cfg.DecodeSwapOnly
+
+	name := strings.TrimSpace(cfg.Exchange)
+	if name == "" {
+		name = "uniswap_v3"
+	}
+	e.exchange = strings.ToLower(name)
+
+	networkName := strings.TrimSpace(cfg.Network)
+	if networkName == "" && cfg.Registry != nil {
+		networkName = cfg.Registry.NetworkName()
+	}
+	e.network = strings.ToLower(networkName)
+
+	chainID := cfg.ChainID
+	if chainID == 0 && cfg.Registry != nil {
+		chainID = cfg.Registry.ChainID()
+	}
+	e.chainID = chainID
+
+	if e.network != "" {
+		e.logPrefix = fmt.Sprintf("uniswap_v3:%s", e.network)
+	} else {
+		e.logPrefix = "uniswap_v3"
+	}
+
+	return e, nil
 }
 
 func v3FallbackStableSet() map[string]struct{} {
@@ -243,17 +314,18 @@ func v3FallbackStableSet() map[string]struct{} {
 	return lookup
 }
 
-func v3InitAssets(reg *TokenRegistry) {
+func (e *v3Engine) initAssets() {
+	reg := e.cfg.Registry
 	provided := reg != nil
 	if reg == nil {
-		util.Debugf("uniswap_v3 assets: registry nil, using defaults")
+		util.Debugf("%s assets: registry nil, using defaults", e.logPrefix)
 		reg = NewTokenRegistry(nil, RegistryOptions{})
 	}
-	v3Registry = reg
+	e.registry = reg
+
 	lookup := v3FallbackStableSet()
 	added := 0
-	stables := reg.StableTokens()
-	for _, meta := range stables {
+	for _, meta := range reg.StableTokens() {
 		key := strings.ToUpper(strings.TrimSpace(meta.Symbol))
 		if key == "" {
 			continue
@@ -263,14 +335,15 @@ func v3InitAssets(reg *TokenRegistry) {
 		}
 		lookup[key] = struct{}{}
 	}
+
 	if added > 0 {
-		util.Infof("uniswap_v3 assets: registry stables added=%d total=%d", added, len(lookup))
+		util.Infof("%s assets: registry stables added=%d total=%d", e.logPrefix, added, len(lookup))
 	} else if provided {
-		util.Debugf("uniswap_v3 assets: registry stables empty, fallback total=%d", len(lookup))
+		util.Debugf("%s assets: registry stables empty, fallback total=%d", e.logPrefix, len(lookup))
 	} else {
-		util.Debugf("uniswap_v3 assets: fallback stables total=%d", len(lookup))
+		util.Debugf("%s assets: fallback stables total=%d", e.logPrefix, len(lookup))
 	}
-	v3StableLookup = lookup
+	e.stableLookup = lookup
 
 	addr := common.Address{}
 	if wethMeta, ok := reg.WETHMeta(); ok && (wethMeta.Address != common.Address{}) {
@@ -282,26 +355,26 @@ func v3InitAssets(reg *TokenRegistry) {
 	if (addr == common.Address{}) {
 		addr = common.HexToAddress(v3FallbackWETHHex)
 		if provided {
-			util.Debugf("uniswap_v3 assets: registry missing WETH, fallback address=%s", addr.Hex())
+			util.Debugf("%s assets: registry missing WETH, fallback address=%s", e.logPrefix, addr.Hex())
 		} else {
-			util.Debugf("uniswap_v3 assets: WETH fallback address=%s", addr.Hex())
+			util.Debugf("%s assets: WETH fallback address=%s", e.logPrefix, addr.Hex())
 		}
 	} else {
-		util.Infof("uniswap_v3 assets: WETH address=%s", addr.Hex())
+		util.Infof("%s assets: WETH address=%s", e.logPrefix, addr.Hex())
 	}
-	v3WETHAddress = addr
+	e.wethAddress = addr
 }
 
-func v3IsStableSymbol(symbol string) bool {
+func (e *v3Engine) isStableSymbol(symbol string) bool {
 	key := strings.ToUpper(strings.TrimSpace(symbol))
 	if key == "" {
 		return false
 	}
-	if v3Registry != nil && v3Registry.IsStableSymbol(key) {
+	if e.registry != nil && e.registry.IsStableSymbol(key) {
 		return true
 	}
-	if v3StableLookup != nil {
-		if _, ok := v3StableLookup[key]; ok {
+	if e.stableLookup != nil {
+		if _, ok := e.stableLookup[key]; ok {
 			return true
 		}
 	}
@@ -330,6 +403,7 @@ type V3Config struct {
 	MaxMetaWorkers int
 	Registry       *TokenRegistry
 	WantedPairs    []string
+	AMMVersions    []string
 }
 
 type V3Connector struct {
@@ -342,105 +416,45 @@ func NewV3Connector(cfg V3Config, pricer pricing.Pricer) *V3Connector {
 }
 
 func (c *V3Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error {
-	return v3Run(ctx, c.cfg, out, c.pricer)
+	engine, err := newV3Engine(ctx, c.cfg, c.pricer, out)
+	if err != nil {
+		return err
+	}
+	return engine.Run()
 }
 
 // Event сигнатуры V3 (минимум Swap). Keccak("Swap(address,address,int256,int256,uint160,uint128,int24)")
 var v3SwapSig = common.HexToHash("0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67")
 
-func v3Run(ctx context.Context, cfg V3Config, out chan<- *pb.MarketData, pricer pricing.Pricer) error {
-	if out == nil {
-		return fmt.Errorf("uniswap_v3: out channel is nil")
-	}
-	if err := v3InitABI(); err != nil {
+func (e *v3Engine) Run() error {
+	if err := e.initABI(); err != nil {
 		return fmt.Errorf("uniswap_v3: init abi: %w", err)
 	}
-	if err := v3ResolveWS(&cfg); err != nil {
+	if err := e.resolveWS(); err != nil {
 		return err
 	}
-	if err := v3LoadPools(cfg); err != nil {
+	if err := e.loadPools(); err != nil {
 		return err
 	}
-	if len(v3Pools) == 0 {
+	if len(e.pools) == 0 {
 		return fmt.Errorf("uniswap_v3: no pools loaded")
 	}
-	v3InitAssets(cfg.Registry)
+	e.initAssets()
 
-	v3OutMu.Lock()
-	v3OutChan = out
-	v3OutMu.Unlock()
+	atomic.StoreUint64(&e.messageCount, 0)
+	atomic.StoreUint64(&e.reconnectCount, 0)
 	defer func() {
-		v3OutMu.Lock()
-		v3OutChan = nil
-		v3OutMu.Unlock()
+		emitted := atomic.LoadUint64(&e.messageCount)
+		reconnects := atomic.LoadUint64(&e.reconnectCount)
+		util.Infof("%s connector stopped, emitted=%d reconnects=%d", e.logPrefix, emitted, reconnects)
 	}()
 
-	v3PricerMu.Lock()
-	v3Pricer = pricer
-	v3PricerMu.Unlock()
-	atomic.StoreUint64(&v3MessageCount, 0)
-	atomic.StoreUint64(&v3ReconnectCount, 0)
-	defer func() {
-		v3PricerMu.Lock()
-		v3Pricer = nil
-		v3PricerMu.Unlock()
-		emitted := atomic.LoadUint64(&v3MessageCount)
-		reconnects := atomic.LoadUint64(&v3ReconnectCount)
-		util.Infof("uniswap_v3 connector stopped, emitted=%d reconnects=%d", emitted, reconnects)
-	}()
-
-	name := strings.TrimSpace(cfg.Exchange)
-	if name == "" {
-		name = "uniswap_v3"
-	}
-	v3ExchangeName = strings.ToLower(name)
-
-	networkName := strings.TrimSpace(cfg.Network)
-	if networkName == "" && cfg.Registry != nil {
-		networkName = cfg.Registry.NetworkName()
-	}
-	v3NetworkName = strings.ToLower(networkName)
-	chainID := cfg.ChainID
-	if chainID == 0 && cfg.Registry != nil {
-		chainID = cfg.Registry.ChainID()
-	}
-	v3ChainID = chainID
-
-	v3BatchSize = cfg.BatchSize
-	if v3BatchSize <= 0 {
-		v3BatchSize = v3BatchSizeDefault
-	}
-	if cfg.MaxMetaWorkers > 0 {
-		v3MetaSem = make(chan struct{}, cfg.MaxMetaWorkers)
-	} else {
-		v3MetaSem = make(chan struct{}, 8)
-	}
-	if cfg.PingInterval > 0 {
-		v3PingInterval = cfg.PingInterval
-	} else {
-		v3PingInterval = v3PingIntervalDefault
-	}
-	v3StopOnErrAck = cfg.StopOnAckError
-	v3LogAllEvents = cfg.LogAllEvents
-	v3DecodeSwapOnly = cfg.DecodeSwapOnly
-
-	v3TokenMu.Lock()
-	v3TokenCache = make(map[common.Address]v3TokenMeta)
-	v3TokenMu.Unlock()
-	v3Pow10Mu.Lock()
-	v3Pow10Cache = make(map[uint8]*big.Int)
-	v3Pow10Mu.Unlock()
-	v3WethMu.Lock()
-	v3WETHUSD = nil
-	v3WETHUSDStable = ""
-	v3WethMu.Unlock()
-
-	util.Infof("uniswap_v3: start exchange=%s network=%s chain_id=%d pools=%d ws=%s", v3ExchangeName, v3NetworkName, v3ChainID, len(v3Pools), v3Mask(v3WSURL))
-	return v3RunLoop(ctx)
+	util.Infof("%s start exchange=%s network=%s chain_id=%d pools=%d ws=%s", e.logPrefix, e.exchange, e.network, e.chainID, len(e.pools), v3Mask(e.wsURL))
+	return e.runLoop()
 }
 
 // --- Init / Load ---
-func v3InitABI() error {
+func (e *v3Engine) initABI() error {
 	b, err := os.ReadFile("ABI/Uniswap/V3/UniswapV3Pool.json")
 	if err != nil {
 		return err
@@ -449,16 +463,17 @@ func v3InitABI() error {
 	if err != nil {
 		return err
 	}
-	v3ABI = parsed
-	for _, ev := range v3ABI.Events {
-		v3EventBySig[ev.ID] = ev
+	e.abi = parsed
+	e.eventBySig = make(map[common.Hash]abi.Event, len(parsed.Events))
+	for _, ev := range e.abi.Events {
+		e.eventBySig[ev.ID] = ev
 	}
 	return nil
 }
 
-func v3ResolveWS(cfg *V3Config) error {
-	ws := strings.TrimSpace(cfg.WSURL)
-	httpURL := strings.TrimSpace(cfg.HTTPURL)
+func (e *v3Engine) resolveWS() error {
+	ws := strings.TrimSpace(e.cfg.WSURL)
+	httpURL := strings.TrimSpace(e.cfg.HTTPURL)
 
 	if ws == "" {
 		if direct := strings.TrimSpace(os.Getenv("ALCHEMY_WS_URL")); direct != "" {
@@ -487,13 +502,13 @@ func v3ResolveWS(cfg *V3Config) error {
 		return fmt.Errorf("uniswap_v3: http_url not provided")
 	}
 
-	v3WSURL = ws
-	v3HTTPURL = httpURL
+	e.wsURL = ws
+	e.httpURL = httpURL
 	return nil
 }
 
-func v3LoadPools(cfg V3Config) error {
-	path := strings.TrimSpace(cfg.PoolsPath)
+func (e *v3Engine) loadPools() error {
+	path := strings.TrimSpace(e.cfg.PoolsPath)
 	if path == "" {
 		path = strings.TrimSpace(os.Getenv("GECKO_POOLS_JSON"))
 	}
@@ -511,51 +526,39 @@ func v3LoadPools(cfg V3Config) error {
 	if err := json.Unmarshal(b, &f); err != nil {
 		return err
 	}
-	dexFilters := cfg.DexFilters
-	if len(dexFilters) == 0 {
-		trimmed := strings.TrimSpace(cfg.DexFilter)
-		if trimmed != "" {
-			dexFilters = []string{trimmed}
-		}
-	}
-	if len(dexFilters) == 0 {
-		dexFilters = []string{"uniswap_v3"}
-	}
-	networkFilters := cfg.NetworkFilters
+	networkFilters := e.cfg.NetworkFilters
 	if len(networkFilters) == 0 {
-		trimmed := strings.TrimSpace(cfg.NetworkFilter)
+		trimmed := strings.TrimSpace(e.cfg.NetworkFilter)
 		if trimmed != "" {
 			networkFilters = []string{trimmed}
 		}
 	}
+	ammFilters := e.cfg.AMMVersions
 
-	v3Pools = make(map[common.Address]*v3PoolMeta)
+	e.pools = make(map[common.Address]*v3PoolMeta)
 	added := 0
-	for _, e := range f.Entries {
-		if !matchesAMMVersion(e.AMMVersion, e.Dex, "v3") {
+	for _, entry := range f.Entries {
+		if !matchesAnyAMMVersion(entry.AMMVersion, ammFilters) {
 			continue
 		}
-		if len(dexFilters) > 0 && !dexMatchesAny(e.Dex, dexFilters) {
+		if len(networkFilters) > 0 && !networkMatchesAny(entry.Network, networkFilters) {
 			continue
 		}
-		if len(networkFilters) > 0 && !networkMatchesAny(e.Network, networkFilters) {
-			continue
-		}
-		addrHex := e.PoolID
+		addrHex := entry.PoolID
 		if addrHex == "" {
-			addrHex = e.PoolAddress
+			addrHex = entry.PoolAddress
 		}
 		if !common.IsHexAddress(addrHex) {
 			continue
 		}
 		addr := common.HexToAddress(addrHex)
-		if _, exists := v3Pools[addr]; exists {
+		if _, exists := e.pools[addr]; exists {
 			continue
 		}
-		token0 := v3TokenMetaFromJSON(e.Token0.Address, e.Token0.Symbol, e.Token0.Decimals)
-		token1 := v3TokenMetaFromJSON(e.Token1.Address, e.Token1.Symbol, e.Token1.Decimals)
+		token0 := v3TokenMetaFromJSON(entry.Token0.Address, entry.Token0.Symbol, entry.Token0.Decimals)
+		token1 := v3TokenMetaFromJSON(entry.Token1.Address, entry.Token1.Symbol, entry.Token1.Decimals)
 		if (token0.Address == common.Address{}) || (token1.Address == common.Address{}) {
-			util.Debugf("uniswap_v3 skip pool=%s reason=missing token address", e.PairName)
+			util.Debugf("%s skip pool=%s reason=missing token address", e.logPrefix, entry.PairName)
 			continue
 		}
 		if token0.Symbol == "" {
@@ -565,78 +568,78 @@ func v3LoadPools(cfg V3Config) error {
 			token1.Symbol = v3DefaultSymbol(token1.Address)
 		}
 		hasJSONMeta := token0.Dec > 0 && token1.Dec > 0
-		v3Pools[addr] = &v3PoolMeta{
+		e.pools[addr] = &v3PoolMeta{
 			Addr:        addr,
-			PairName:    e.PairName,
+			PairName:    entry.PairName,
 			Token0:      token0,
 			Token1:      token1,
 			HasJSONMeta: hasJSONMeta,
 		}
 		if hasJSONMeta {
-			util.Debugf("uniswap_v3 pool=%s decimals json token0=%d token1=%d", e.PairName, token0.Dec, token1.Dec)
+			util.Debugf("%s pool=%s decimals json token0=%d token1=%d", e.logPrefix, entry.PairName, token0.Dec, token1.Dec)
 		}
 		added++
 		if added <= 20 {
-			util.Infof("uniswap_v3 add pool %s addr=%s", e.PairName, addr.Hex())
+			util.Infof("%s add pool %s addr=%s", e.logPrefix, entry.PairName, addr.Hex())
 		}
 	}
-	util.Infof("uniswap_v3 loaded pools=%d source=%s", added, path)
+	util.Infof("%s loaded pools=%d source=%s", e.logPrefix, added, path)
 	return nil
 }
 
 // --- Run Loop ---
-func v3RunLoop(ctx context.Context) error {
+func (e *v3Engine) runLoop() error {
 	backoff := v3ReconnectBase
 	for {
-		if err := ctx.Err(); err != nil {
+		if err := e.ctx.Err(); err != nil {
 			return err
 		}
-		conn, err := v3Dial()
+		conn, err := e.dial()
 		if err != nil {
-			util.Errorf("uniswap_v3 dial error: %v", err)
+			util.Errorf("%s dial error: %v", e.logPrefix, err)
 			backoff = v3NextBackoff(backoff)
 			select {
-			case <-ctx.Done():
-				return ctx.Err()
+			case <-e.ctx.Done():
+				return e.ctx.Err()
 			case <-time.After(backoff):
 			}
 			continue
 		}
-		util.Infof("uniswap_v3 ws connected %s", v3Mask(v3WSURL))
-		if err := v3SubscribeAll(conn); err != nil {
-			util.Errorf("uniswap_v3 subscribe error: %v", err)
+		util.Infof("%s ws connected %s", e.logPrefix, v3Mask(e.wsURL))
+		if err := e.subscribeAll(conn); err != nil {
+			util.Errorf("%s subscribe error: %v", e.logPrefix, err)
 			conn.Close()
 			backoff = v3NextBackoff(backoff)
 			select {
-			case <-ctx.Done():
-				return ctx.Err()
+			case <-e.ctx.Done():
+				return e.ctx.Err()
 			case <-time.After(backoff):
 			}
 			continue
 		}
 		backoff = v3ReconnectBase
-		loopCtx, cancel := context.WithCancel(ctx)
+		loopCtx, cancel := context.WithCancel(e.ctx)
 		msgs := make(chan []byte, 4096)
 		errs := make(chan error, 1)
-		go v3Ping(loopCtx, conn)
-		go v3Read(conn, msgs, errs)
+		go e.ping(loopCtx, conn)
+		go e.read(conn, msgs, errs)
 		running := true
 		for running {
 			select {
-			case <-ctx.Done():
+			case <-e.ctx.Done():
 				cancel()
 				conn.Close()
-				return ctx.Err()
+				return e.ctx.Err()
 			case raw, ok := <-msgs:
 				if !ok {
-					util.Infof("uniswap_v3 reader closed -> reconnect")
+					util.Infof("%s reader closed -> reconnect", e.logPrefix)
 					running = false
 					continue
 				}
-				v3Handle(raw)
-			case e := <-errs:
-				if e != nil {
-					util.Errorf("uniswap_v3 ws error: %v", e)
+				e.handle(raw)
+			case err := <-errs:
+				if err != nil {
+					util.Errorf("%s ws error: %v", e.logPrefix, err)
 				}
 				running = false
 			}
@@ -644,33 +647,33 @@ func v3RunLoop(ctx context.Context) error {
 		cancel()
 		conn.Close()
 		select {
-		case <-ctx.Done():
-			return ctx.Err()
+		case <-e.ctx.Done():
+			return e.ctx.Err()
 		case <-time.After(backoff):
 		}
-		count := atomic.AddUint64(&v3ReconnectCount, 1)
-		util.Infof("uniswap_v3 reconnect #%d in %s", count, backoff)
+		count := atomic.AddUint64(&e.reconnectCount, 1)
+		util.Infof("%s reconnect #%d in %s", e.logPrefix, count, backoff)
 		backoff = v3NextBackoff(backoff)
 	}
 }
 
-func v3Dial() (*websocket.Conn, error) {
+func (e *v3Engine) dial() (*websocket.Conn, error) {
 	d := *websocket.DefaultDialer
 	d.EnableCompression = true
-	c, _, err := d.Dial(v3WSURL, nil)
+	c, _, err := d.Dial(e.wsURL, nil)
 	return c, err
 }
 
-func v3SubscribeAll(conn *websocket.Conn) error {
-	addresses := make([]string, 0, len(v3Pools))
-	for a := range v3Pools {
+func (e *v3Engine) subscribeAll(conn *websocket.Conn) error {
+	addresses := make([]string, 0, len(e.pools))
+	for a := range e.pools {
 		addresses = append(addresses, a.Hex())
 	}
 	sort.Strings(addresses)
 	batches := 0
 	id := 1
-	for start := 0; start < len(addresses); start += v3BatchSize {
-		end := start + v3BatchSize
+	for start := 0; start < len(addresses); start += e.batchSize {
+		end := start + e.batchSize
 		if end > len(addresses) {
 			end = len(addresses)
 		}
@@ -679,17 +682,17 @@ func v3SubscribeAll(conn *websocket.Conn) error {
 		if err := conn.WriteJSON(req); err != nil {
 			return fmt.Errorf("batch %d: %w", batches, err)
 		}
-		util.Debugf("uniswap_v3 subscribe batch=%d id=%d size=%d", batches, id, len(part))
+		util.Debugf("%s subscribe batch=%d id=%d size=%d", e.logPrefix, batches, id, len(part))
 		batches++
 		id++
 	}
-	util.Infof("uniswap_v3 total subscribe batches=%d", batches)
+	util.Infof("%s total subscribe batches=%d", e.logPrefix, batches)
 	return nil
 }
 
 // --- WS helpers ---
-func v3Ping(ctx context.Context, c *websocket.Conn) {
-	t := time.NewTicker(v3PingInterval)
+func (e *v3Engine) ping(ctx context.Context, c *websocket.Conn) {
+	t := time.NewTicker(e.pingInterval)
 	defer t.Stop()
 	for {
 		select {
@@ -700,7 +703,8 @@ func v3Ping(ctx context.Context, c *websocket.Conn) {
 		}
 	}
 }
-func v3Read(c *websocket.Conn, out chan<- []byte, errs chan<- error) {
+
+func (e *v3Engine) read(c *websocket.Conn, out chan<- []byte, errs chan<- error) {
 	defer close(out)
 	for {
 		mt, data, err := c.ReadMessage()
@@ -723,15 +727,15 @@ func v3NextBackoff(cur time.Duration) time.Duration {
 }
 
 // --- Message handling ---
-func v3Handle(raw []byte) {
+func (e *v3Engine) handle(raw []byte) {
 	if ack, ok := v3TryAck(raw); ok {
 		if ack.Error != nil {
-			util.Errorf("uniswap_v3 ack error code=%d msg=%s", ack.Error.Code, ack.Error.Message)
-			if v3StopOnErrAck {
-				util.Fatalf("uniswap_v3 ack error stop")
+			util.Errorf("%s ack error code=%d msg=%s", e.logPrefix, ack.Error.Code, ack.Error.Message)
+			if e.stopOnAckErr {
+				util.Fatalf("%s ack error stop", e.logPrefix)
 			}
 		} else {
-			util.Infof("uniswap_v3 subscribed id=%s", ack.Result)
+			util.Infof("%s subscribed id=%s", e.logPrefix, ack.Result)
 		}
 		return
 	}
@@ -739,7 +743,7 @@ func v3Handle(raw []byte) {
 	if !ok {
 		return
 	}
-	v3Process(note.Params.Result)
+	e.process(note.Params.Result)
 }
 
 func v3TryAck(raw []byte) (*v3SubAck, bool) {
@@ -764,28 +768,27 @@ func v3TryNote(raw []byte) (*v3SubNote, bool) {
 }
 
 // --- Event decoding ---
-func v3Process(l v3LogItem) {
+func (e *v3Engine) process(l v3LogItem) {
 	if l.Removed || len(l.Topics) == 0 {
 		return
 	}
 	sig := common.HexToHash(l.Topics[0])
-	if v3DecodeSwapOnly && sig != v3SwapSig {
+	if e.decodeSwapOnly && sig != v3SwapSig {
 		return
 	}
 	addr := common.HexToAddress(l.Address)
-	pm, ok := v3Pools[addr]
+	pm, ok := e.pools[addr]
 	if !ok {
 		return
 	}
 	if sig == v3SwapSig {
-		v3HandleSwap(pm, l)
-	} else if v3LogAllEvents {
-		util.Infof("uniswap_v3 evt addr=%s topic=%s tx=%s", addr.Hex(), sig.Hex(), l.TransactionHash)
+		e.handleSwap(pm, l)
+	} else if e.logAllEvents {
+		util.Infof("%s evt addr=%s topic=%s tx=%s", e.logPrefix, addr.Hex(), sig.Hex(), l.TransactionHash)
 	}
 }
 
-func v3HandleSwap(pm *v3PoolMeta, l v3LogItem) {
-	// Unpack non-indexed data для Swap: amount0, amount1, sqrtPriceX96, liquidity, tick
+func (e *v3Engine) handleSwap(pm *v3PoolMeta, l v3LogItem) {
 	if len(l.Data) < 2 {
 		return
 	}
@@ -793,44 +796,40 @@ func v3HandleSwap(pm *v3PoolMeta, l v3LogItem) {
 	if err != nil {
 		return
 	}
-	// По ABI порядок: int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick
-	// ABI-пакетирование: каждая 32-байтовая ячейка.
 	if len(dataBytes) < 32*5 {
 		return
 	}
 	amount0 := v3DecodeInt256(dataBytes[0:32])
 	amount1 := v3DecodeInt256(dataBytes[32:64])
-	sqrtPriceX96 := new(big.Int).SetBytes(dataBytes[64:96]) // uint160 в 32 байтах
-	// liquidity := new(big.Int).SetBytes(dataBytes[96:128]) // можно логировать при желании
-	// tick := v3DecodeInt24(dataBytes[128:160]) // последние 32 байта содержат int24 в хвосте
-	// Цена raw = (sqrtP^2)/2^192 = token1/token0
-	rawPrice := v3PriceFromSqrt(sqrtPriceX96) // token1/token0 без decimal adjust (Raw)
+	sqrtPriceX96 := new(big.Int).SetBytes(dataBytes[64:96])
+
+	rawPrice := e.priceFromSqrt(sqrtPriceX96)
 	if rawPrice == nil {
 		return
 	}
-	// Ensure metadata (token addresses, symbols, decimals) — лениво.
+
 	if !pm.Verified {
-		if v3TryAcquireMetaSlot() {
-			if err := v3EnsurePoolMeta(pm); err != nil {
+		if e.tryAcquireMetaSlot() {
+			if err := e.ensurePoolMeta(pm); err != nil {
 				pm.LoadErr = err
-				util.Errorf("uniswap_v3 meta pool=%s err=%v", pm.Addr.Hex(), err)
+				util.Errorf("%s meta pool=%s err=%v", e.logPrefix, pm.Addr.Hex(), err)
 			} else {
 				pm.Loaded = true
 				pm.Verified = true
 			}
-			v3ReleaseMetaSlot()
+			e.releaseMetaSlot()
 		}
 	}
 	if (pm.HasJSONMeta || pm.Loaded) && !pm.Registered {
-		v3RegisterToken(pm.Token0)
-		v3RegisterToken(pm.Token1)
+		e.registerToken(pm.Token0)
+		e.registerToken(pm.Token1)
 		pm.Registered = true
 	}
 
 	var price1Per0, price0Per1 *big.Rat
 	var priceNote string
 	if (pm.Loaded || pm.HasJSONMeta) && pm.Token0.Dec > 0 && pm.Token1.Dec > 0 {
-		adj := v3DecimalAdjust(pm.Token0.Dec, pm.Token1.Dec)
+		adj := e.decimalAdjust(pm.Token0.Dec, pm.Token1.Dec)
 		price1Per0 = new(big.Rat).Mul(rawPrice, adj)
 		price0Per1 = v3Invert(price1Per0)
 		priceNote = "norm"
@@ -840,16 +839,16 @@ func v3HandleSwap(pm *v3PoolMeta, l v3LogItem) {
 		priceNote = "raw"
 	}
 
-	// USD derivation (опционально, быстрый путь)
-	usdLines := v3DeriveUSD(pm, price1Per0, price0Per1)
+	usdLines := e.deriveUSD(pm, price1Per0, price0Per1)
 
-	if v3LogAllEvents {
-		util.Infof("uniswap_v3 swap pool=%s addr=%s sqrtP=%s mode=%s p1per0=%s p0per1=%s amt0=%s amt1=%s blk=%s tx=%s %s", pm.PairName, pm.Addr.Hex(), sqrtPriceX96.String(), priceNote, v3Format(price1Per0, 8), v3Format(price0Per1, 8), amount0.String(), amount1.String(), l.BlockNumber, l.TransactionHash, usdLines)
+	if e.logAllEvents {
+		util.Infof("%s swap pool=%s addr=%s sqrtP=%s mode=%s p1per0=%s p0per1=%s amt0=%s amt1=%s blk=%s tx=%s %s",
+			e.logPrefix, pm.PairName, pm.Addr.Hex(), sqrtPriceX96.String(), priceNote, v3Format(price1Per0, 8), v3Format(price0Per1, 8), amount0.String(), amount1.String(), l.BlockNumber, l.TransactionHash, usdLines)
 	}
 
-	v3EmitPair(pm.Token0.Symbol, pm.Token1.Symbol, price1Per0)
-	v3EmitPair(pm.Token1.Symbol, pm.Token0.Symbol, price0Per1)
-	v3UpdatePricing(pm, price1Per0, price0Per1, amount0, amount1)
+	e.emitPair(pm.Token0.Symbol, pm.Token1.Symbol, price1Per0)
+	e.emitPair(pm.Token1.Symbol, pm.Token0.Symbol, price0Per1)
+	e.updatePricing(pm, price1Per0, price0Per1, amount0, amount1)
 }
 
 // --- Decoding helpers ---
@@ -871,12 +870,12 @@ func v3Invert(r *big.Rat) *big.Rat {
 	}
 	return new(big.Rat).Inv(r)
 }
-func v3PriceFromSqrt(s *big.Int) *big.Rat {
+func (e *v3Engine) priceFromSqrt(s *big.Int) *big.Rat {
 	if s == nil || s.Sign() == 0 {
 		return nil
 	}
 	sq := new(big.Int).Mul(s, s)
-	return new(big.Rat).SetFrac(sq, v3TwoPow192)
+	return new(big.Rat).SetFrac(sq, e.twoPow192)
 }
 func v3Format(r *big.Rat, prec int) string {
 	if r == nil {
@@ -886,7 +885,7 @@ func v3Format(r *big.Rat, prec int) string {
 	return f.Text('f', prec)
 }
 
-func v3EmitPair(base, quote string, value *big.Rat) {
+func (e *v3Engine) emitPair(base, quote string, value *big.Rat) {
 	if value == nil {
 		return
 	}
@@ -895,104 +894,96 @@ func v3EmitPair(base, quote string, value *big.Rat) {
 	if base == "" || quote == "" {
 		return
 	}
-	v3Publish(base+quote, value)
+	e.publish(base+quote, value)
 }
 
-func v3Publish(symbol string, value *big.Rat) {
-	if value == nil {
+func (e *v3Engine) publish(symbol string, value *big.Rat) {
+	if value == nil || e.out == nil {
 		return
 	}
 	f64, _ := new(big.Float).SetPrec(256).SetRat(value).Float64()
 	if f64 <= 0 || math.IsInf(f64, 0) || math.IsNaN(f64) {
 		return
 	}
-	v3OutMu.RLock()
-	out := v3OutChan
-	name := v3ExchangeName
-	v3OutMu.RUnlock()
-	if out == nil {
-		return
-	}
 	md := &pb.MarketData{
-		Exchange:  name,
+		Exchange:  e.exchange,
 		Symbol:    strings.ToUpper(strings.TrimSpace(symbol)),
 		Price:     f64,
 		Timestamp: time.Now().UnixMilli(),
-		Network:   v3NetworkName,
-		ChainID:   uint32(v3ChainID),
+		Network:   e.network,
+		ChainID:   uint32(e.chainID),
 	}
-	count := atomic.AddUint64(&v3MessageCount, 1)
+	count := atomic.AddUint64(&e.messageCount, 1)
 	if count%500 == 0 {
-		util.Infof("uniswap_v3 emitted %d market data messages", count)
+		util.Infof("%s emitted %d market data messages", e.logPrefix, count)
 	}
-	util.Debugf("uniswap_v3: emit symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", md.Symbol, md.Price, md.Exchange, md.Network, v3ChainID)
-	out <- md
+	util.Debugf("%s emit symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", e.logPrefix, md.Symbol, md.Price, md.Exchange, md.Network, e.chainID)
+	e.out <- md
 }
 
 // --- Metadata & USD helpers ---
-func v3TryAcquireMetaSlot() bool {
+func (e *v3Engine) tryAcquireMetaSlot() bool {
 	select {
-	case v3MetaSem <- struct{}{}:
+	case e.metaSem <- struct{}{}:
 		return true
 	default:
 		return false
 	}
 }
-func v3ReleaseMetaSlot() {
+
+func (e *v3Engine) releaseMetaSlot() {
 	select {
-	case <-v3MetaSem:
+	case <-e.metaSem:
 	default:
 	}
 }
 
-func v3CurrentPricer() pricing.Pricer {
-	v3PricerMu.RLock()
-	defer v3PricerMu.RUnlock()
-	return v3Pricer
+func (e *v3Engine) currentPricer() pricing.Pricer {
+	return e.pricer
 }
 
-func v3RegisterToken(meta v3TokenMeta) {
+func (e *v3Engine) registerToken(meta v3TokenMeta) {
 	if (meta.Address == common.Address{}) {
 		return
 	}
-	if pricer := v3CurrentPricer(); pricer != nil {
-		info := v3MakeTokenInfo(meta)
+	if pricer := e.currentPricer(); pricer != nil {
+		info := e.makeTokenInfo(meta)
 		pricer.RegisterToken(info)
-		if v3IsStableSymbol(meta.Symbol) {
+		if e.isStableSymbol(meta.Symbol) {
 			pricer.RegisterStable(info)
 		}
 	}
 }
 
-func v3MakeTokenInfo(meta v3TokenMeta) pricing.TokenInfo {
+func (e *v3Engine) makeTokenInfo(meta v3TokenMeta) pricing.TokenInfo {
 	info := pricing.TokenInfo{
 		Address:  meta.Address,
 		Symbol:   meta.Symbol,
 		Decimals: int(meta.Dec),
-		DexAlias: v3ExchangeName,
-		Network:  v3NetworkName,
-		ChainID:  v3ChainID,
+		DexAlias: e.exchange,
+		Network:  e.network,
+		ChainID:  e.chainID,
 	}
-	if v3IsStableSymbol(meta.Symbol) {
+	if e.isStableSymbol(meta.Symbol) {
 		info.Bridge = strings.ToUpper(strings.TrimSpace(meta.Symbol))
-	} else if meta.Address == v3WETHAddress {
+	} else if meta.Address == e.wethAddress {
 		info.Bridge = "WETH"
 	}
 	return info
 }
 
-func v3UpdatePricing(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat, amount0, amount1 *big.Int) {
+func (e *v3Engine) updatePricing(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat, amount0, amount1 *big.Int) {
 	if pm == nil || (!pm.Loaded && !pm.HasJSONMeta) {
 		return
 	}
-	pricer := v3CurrentPricer()
+	pricer := e.currentPricer()
 	if pricer == nil {
 		return
 	}
-	info0 := v3MakeTokenInfo(pm.Token0)
-	info1 := v3MakeTokenInfo(pm.Token1)
+	info0 := e.makeTokenInfo(pm.Token0)
+	info1 := e.makeTokenInfo(pm.Token1)
 	now := time.Now()
-	weight := v3CalcWeight(amount0, amount1, pm.Token0.Dec, pm.Token1.Dec)
+	weight := e.calcWeight(amount0, amount1, pm.Token0.Dec, pm.Token1.Dec)
 	if val, ok := v3RatToFloat(price1Per0); ok {
 		pricer.UpdatePair(info0, info1, val, weight, now)
 	} else if val, ok := v3RatToFloat(price0Per1); ok {
@@ -1000,12 +991,12 @@ func v3UpdatePricing(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat, amount0, a
 	} else {
 		return
 	}
-	v3EmitUSDWithPricer(pricer, info0, now)
-	v3EmitUSDWithPricer(pricer, info1, now)
+	e.emitUSDWithPricer(pricer, info0, now)
+	e.emitUSDWithPricer(pricer, info1, now)
 }
 
-func v3EmitUSDWithPricer(pricer pricing.Pricer, info pricing.TokenInfo, ts time.Time) {
-	if pricer == nil {
+func (e *v3Engine) emitUSDWithPricer(pricer pricing.Pricer, info pricing.TokenInfo, ts time.Time) {
+	if pricer == nil || e.out == nil {
 		return
 	}
 	res, ok := pricer.ResolveUSD(info)
@@ -1017,28 +1008,21 @@ func v3EmitUSDWithPricer(pricer pricing.Pricer, info pricing.TokenInfo, ts time.
 		symbol = strings.ToUpper(strings.TrimPrefix(info.Address.Hex(), "0x"))
 	}
 	marketSymbol := symbol + "USD"
-	v3OutMu.RLock()
-	out := v3OutChan
-	name := v3ExchangeName
-	v3OutMu.RUnlock()
-	if out == nil {
-		return
-	}
 	if ts.IsZero() {
 		ts = time.Now()
 	}
 	md := &pb.MarketData{
-		Exchange:  name,
+		Exchange:  e.exchange,
 		Symbol:    marketSymbol,
 		Price:     res.Price,
 		Timestamp: ts.UnixMilli(),
-		Network:   v3NetworkName,
-		ChainID:   uint32(v3ChainID),
+		Network:   e.network,
+		ChainID:   uint32(e.chainID),
 	}
-	out <- md
-	util.Debugf("uniswap_v3: emit usd symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", marketSymbol, res.Price, md.Exchange, md.Network, v3ChainID)
-	if len(res.Route) > 0 && v3LogAllEvents {
-		util.Infof("uniswap_v3 usd %s price=%.8f weight=%.4f network=%s chain_id=%d route=%s", marketSymbol, res.Price, res.Weight, md.Network, md.ChainID, strings.Join(res.Route, "->"))
+	e.out <- md
+	util.Debugf("%s emit usd symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", e.logPrefix, marketSymbol, res.Price, md.Exchange, md.Network, e.chainID)
+	if len(res.Route) > 0 && e.logAllEvents {
+		util.Infof("%s usd %s price=%.8f weight=%.4f network=%s chain_id=%d route=%s", e.logPrefix, marketSymbol, res.Price, res.Weight, md.Network, md.ChainID, strings.Join(res.Route, "->"))
 	}
 }
 
@@ -1053,9 +1037,9 @@ func v3RatToFloat(r *big.Rat) (float64, bool) {
 	return val, true
 }
 
-func v3CalcWeight(amount0, amount1 *big.Int, dec0, dec1 uint8) float64 {
-	w0 := v3AmountToFloat(amount0, dec0)
-	w1 := v3AmountToFloat(amount1, dec1)
+func (e *v3Engine) calcWeight(amount0, amount1 *big.Int, dec0, dec1 uint8) float64 {
+	w0 := e.amountToFloat(amount0, dec0)
+	w1 := e.amountToFloat(amount1, dec1)
 	weight := math.Max(w0, w1)
 	if weight <= 0 {
 		return 1e-9
@@ -1063,7 +1047,7 @@ func v3CalcWeight(amount0, amount1 *big.Int, dec0, dec1 uint8) float64 {
 	return weight
 }
 
-func v3AmountToFloat(amount *big.Int, dec uint8) float64 {
+func (e *v3Engine) amountToFloat(amount *big.Int, dec uint8) float64 {
 	if amount == nil {
 		return 0
 	}
@@ -1073,7 +1057,7 @@ func v3AmountToFloat(amount *big.Int, dec uint8) float64 {
 	}
 	f := new(big.Float).SetPrec(256).SetInt(abs)
 	if dec > 0 {
-		den := new(big.Float).SetPrec(256).SetInt(v3Pow10(dec))
+		den := new(big.Float).SetPrec(256).SetInt(e.pow10(dec))
 		f.Quo(f, den)
 	}
 	val, _ := f.Float64()
@@ -1083,7 +1067,7 @@ func v3AmountToFloat(amount *big.Int, dec uint8) float64 {
 	return val
 }
 
-func v3EnsurePoolMeta(pm *v3PoolMeta) error {
+func (e *v3Engine) ensurePoolMeta(pm *v3PoolMeta) error {
 	if pm == nil {
 		return fmt.Errorf("nil pool meta")
 	}
@@ -1092,20 +1076,19 @@ func v3EnsurePoolMeta(pm *v3PoolMeta) error {
 	}
 	pm.Loading = true
 	defer func() { pm.Loading = false }()
-	// Fetch token0/token1 via eth_call
-	t0, err := v3CallAddress(pm.Addr, "0dfe1681") // token0()
+	t0, err := e.callAddress(pm.Addr, "0dfe1681")
 	if err != nil {
 		return err
 	}
-	t1, err := v3CallAddress(pm.Addr, "d21220a7") // token1()
+	t1, err := e.callAddress(pm.Addr, "d21220a7")
 	if err != nil {
 		return err
 	}
-	tm0, err := v3FetchTokenMeta(t0, pm.Token0)
+	tm0, err := e.fetchTokenMeta(t0, pm.Token0)
 	if err != nil {
 		return err
 	}
-	tm1, err := v3FetchTokenMeta(t1, pm.Token1)
+	tm1, err := e.fetchTokenMeta(t1, pm.Token1)
 	if err != nil {
 		return err
 	}
@@ -1114,15 +1097,14 @@ func v3EnsurePoolMeta(pm *v3PoolMeta) error {
 	if tm0.Dec > 0 && tm1.Dec > 0 {
 		pm.HasJSONMeta = true
 	}
-	v3RegisterToken(tm0)
-	v3RegisterToken(tm1)
+	e.registerToken(tm0)
+	e.registerToken(tm1)
 	return nil
 }
 
-// v3CallAddress calls a contract method returning address (first 32 bytes right-padded) using function selector hex (8 chars w/o 0x)
-func v3CallAddress(contract common.Address, selector string) (common.Address, error) {
+func (e *v3Engine) callAddress(contract common.Address, selector string) (common.Address, error) {
 	data := "0x" + selector
-	resp, err := v3EthCall(contract, data)
+	resp, err := e.ethCall(contract, data)
 	if err != nil {
 		return common.Address{}, err
 	}
@@ -1139,14 +1121,14 @@ func v3CallAddress(contract common.Address, selector string) (common.Address, er
 	return common.BytesToAddress(b[12:32]), nil
 }
 
-func v3FetchTokenMeta(addr common.Address, hint v3TokenMeta) (v3TokenMeta, error) {
+func (e *v3Engine) fetchTokenMeta(addr common.Address, hint v3TokenMeta) (v3TokenMeta, error) {
 	meta := v3TokenMeta{Address: addr, Symbol: strings.ToUpper(strings.TrimSpace(hint.Symbol)), Dec: hint.Dec}
 	if hint.Address != addr {
 		meta.Symbol = ""
 		meta.Dec = 0
 	}
-	v3TokenMu.RLock()
-	if cached, ok := v3TokenCache[addr]; ok {
+	e.tokenMu.RLock()
+	if cached, ok := e.tokenCache[addr]; ok {
 		if meta.Symbol == "" {
 			meta.Symbol = cached.Symbol
 		}
@@ -1154,29 +1136,29 @@ func v3FetchTokenMeta(addr common.Address, hint v3TokenMeta) (v3TokenMeta, error
 			meta.Dec = cached.Dec
 		}
 	}
-	v3TokenMu.RUnlock()
+	e.tokenMu.RUnlock()
 	if meta.Dec == 0 {
-		if dec, err := v3CallUint8(addr, "313ce567"); err == nil {
+		if dec, err := e.callUint8(addr, "313ce567"); err == nil {
 			meta.Dec = dec
 		}
 	}
 	if meta.Symbol == "" {
-		if sym, err := v3CallSymbol(addr); err == nil {
+		if sym, err := e.callSymbol(addr); err == nil {
 			meta.Symbol = strings.ToUpper(strings.TrimSpace(sym))
 		}
 	}
 	if meta.Symbol == "" {
 		meta.Symbol = v3DefaultSymbol(addr)
 	}
-	v3TokenMu.Lock()
-	v3TokenCache[addr] = meta
-	v3TokenMu.Unlock()
+	e.tokenMu.Lock()
+	e.tokenCache[addr] = meta
+	e.tokenMu.Unlock()
 	return meta, nil
 }
 
-func v3CallUint8(contract common.Address, selector string) (uint8, error) {
+func (e *v3Engine) callUint8(contract common.Address, selector string) (uint8, error) {
 	data := "0x" + selector
-	resp, err := v3EthCall(contract, data)
+	resp, err := e.ethCall(contract, data)
 	if err != nil {
 		return 0, err
 	}
@@ -1190,9 +1172,9 @@ func v3CallUint8(contract common.Address, selector string) (uint8, error) {
 	return uint8(b[31]), nil
 }
 
-func v3CallSymbol(contract common.Address) (string, error) {
+func (e *v3Engine) callSymbol(contract common.Address) (string, error) {
 	// Try standard symbol() -> selector 0x95d89b41 returning dynamic string
-	resp, err := v3EthCall(contract, "0x95d89b41")
+	resp, err := e.ethCall(contract, "0x95d89b41")
 	if err == nil {
 		// dynamic: offset (32) + length + data
 		b, err2 := hexutil.Decode(resp)
@@ -1207,7 +1189,7 @@ func v3CallSymbol(contract common.Address) (string, error) {
 		}
 	}
 	// Fallback bytes32 (same selector) truncated or zero padded
-	resp2, err2 := v3EthCall(contract, "0x95d89b41")
+	resp2, err2 := e.ethCall(contract, "0x95d89b41")
 	if err2 != nil {
 		return "", err2
 	}
@@ -1237,18 +1219,17 @@ func isASCII(b []byte) bool {
 	return true
 }
 
-// v3EthCall performs a minimal eth_call via HTTP
-func v3EthCall(to common.Address, data string) (string, error) {
-	if v3HTTPURL == "" {
+func (e *v3Engine) ethCall(to common.Address, data string) (string, error) {
+	if e.httpURL == "" {
 		return "", fmt.Errorf("http url empty")
 	}
 	reqBody := fmt.Sprintf(`{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"to":"%s","data":"%s"},"latest"]}`, to.Hex(), data)
-	r, err := http.NewRequest("POST", v3HTTPURL, strings.NewReader(reqBody))
+	r, err := http.NewRequest("POST", e.httpURL, strings.NewReader(reqBody))
 	if err != nil {
 		return "", err
 	}
 	r.Header.Set("Content-Type", "application/json")
-	resp, err := v3HTTPClient.Do(r)
+	resp, err := e.httpClient.Do(r)
 	if err != nil {
 		return "", err
 	}
@@ -1272,26 +1253,27 @@ func v3EthCall(to common.Address, data string) (string, error) {
 	return parsed.Result, nil
 }
 
-func v3DecimalAdjust(dec0, dec1 uint8) *big.Rat {
-	num := v3Pow10(dec0)
-	den := v3Pow10(dec1)
+func (e *v3Engine) decimalAdjust(dec0, dec1 uint8) *big.Rat {
+	num := e.pow10(dec0)
+	den := e.pow10(dec1)
 	return new(big.Rat).SetFrac(num, den)
 }
-func v3Pow10(dec uint8) *big.Int {
-	v3Pow10Mu.RLock()
-	if v, ok := v3Pow10Cache[dec]; ok {
-		v3Pow10Mu.RUnlock()
+
+func (e *v3Engine) pow10(dec uint8) *big.Int {
+	e.pow10Mu.RLock()
+	if v, ok := e.pow10Cache[dec]; ok {
+		e.pow10Mu.RUnlock()
 		return v
 	}
-	v3Pow10Mu.RUnlock()
+	e.pow10Mu.RUnlock()
 	v := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(dec)), nil)
-	v3Pow10Mu.Lock()
-	v3Pow10Cache[dec] = v
-	v3Pow10Mu.Unlock()
+	e.pow10Mu.Lock()
+	e.pow10Cache[dec] = v
+	e.pow10Mu.Unlock()
 	return v
 }
 
-func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
+func (e *v3Engine) deriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 	if !pm.Loaded && !pm.HasJSONMeta {
 		return ""
 	}
@@ -1300,20 +1282,20 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 	usdParts := []string{}
 	// 1. Обновление WETHUSD (WETH-стэйбл пул)
 	updated := false
-	if (pm.Token0.Address == v3WETHAddress && v3IsStableSymbol(sym1)) && price0Per1 != nil { // WETH - STABLE (token0=WETH, token1=STABLE)
+	if (pm.Token0.Address == e.wethAddress && e.isStableSymbol(sym1)) && price0Per1 != nil {
 		stablePerWeth := v3Invert(price0Per1)
-		v3MaybeSetWETHUSD(stablePerWeth, sym1, pm.PairName)
+		e.maybeSetWETHUSD(stablePerWeth, sym1, pm.PairName)
 		updated = true
-	} else if (pm.Token1.Address == v3WETHAddress && v3IsStableSymbol(sym0)) && price1Per0 != nil { // STABLE - WETH (token1=WETH)
+	} else if (pm.Token1.Address == e.wethAddress && e.isStableSymbol(sym0)) && price1Per0 != nil {
 		stablePerWeth := v3Invert(price1Per0)
-		v3MaybeSetWETHUSD(stablePerWeth, sym0, pm.PairName)
+		e.maybeSetWETHUSD(stablePerWeth, sym0, pm.PairName)
 		updated = true
 	}
 
-	v3WethMu.RLock()
-	wethUSD := v3WETHUSD
-	wethStable := v3WETHUSDStable
-	v3WethMu.RUnlock()
+	e.wethMu.RLock()
+	wethUSD := e.wethUSD
+	wethStable := e.wethStable
+	e.wethMu.RUnlock()
 
 	// Helper для добавления BA (базовый актив) позже
 	type baInfo struct {
@@ -1324,13 +1306,13 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 	var ba *baInfo
 
 	// 2. Стэйбл <-> токен (прямой USD) — цена токена в USD напрямую
-	if v3IsStableSymbol(sym0) && !v3IsStableSymbol(sym1) && price1Per0 != nil { // token0=STABLE, token1=TOKEN : price1Per0 = token1 per token0 => 1 token0 (USD) = price1Per0 token1 => 1 token1 = 1/price1Per0 USD
+	if e.isStableSymbol(sym0) && !e.isStableSymbol(sym1) && price1Per0 != nil {
 		usd := v3Invert(price1Per0)
 		if usd != nil {
 			usdParts = append(usdParts, fmt.Sprintf("%sUSD=%s %s", sym1, v3Format(usd, 6), sym0))
 			ba = &baInfo{sym: sym1, usd: usd, stable: sym0}
 		}
-	} else if v3IsStableSymbol(sym1) && !v3IsStableSymbol(sym0) && price0Per1 != nil { // token1=STABLE, token0=TOKEN : price0Per1 = token0 per token1 => 1 token1(USD)=price0Per1 token0 => 1 token0 = 1/price0Per1 USD
+	} else if e.isStableSymbol(sym1) && !e.isStableSymbol(sym0) && price0Per1 != nil {
 		usd := v3Invert(price0Per1)
 		if usd != nil {
 			usdParts = append(usdParts, fmt.Sprintf("%sUSD=%s %s", sym0, v3Format(usd, 6), sym1))
@@ -1340,14 +1322,14 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 
 	// 3. Токен-WETH — деривация через WETHUSD
 	if wethUSD != nil {
-		if pm.Token0.Address == v3WETHAddress && !v3IsStableSymbol(sym1) && price1Per0 != nil { // WETH -> token1
+		if pm.Token0.Address == e.wethAddress && !e.isStableSymbol(sym1) && price1Per0 != nil {
 			token1PerWeth := price1Per0
 			usd := new(big.Rat).Mul(v3Invert(token1PerWeth), wethUSD)
 			usdParts = appendIfMissing(usdParts, fmt.Sprintf("%sUSD=%s %s", sym1, v3Format(usd, 6), wethStable))
 			if ba == nil {
 				ba = &baInfo{sym: sym1, usd: usd, stable: wethStable}
 			}
-		} else if pm.Token1.Address == v3WETHAddress && !v3IsStableSymbol(sym0) && price0Per1 != nil { // token0 -> WETH
+		} else if pm.Token1.Address == e.wethAddress && !e.isStableSymbol(sym0) && price0Per1 != nil {
 			token0PerWeth := price0Per1
 			usd := new(big.Rat).Mul(v3Invert(token0PerWeth), wethUSD)
 			usdParts = appendIfMissing(usdParts, fmt.Sprintf("%sUSD=%s %s", sym0, v3Format(usd, 6), wethStable))
@@ -1358,7 +1340,7 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 	}
 
 	// 4. Стэйбл-стэйбл пул — можно указать BA=первый стэйбл (цена 1)
-	if v3IsStableSymbol(sym0) && v3IsStableSymbol(sym1) && ba == nil {
+	if e.isStableSymbol(sym0) && e.isStableSymbol(sym1) && ba == nil {
 		one := big.NewRat(1, 1)
 		ba = &baInfo{sym: sym0, usd: one, stable: sym0}
 		// Не добавляем дублирующий XXXUSD=1 если уже есть другие
@@ -1378,8 +1360,8 @@ func v3DeriveUSD(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat) string {
 	if len(usdParts) == 0 {
 		return ""
 	}
-	if v3LogAllEvents {
-		util.Infof("uniswap_v3 usd route %s", strings.Join(usdParts, " "))
+	if e.logAllEvents {
+		util.Infof("%s usd route %s", e.logPrefix, strings.Join(usdParts, " "))
 	}
 	return strings.Join(usdParts, " ")
 }
@@ -1393,30 +1375,30 @@ func appendIfMissing(sl []string, val string) []string {
 	return append(sl, val)
 }
 
-func v3MaybeSetWETHUSD(stablePerWeth *big.Rat, stableSym, src string) {
+func (e *v3Engine) maybeSetWETHUSD(stablePerWeth *big.Rat, stableSym, src string) {
 	if stablePerWeth == nil || stablePerWeth.Sign() <= 0 {
 		return
 	}
 	stableSym = strings.ToUpper(strings.TrimSpace(stableSym))
-	if !v3IsStableSymbol(stableSym) {
-		util.Debugf("uniswap_v3 skip wethusd update unknown stable=%s", stableSym)
+	if !e.isStableSymbol(stableSym) {
+		util.Debugf("%s skip wethusd update unknown stable=%s", e.logPrefix, stableSym)
 		return
 	}
 	// WETHUSD = stable per WETH
 	if !v3SanityWETH(stablePerWeth) {
 		return
 	}
-	v3WethMu.Lock()
-	defer v3WethMu.Unlock()
-	if v3WETHUSD != nil {
+	e.wethMu.Lock()
+	defer e.wethMu.Unlock()
+	if e.wethUSD != nil {
 		// Only upgrade if higher priority
-		if v3Priority(stableSym) <= v3Priority(v3WETHUSDStable) {
+		if v3Priority(stableSym) <= v3Priority(e.wethStable) {
 			return
 		}
 	}
-	v3WETHUSD = new(big.Rat).Set(stablePerWeth)
-	v3WETHUSDStable = stableSym
-	util.Infof("uniswap_v3 wethusd=%s stable=%s src=%s", v3Format(v3WETHUSD, 6), stableSym, src)
+	e.wethUSD = new(big.Rat).Set(stablePerWeth)
+	e.wethStable = stableSym
+	util.Infof("%s wethusd=%s stable=%s src=%s", e.logPrefix, v3Format(e.wethUSD, 6), stableSym, src)
 }
 
 func v3Priority(s string) int {

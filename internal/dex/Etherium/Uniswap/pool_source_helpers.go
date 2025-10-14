@@ -25,19 +25,34 @@ func dexMatches(dex, filter string) bool {
 }
 
 func matchesAMMVersion(ammVersion, dex, want string) bool {
-	want = strings.TrimSpace(strings.ToLower(want))
-	if want == "" {
+	return matchesAnyAMMVersion(ammVersion, []string{want})
+}
+
+func matchesAnyAMMVersion(ammVersion string, wants []string) bool {
+	norm := normalizeAMMVersion(ammVersion)
+	if len(wants) == 0 {
 		return true
 	}
-	amm := strings.TrimSpace(strings.ToLower(ammVersion))
-	if amm != "" {
-		return amm == want
-	}
-	dexNorm := normalizeDexName(dex)
-	if dexNorm == "" {
+	if norm == "" {
 		return false
 	}
-	return strings.Contains(dexNorm, want)
+	for _, want := range wants {
+		if normalizeAMMVersion(want) == norm {
+			return true
+		}
+	}
+	return false
+}
+
+func normalizeAMMVersion(version string) string {
+	trimmed := strings.ToLower(strings.TrimSpace(version))
+	if trimmed == "" {
+		return ""
+	}
+	if !strings.HasPrefix(trimmed, "v") {
+		trimmed = "v" + trimmed
+	}
+	return trimmed
 }
 
 func isUniswapDex(dex string) bool {

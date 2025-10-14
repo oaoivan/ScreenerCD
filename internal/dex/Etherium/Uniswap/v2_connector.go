@@ -977,6 +977,15 @@ type geckoToken struct {
 	Decimals intOrString `json:"decimals"`
 }
 
+// PoolSourceOptions описывает дополнительные фильтры при загрузке пулов из общего источника.
+type PoolSourceOptions struct {
+	DexFilters     []string
+	NetworkFilters []string
+	WantedPairs    []string
+	IncludeStable  bool
+	AMMVersions    []string
+}
+
 var (
 	hardWethStable = []struct {
 		Addr   string
@@ -990,11 +999,16 @@ var (
 
 // LoadPoolsFromSource parses pools JSON (legacy GeckoTerminal or base_pools.json) and returns Uniswap V2 pools using the default registry.
 func LoadPoolsFromSource(path string) ([]PoolConfig, error) {
-	return LoadPoolsFromSourceWithRegistry(path, nil)
+	return LoadPoolsFromSourceWithOptions(path, nil, PoolSourceOptions{})
 }
 
 // LoadPoolsFromSourceWithRegistry allows passing an explicit token registry for pool normalization.
 func LoadPoolsFromSourceWithRegistry(path string, registry *TokenRegistry) ([]PoolConfig, error) {
+	return LoadPoolsFromSourceWithOptions(path, registry, PoolSourceOptions{})
+}
+
+// LoadPoolsFromSourceWithOptions загружает пулы с учётом фильтров по сети/DEX/парам.
+func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts PoolSourceOptions) ([]PoolConfig, error) {
 	if registry == nil {
 		registry = NewTokenRegistry(nil, RegistryOptions{})
 	}
@@ -1008,16 +1022,31 @@ func LoadPoolsFromSourceWithRegistry(path string, registry *TokenRegistry) ([]Po
 		return nil, err
 	}
 
+	allowedAMM := make(map[string]struct{})
+	for _, want := range opts.AMMVersions {
+		if norm := normalizeAMMVersion(want); norm != "" {
+			allowedAMM[norm] = struct{}{}
+		}
+	}
+
+	wanted := make(map[string]struct{})
+	for _, pair := range opts.WantedPairs {
+		key := strings.ToUpper(strings.TrimSpace(pair))
+		if key == "" {
+			continue
+		}
+		wanted[key] = struct{}{}
+	}
+
 	result := make([]PoolConfig, 0, len(file.Entries))
 	seen := make(map[common.Address]bool)
 	for _, entry := range file.Entries {
-		if !matchesAMMVersion(entry.AMMVersion, entry.Dex, "v2") {
-			continue
+		if len(allowedAMM) > 0 {
+			if _, ok := allowedAMM[normalizeAMMVersion(entry.AMMVersion)]; !ok {
+				continue
+			}
 		}
-		if !isUniswapDex(entry.Dex) {
-			continue
-		}
-		if !strings.Contains(strings.ToLower(entry.Network), "eth") {
+		if len(opts.NetworkFilters) > 0 && !networkMatchesAny(entry.Network, opts.NetworkFilters) {
 			continue
 		}
 		addrHex := entry.PoolID
@@ -1040,7 +1069,7 @@ func LoadPoolsFromSourceWithRegistry(path string, registry *TokenRegistry) ([]Po
 		weth0 := t0.IsWETH
 		weth1 := t1.IsWETH
 
-		if stable0 && stable1 {
+		if stable0 && stable1 && !opts.IncludeStable {
 			continue
 		}
 		if !stable0 && !stable1 && !weth0 && !weth1 {
@@ -1075,74 +1104,55 @@ func LoadPoolsFromSourceWithRegistry(path string, registry *TokenRegistry) ([]Po
 			BaseIsToken0: baseIsToken0,
 		}
 		FinalizePool(&pool)
+		if len(wanted) > 0 {
+			key := strings.ToUpper(strings.TrimSpace(pool.CanonicalPair))
+			if key == "" {
+				key = strings.ToUpper(strings.ReplaceAll(pool.PairName, "/", ""))
+			}
+			if _, ok := wanted[key]; !ok {
+				continue
+			}
+		}
 		result = append(result, pool)
 		seen[addr] = true
 	}
 
-	added := 0
-	wethMeta, hasWETH := registry.WETHMeta()
-	for _, hw := range hardWethStable {
-		addr := common.HexToAddress(hw.Addr)
-		if seen[addr] {
-			continue
-		}
-		stableMeta, ok := registry.StableBySymbol(hw.Stable)
-		if !ok {
-			util.Debugf("uniswap_v2: skip hard pool %s missing stable %s", addr.Hex(), hw.Stable)
-			continue
-		}
-		if !hasWETH || (wethMeta.Address == common.Address{}) {
-			util.Debugf("uniswap_v2: skip hard pool %s missing WETH meta", addr.Hex())
-			continue
-		}
-		// Make copies to avoid sharing underlying struct references.
-		stableCopy := stableMeta
-		stableCopy.IsStable = true
-		if stableCopy.Decimals == 0 {
-			stableCopy.Decimals = 18
-		}
-		wethCopy := wethMeta
-		if wethCopy.Decimals == 0 {
-			wethCopy.Decimals = 18
-		}
-		wethCopy.IsWETH = true
-
-		var pool PoolConfig
-		switch strings.ToUpper(hw.Stable) {
-		case "USDC":
-			pool = PoolConfig{
-				Address:      addr,
-				PairName:     "USDC / WETH (hard)",
-				Token0:       stableCopy,
-				Token1:       wethCopy,
-				BaseIsToken0: false,
+	if len(result) == 0 && shouldAddHardFallback(opts, registry) {
+		added := 0
+		wethMeta, hasWETH := registry.WETHMeta()
+		for _, hw := range hardWethStable {
+			addr := common.HexToAddress(hw.Addr)
+			if seen[addr] {
+				continue
 			}
-		case "USDT":
-			pool = PoolConfig{
+			if len(opts.DexFilters) > 0 && !dexMatchesAny("uniswap", opts.DexFilters) {
+				continue
+			}
+			stableMeta, ok := registry.StableBySymbol(hw.Stable)
+			if !ok || !hasWETH {
+				continue
+			}
+			pool := PoolConfig{
 				Address:      addr,
-				PairName:     "WETH / USDT (hard)",
-				Token0:       wethCopy,
-				Token1:       stableCopy,
+				PairName:     fmt.Sprintf("WETH / %s (hard)", hw.Stable),
+				Token0:       wethMeta,
+				Token1:       stableMeta,
 				BaseIsToken0: true,
 			}
-		case "DAI":
-			pool = PoolConfig{
-				Address:      addr,
-				PairName:     "DAI / WETH (hard)",
-				Token0:       stableCopy,
-				Token1:       wethCopy,
-				BaseIsToken0: false,
+			FinalizePool(&pool)
+			if len(wanted) > 0 {
+				key := strings.ToUpper(strings.TrimSpace(pool.CanonicalPair))
+				if _, ok := wanted[key]; !ok {
+					continue
+				}
 			}
-		default:
-			continue
+			result = append(result, pool)
+			seen[addr] = true
+			added++
 		}
-		FinalizePool(&pool)
-		result = append(result, pool)
-		seen[addr] = true
-		added++
-	}
-	if added > 0 {
-		util.Infof("uniswap_v2: added %d hard reference pools", added)
+		if added > 0 {
+			util.Infof("uniswap_v2: added %d hard reference pools", added)
+		}
 	}
 
 	return result, nil
@@ -1314,6 +1324,24 @@ func shortAddress(addr string) string {
 		return strings.ToUpper(addr)
 	}
 	return strings.ToUpper(addr[:3] + addr[len(addr)-3:])
+}
+
+func shouldAddHardFallback(opts PoolSourceOptions, registry *TokenRegistry) bool {
+	if len(opts.NetworkFilters) > 0 {
+		for _, nf := range opts.NetworkFilters {
+			if strings.Contains(strings.ToLower(nf), "eth") {
+				return true
+			}
+		}
+		return false
+	}
+	if registry != nil {
+		net := strings.ToLower(strings.TrimSpace(registry.NetworkName()))
+		if strings.Contains(net, "eth") {
+			return true
+		}
+	}
+	return true
 }
 
 // intOrString поддерживает декод чисел GeckoTerminal
