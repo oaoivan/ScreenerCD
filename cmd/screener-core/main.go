@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -60,6 +61,127 @@ func supervisor(name string, fn func() error, stop <-chan struct{}) {
 	}
 }
 
+func collectActiveSymbolIdentities(cfgs []config.DexConfig) []util.SymbolIdentity {
+	seen := make(map[string]util.SymbolIdentity)
+	for _, dexCfg := range cfgs {
+		combos := deriveSymbolIdentitiesFromDexConfig(dexCfg)
+		if len(combos) == 0 {
+			util.Debugf("symbol identity: no combos derived for %s", strings.TrimSpace(dexCfg.Name))
+			continue
+		}
+		for _, combo := range combos {
+			if key := combo.Key(); key != "" {
+				seen[key] = combo
+			}
+		}
+	}
+	out := make([]util.SymbolIdentity, 0, len(seen))
+	for _, combo := range seen {
+		out = append(out, combo)
+	}
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Key() < out[j].Key()
+	})
+	if len(out) > 0 {
+		util.Infof("symbol identity: derived %d unique combinations for shared subscriptions", len(out))
+	} else {
+		util.Infof("symbol identity: no explicit combinations derived; using unfiltered shared pools")
+	}
+	return out
+}
+
+func deriveSymbolIdentitiesFromDexConfig(dexCfg config.DexConfig) []util.SymbolIdentity {
+	dexSet := make(map[string]struct{})
+	for _, raw := range dexCfg.PoolsSource.DexFilters() {
+		addDexCandidate(dexSet, raw)
+	}
+	addDexCandidate(dexSet, dexCfg.DexAlias)
+	addDexCandidate(dexSet, dexCfg.Name)
+	for _, pool := range dexCfg.Pools {
+		addDexCandidate(dexSet, pool.Dex)
+	}
+
+	networkSet := make(map[string]struct{})
+	for _, raw := range dexCfg.PoolsSource.NetworkFilters() {
+		addNetworkCandidate(networkSet, raw)
+	}
+	addNetworkCandidate(networkSet, dexCfg.EffectiveNetworkID())
+	addNetworkCandidate(networkSet, dexCfg.Network)
+	for _, pool := range dexCfg.Pools {
+		addNetworkCandidate(networkSet, pool.Network)
+	}
+
+	ammSet := make(map[string]struct{})
+	for _, raw := range dexCfg.PoolsSource.AMMFilters() {
+		addAMMCandidate(ammSet, raw)
+	}
+	addAMMCandidate(ammSet, inferAMMVersion(dexCfg.Name))
+	addAMMCandidate(ammSet, inferAMMVersion(dexCfg.DexAlias))
+	for _, pool := range dexCfg.Pools {
+		addAMMCandidate(ammSet, pool.AMMVersion)
+	}
+
+	if len(dexSet) == 0 || len(networkSet) == 0 || len(ammSet) == 0 {
+		util.Debugf("symbol identity: insufficient attributes for %s (dex=%d network=%d amm=%d)", strings.TrimSpace(dexCfg.Name), len(dexSet), len(networkSet), len(ammSet))
+		return nil
+	}
+
+	result := make([]util.SymbolIdentity, 0, len(dexSet)*len(networkSet)*len(ammSet))
+	for dex := range dexSet {
+		for network := range networkSet {
+			for amm := range ammSet {
+				result = append(result, util.SymbolIdentity{
+					Dex:        dex,
+					AMMVersion: amm,
+					Network:    network,
+				})
+			}
+		}
+	}
+	util.Debugf("symbol identity: %s combinations=%d", strings.TrimSpace(dexCfg.Name), len(result))
+	return result
+}
+
+func addDexCandidate(set map[string]struct{}, raw string) {
+	norm := util.NormalizeSymbolDex(raw)
+	if norm == "" {
+		return
+	}
+	set[norm] = struct{}{}
+	if base := util.StripDexVersion(norm); base != "" {
+		set[base] = struct{}{}
+	}
+}
+
+func addNetworkCandidate(set map[string]struct{}, raw string) {
+	norm := util.NormalizeSymbolNetwork(raw)
+	if norm == "" {
+		return
+	}
+	set[norm] = struct{}{}
+}
+
+func addAMMCandidate(set map[string]struct{}, raw string) {
+	norm := util.NormalizeSymbolAMM(raw)
+	if norm == "" {
+		return
+	}
+	set[norm] = struct{}{}
+}
+
+func inferAMMVersion(raw string) string {
+	lower := strings.ToLower(strings.TrimSpace(raw))
+	if lower == "" {
+		return ""
+	}
+	for _, candidate := range []string{"v4", "v3", "v2", "v1"} {
+		if strings.Contains(lower, candidate) {
+			return candidate
+		}
+	}
+	return ""
+}
+
 func main() {
 	util.Infof("starting Screener Core - multi-exchange with shared channel")
 
@@ -89,6 +211,7 @@ func main() {
 
 	// Init Redis
 	redisClient := redisclient.NewRedisClient(cfg.Redis.RedisAddress(), cfg.Redis.Password, 0)
+	redisClient.NormalizeExchangeKeys()
 	util.Infof("Redis client initialized: %s", cfg.Redis.RedisAddress())
 
 	// Build list of exchanges (preserve legacy fallbacks)
@@ -111,6 +234,20 @@ func main() {
 		exConfigByName[name] = exCfg
 	}
 
+	descriptorCache := make(map[string][]util.SymbolDescriptor)
+	loadSymbolDescriptors := func(path string) ([]util.SymbolDescriptor, error) {
+		if cached, ok := descriptorCache[path]; ok {
+			return cached, nil
+		}
+		list, err := util.LoadSymbolDescriptors(path)
+		if err != nil {
+			return nil, err
+		}
+		descriptorCache[path] = list
+		util.Infof("Loaded %d symbol descriptors from %s", len(list), path)
+		return list, nil
+	}
+
 	baseSymbolCache := make(map[string][]string)
 	loadSymbolsFromFile := func(path string) ([]string, error) {
 		if cached, ok := baseSymbolCache[path]; ok {
@@ -127,11 +264,21 @@ func main() {
 
 	var defaultBaseSymbols []string
 	defaultSymbolsSource := sharedPoolsPath
-	if list, err := loadSymbolsFromFile(sharedPoolsPath); err != nil {
-		util.Fatalf("Failed to load shared pools file %s: %v", sharedPoolsPath, err)
-	} else {
-		defaultBaseSymbols = list
+	defaultDescriptors, err := loadSymbolDescriptors(sharedPoolsPath)
+	if err != nil {
+		util.Fatalf("Failed to load shared pools descriptors %s: %v", sharedPoolsPath, err)
 	}
+	activeIdentities := collectActiveSymbolIdentities(cfg.DexConfigs)
+	filteredDescriptors := defaultDescriptors
+	if len(activeIdentities) > 0 {
+		filteredDescriptors = util.FilterDescriptorsByIdentity(defaultDescriptors, activeIdentities)
+		util.Infof("Shared pools descriptors filtered: %d -> %d", len(defaultDescriptors), len(filteredDescriptors))
+	}
+	defaultBaseSymbols = util.ExtractUniqueSymbols(filteredDescriptors)
+	if len(defaultBaseSymbols) == 0 {
+		util.Fatalf("No base symbols resolved from shared pools %s", sharedPoolsPath)
+	}
+	baseSymbolCache[sharedPoolsPath] = append([]string(nil), defaultBaseSymbols...)
 
 	const legacySymbolsPath = "Temp/all_contracts_merged_reformatted.json"
 	symbolsByExchange := make(map[string][]string)
@@ -221,11 +368,12 @@ func main() {
 	}
 
 	launchCtx := launcher.LaunchContext{
-		Config:      cfg,
-		DataChannel: dataChannel,
-		Stop:        stop,
-		Pricer:      pricer,
-		Assets:      assetProvider,
+		Config:           cfg,
+		DataChannel:      dataChannel,
+		Stop:             stop,
+		Pricer:           pricer,
+		Assets:           assetProvider,
+		SymbolIdentities: activeIdentities,
 		Supervisor: func(name string, fn func() error) {
 			go supervisor(name, fn, stop)
 		},
@@ -296,15 +444,27 @@ func main() {
 						return
 					}
 					networkSegment := util.NormalizeNetworkName(md.Network, uint64(md.ChainID))
-					// Raw key (как было)
-					keyRaw := fmt.Sprintf("price:%s:%s:%s", networkSegment, md.Exchange, md.Symbol)
-					entryRaw := []interface{}{keyRaw, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol, "network", networkSegment, "chain_id", md.ChainID}
+					dexSegment := util.NormalizeMarketDex(md.Dex, md.Exchange)
+					if dexSegment == "" {
+						dexSegment = util.NormalizeMarketDex(md.Exchange, md.Exchange)
+					}
+					ammSegment := util.NormalizeMarketAMM(md.AMMVersion, dexSegment)
+					if ammSegment == "" {
+						ammSegment = util.DefaultAMMForDex(dexSegment)
+					}
+					identityKey := fmt.Sprintf("%s|%s|%s", dexSegment, ammSegment, networkSegment)
+					md.Dex = dexSegment
+					md.AMMVersion = ammSegment
+					md.Network = networkSegment
+					// Raw key включает dex и amm
+					keyRaw := fmt.Sprintf("price:%s:%s:%s:%s", networkSegment, dexSegment, ammSegment, md.Symbol)
+					entryRaw := []interface{}{keyRaw, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol, "network", networkSegment, "chain_id", md.ChainID, "dex", dexSegment, "amm_version", ammSegment, "pool_identity", identityKey}
 					batch = append(batch, entryRaw)
 
 					// Canonical key для арбитража (нормализуем спот-символ)
 					canon := util.NormalizeSpotSymbol(md.Exchange, md.Symbol)
-					keyCanon := fmt.Sprintf("price_canon:%s:%s:%s", networkSegment, canon, md.Exchange)
-					entryCanon := []interface{}{keyCanon, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol, "network", networkSegment, "chain_id", md.ChainID}
+					keyCanon := fmt.Sprintf("price_canon:%s:%s:%s:%s", networkSegment, dexSegment, ammSegment, canon)
+					entryCanon := []interface{}{keyCanon, "price", md.Price, "timestamp", md.Timestamp, "exchange", md.Exchange, "symbol", md.Symbol, "network", networkSegment, "chain_id", md.ChainID, "dex", dexSegment, "amm_version", ammSegment, "pool_identity", identityKey}
 					batch = append(batch, entryCanon)
 					// metrics: processed messages
 					atomic.AddInt64(&totalProcessed, 1)

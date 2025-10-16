@@ -6,10 +6,12 @@ package protobuf
 
 // MarketData описывает единицу рыночных данных, которую мы публикуем в Redis и grpc-потребителям.
 type MarketData struct {
-	Exchange  string  `json:"exchange"`
-	Symbol    string  `json:"symbol"`
-	Price     float64 `json:"price"`
-	Timestamp int64   `json:"timestamp"`
-	Network   string  `json:"network"`
-	ChainID   uint32  `json:"chain_id"`
+	Exchange   string  `json:"exchange"`
+	Symbol     string  `json:"symbol"`
+	Price      float64 `json:"price"`
+	Timestamp  int64   `json:"timestamp"`
+	Network    string  `json:"network"`
+	ChainID    uint32  `json:"chain_id"`
+	Dex        string  `json:"dex"`
+	AMMVersion string  `json:"amm_version"`
 }

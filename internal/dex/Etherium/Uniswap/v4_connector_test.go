@@ -53,8 +53,11 @@ func TestUpdatePricingEmitsSpotWithCanonicalExchange(t *testing.T) {
 
 	ch := make(chan *pb.MarketData, 2)
 	meta := V4PoolConfig{
-		Token0: TokenMeta{Symbol: "Uni-Swap", Address: common.HexToAddress("0x1"), Decimals: 18},
-		Token1: TokenMeta{Symbol: "usd.c", Address: common.HexToAddress("0x2"), Decimals: 6},
+		Dex:        "uniswap",
+		Network:    connector.cfg.Network,
+		AMMVersion: "v4",
+		Token0:     TokenMeta{Symbol: "Uni-Swap", Address: common.HexToAddress("0x1"), Decimals: 18},
+		Token1:     TokenMeta{Symbol: "usd.c", Address: common.HexToAddress("0x2"), Decimals: 6},
 	}
 
 	connector.updatePricing(meta, 5.25, true, 0.19, true, 100, time.Unix(100, 0), ch)
@@ -78,8 +81,11 @@ func TestUpdatePricingRespectsCustomExchangeName(t *testing.T) {
 
 	ch := make(chan *pb.MarketData, 2)
 	meta := V4PoolConfig{
-		Token0: TokenMeta{Symbol: "Lin-K", Address: common.HexToAddress("0x3"), Decimals: 18},
-		Token1: TokenMeta{Symbol: "usd_t", Address: common.HexToAddress("0x4"), Decimals: 6},
+		Dex:        "uniswap",
+		Network:    connector.cfg.Network,
+		AMMVersion: "v4",
+		Token0:     TokenMeta{Symbol: "Lin-K", Address: common.HexToAddress("0x3"), Decimals: 18},
+		Token1:     TokenMeta{Symbol: "usd_t", Address: common.HexToAddress("0x4"), Decimals: 6},
 	}
 
 	connector.updatePricing(meta, 7.5, true, 0.133, true, 50, time.Unix(200, 0), ch)
@@ -104,7 +110,8 @@ func TestEmitUSDUsesExchangeName(t *testing.T) {
 	connector := makeTestConnector(t, "", pricer)
 
 	ch := make(chan *pb.MarketData, 1)
-	connector.emitUSD(ch, pricing.TokenInfo{Symbol: "uni-swap", Address: common.HexToAddress("0x1"), Decimals: 18}, time.Unix(300, 0))
+	identity := connector.poolIdentityFromConfig(V4PoolConfig{Dex: connector.cfg.Exchange, AMMVersion: "v4", Network: connector.cfg.Network})
+	connector.emitUSD(ch, pricing.TokenInfo{Symbol: "uni-swap", Address: common.HexToAddress("0x1"), Decimals: 18}, identity, time.Unix(300, 0))
 
 	select {
 	case md := <-ch:

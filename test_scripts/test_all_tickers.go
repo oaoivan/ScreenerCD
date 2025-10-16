@@ -79,14 +79,26 @@ func main() {
 
 			// Сохраняем в Redis
 			networkSegment := util.NormalizeNetworkName(marketData.Network, uint64(marketData.ChainID))
-			redisKey := fmt.Sprintf("price:%s:%s:%s", networkSegment, marketData.Exchange, marketData.Symbol)
+			dexSegment := util.NormalizeMarketDex(marketData.Dex, marketData.Exchange)
+			if dexSegment == "" {
+				dexSegment = util.NormalizeMarketDex(marketData.Exchange, marketData.Exchange)
+			}
+			ammSegment := util.NormalizeMarketAMM(marketData.AMMVersion, dexSegment)
+			if ammSegment == "" {
+				ammSegment = util.DefaultAMMForDex(dexSegment)
+			}
+			identityKey := fmt.Sprintf("%s|%s|%s", dexSegment, ammSegment, networkSegment)
+			redisKey := fmt.Sprintf("price:%s:%s:%s:%s", networkSegment, dexSegment, ammSegment, marketData.Symbol)
 			if err := redisClient.HSet(redisKey,
 				"price", marketData.Price,
 				"timestamp", marketData.Timestamp,
 				"exchange", marketData.Exchange,
 				"symbol", marketData.Symbol,
 				"network", networkSegment,
-				"chain_id", marketData.ChainID); err != nil {
+				"chain_id", marketData.ChainID,
+				"dex", dexSegment,
+				"amm_version", ammSegment,
+				"pool_identity", identityKey); err != nil {
 				fmt.Printf("❌ Failed to save %s to Redis: %v\n", marketData.Symbol, err)
 			}
 		}

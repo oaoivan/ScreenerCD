@@ -4,6 +4,7 @@ import (
 	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/config"
 	"github.com/yourusername/screner/internal/dex/pricing"
+	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
 )
 
@@ -12,10 +13,11 @@ type SupervisorFunc func(name string, fn func() error)
 
 // LaunchContext содержит «глобальные» зависимости, необходимые builder'ам для запуска коннекторов.
 type LaunchContext struct {
-	Config      *config.Config
-	DataChannel chan<- *pb.MarketData
-	Stop        <-chan struct{}
-	Pricer      pricing.Pricer
-	Assets      *assets.Provider
-	Supervisor  SupervisorFunc
+	Config           *config.Config
+	DataChannel      chan<- *pb.MarketData
+	Stop             <-chan struct{}
+	Pricer           pricing.Pricer
+	Assets           *assets.Provider
+	Supervisor       SupervisorFunc
+	SymbolIdentities []util.SymbolIdentity
 }

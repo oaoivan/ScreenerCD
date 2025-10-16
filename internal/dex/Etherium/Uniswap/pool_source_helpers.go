@@ -1,6 +1,9 @@
 package uniswap
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func normalizeDexName(dex string) string {
 	dex = strings.TrimSpace(strings.ToLower(dex))
@@ -21,7 +24,10 @@ func dexMatches(dex, filter string) bool {
 	if dexNorm == "" {
 		return false
 	}
-	return strings.Contains(dexNorm, filterNorm)
+	if dexNorm == filterNorm {
+		return true
+	}
+	return stripDexVersion(dexNorm) != "" && stripDexVersion(dexNorm) == stripDexVersion(filterNorm)
 }
 
 func matchesAMMVersion(ammVersion, dex, want string) bool {
@@ -104,4 +110,25 @@ func networkMatchesAny(network string, filters []string) bool {
 		}
 	}
 	return false
+}
+
+func identityKey(dex, ammVersion, network string) string {
+	dexNorm := normalizeDexName(dex)
+	ammNorm := normalizeAMMVersion(ammVersion)
+	networkNorm := normalizeNetworkName(network)
+	if dexNorm == "" || ammNorm == "" || networkNorm == "" {
+		return ""
+	}
+	return fmt.Sprintf("%s|%s|%s", dexNorm, ammNorm, networkNorm)
+}
+
+func stripDexVersion(raw string) string {
+	if raw == "" {
+		return ""
+	}
+	idx := strings.Index(raw, "_v")
+	if idx <= 0 {
+		return raw
+	}
+	return strings.TrimSuffix(raw[:idx], "_")
 }

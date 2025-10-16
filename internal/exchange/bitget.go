@@ -178,11 +178,17 @@ func (c *BitgetClient) ReadLoop(exchangeName string) {
 			continue
 		}
 
+		dexAlias := util.NormalizeMarketDex(exchangeName, exchangeName)
+		amm := util.DefaultAMMForDex(dexAlias)
+		network := util.NormalizeNetworkName("", 0)
 		md := &protobuf.MarketData{
-			Exchange:  strings.ToLower(exchangeName),
-			Symbol:    d.InstId,
-			Price:     price,
-			Timestamp: time.Now().Unix(),
+			Exchange:   strings.ToLower(exchangeName),
+			Symbol:     d.InstId,
+			Price:      price,
+			Timestamp:  time.Now().Unix(),
+			Network:    network,
+			Dex:        dexAlias,
+			AMMVersion: amm,
 		}
 
 		select {

@@ -8,6 +8,9 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/ethereum/go-ethereum/common"
+	core "github.com/yourusername/screner/internal/dex"
+	"github.com/yourusername/screner/internal/util"
 	"gopkg.in/yaml.v2"
 )
 
@@ -59,6 +62,8 @@ type DexConfig struct {
 	DexAlias        string          `yaml:"dex_alias"`
 	WSURL           string          `yaml:"ws_url"`
 	HTTPURL         string          `yaml:"http_url"`
+	PoolABIPath     string          `yaml:"pool_abi"`
+	ManagerABIPath  string          `yaml:"manager_abi"`
 	SubscribeBatch  int             `yaml:"subscribe_batch"`
 	PingInterval    int             `yaml:"ping_interval"`
 	PoolManager     string          `yaml:"pool_manager"`
@@ -147,6 +152,8 @@ func (d *DexConfig) applyDefaults() {
 	d.NetworkID = strings.TrimSpace(d.NetworkID)
 	d.Network = strings.TrimSpace(d.Network)
 	d.Name = strings.TrimSpace(d.Name)
+	d.PoolABIPath = strings.TrimSpace(d.PoolABIPath)
+	d.ManagerABIPath = strings.TrimSpace(d.ManagerABIPath)
 	if strings.TrimSpace(d.DexAlias) == "" {
 		d.resolvedDexAlias = strings.ToLower(strings.TrimSpace(d.Name))
 	} else {
@@ -220,6 +227,9 @@ func (d DexConfig) Validate() error {
 // DexPoolConfig описывает минимальную информацию по пулу.
 type DexPoolConfig struct {
 	Address        string `yaml:"address"`
+	Dex            string `yaml:"dex"`
+	AMMVersion     string `yaml:"amm_version"`
+	Network        string `yaml:"network"`
 	PairName       string `yaml:"pair_name"`
 	Token0Symbol   string `yaml:"token0_symbol"`
 	Token1Symbol   string `yaml:"token1_symbol"`
@@ -485,6 +495,8 @@ func LoadConfig(filePath string) (*Config, error) {
 		config.DexConfigs[i].WSURL = strings.TrimSpace(os.ExpandEnv(config.DexConfigs[i].WSURL))
 		config.DexConfigs[i].HTTPURL = strings.TrimSpace(os.ExpandEnv(config.DexConfigs[i].HTTPURL))
 		config.DexConfigs[i].PoolManager = strings.TrimSpace(os.ExpandEnv(config.DexConfigs[i].PoolManager))
+		config.DexConfigs[i].PoolABIPath = strings.TrimSpace(os.ExpandEnv(config.DexConfigs[i].PoolABIPath))
+		config.DexConfigs[i].ManagerABIPath = strings.TrimSpace(os.ExpandEnv(config.DexConfigs[i].ManagerABIPath))
 		config.DexConfigs[i].applyDefaults()
 		config.DexConfigs[i].AssetsPath = config.DexConfigs[i].ResolveAssetsPath(sharedAssets)
 	}
@@ -536,6 +548,10 @@ func (c *Config) Validate() error {
 			if poolsPath == "" {
 				return fmt.Errorf("dex config %s: pools or pools_source/pools_file must be provided", c.DexConfigs[i].Name)
 			}
+		} else {
+			if err := validateInlineDexPools(c.DexConfigs[i]); err != nil {
+				return fmt.Errorf("dex config %s: %w", c.DexConfigs[i].Name, err)
+			}
 		}
 	}
 
@@ -543,6 +559,73 @@ func (c *Config) Validate() error {
 		// Валидация уже проверяет per-dex путь, но дополнительная проверка
 		// помогает обнаружить забытый глобальный реестр для графового прайсера.
 		return fmt.Errorf("assets_registry must be configured when uniswap_v4 is enabled")
+	}
+	return nil
+}
+
+func validateInlineDexPools(d DexConfig) error {
+	if len(d.Pools) == 0 {
+		return nil
+	}
+	seen := make(map[string]string)
+	for idx := range d.Pools {
+		pool := d.Pools[idx]
+		rawDex := strings.TrimSpace(pool.Dex)
+		rawAMM := strings.TrimSpace(pool.AMMVersion)
+		rawNetwork := strings.TrimSpace(pool.Network)
+
+		util.Debugf("config: validating inline pool idx=%d dex=%s amm=%s network=%s", idx, rawDex, rawAMM, rawNetwork)
+
+		if rawDex == "" {
+			return fmt.Errorf("pool %d: dex is required", idx)
+		}
+		if rawAMM == "" {
+			return fmt.Errorf("pool %d: amm_version is required", idx)
+		}
+		if rawNetwork == "" {
+			return fmt.Errorf("pool %d: network is required", idx)
+		}
+
+		if addr := strings.TrimSpace(pool.Address); addr == "" || !common.IsHexAddress(addr) {
+			return fmt.Errorf("pool %d: invalid address %s", idx, pool.Address)
+		}
+
+		token0Addr := strings.TrimSpace(pool.Token0Address)
+		token1Addr := strings.TrimSpace(pool.Token1Address)
+		if token0Addr != "" && !common.IsHexAddress(token0Addr) {
+			return fmt.Errorf("pool %d: token0_address %s invalid", idx, pool.Token0Address)
+		}
+		if token1Addr != "" && !common.IsHexAddress(token1Addr) {
+			return fmt.Errorf("pool %d: token1_address %s invalid", idx, pool.Token1Address)
+		}
+
+		descriptor := core.PoolDescriptor{
+			Dex:        rawDex,
+			AMMVersion: rawAMM,
+			Network:    rawNetwork,
+			Token0: core.PoolToken{
+				Symbol: pool.Token0Symbol,
+			},
+			Token1: core.PoolToken{
+				Symbol: pool.Token1Symbol,
+			},
+		}
+		if token0Addr != "" {
+			descriptor.Token0.Address = common.HexToAddress(token0Addr)
+		}
+		if token1Addr != "" {
+			descriptor.Token1.Address = common.HexToAddress(token1Addr)
+		}
+
+		if err := descriptor.Validate(); err != nil {
+			return fmt.Errorf("pool %d: %w", idx, err)
+		}
+
+		compositeKey := descriptor.CompositeKey()
+		if prev, exists := seen[compositeKey]; exists {
+			return fmt.Errorf("pool %d: duplicate composite key %s (previous %s)", idx, compositeKey, prev)
+		}
+		seen[compositeKey] = fmt.Sprintf("pool idx %d", idx)
 	}
 	return nil
 }

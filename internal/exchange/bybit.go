@@ -102,11 +102,17 @@ func (c *BybitClient) ReadLoop(exchangeName, symbol string) {
 
 		util.Debugf("Bybit parsed price=%f for %s/%s", price, exchangeName, messageSymbol)
 
+		dexAlias := util.NormalizeMarketDex(exchangeName, exchangeName)
+		amm := util.DefaultAMMForDex(dexAlias)
+		network := util.NormalizeNetworkName("", 0)
 		md := &protobuf.MarketData{
-			Exchange:  strings.ToLower(exchangeName),
-			Symbol:    messageSymbol, // Use symbol from message topic
-			Price:     price,
-			Timestamp: time.Now().Unix(),
+			Exchange:   strings.ToLower(exchangeName),
+			Symbol:     messageSymbol, // Use symbol from message topic
+			Price:      price,
+			Timestamp:  time.Now().Unix(),
+			Network:    network,
+			Dex:        dexAlias,
+			AMMVersion: amm,
 		}
 
 		select {

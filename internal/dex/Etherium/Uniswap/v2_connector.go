@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/yourusername/screner/internal/assets"
+	core "github.com/yourusername/screner/internal/dex"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
@@ -39,6 +40,9 @@ type Config struct {
 type PoolConfig struct {
 	Address       common.Address
 	PairName      string
+	Dex           string
+	AMMVersion    string
+	Network       string
 	Token0        TokenMeta
 	Token1        TokenMeta
 	BaseIsToken0  bool
@@ -46,9 +50,20 @@ type PoolConfig struct {
 	HasStable     bool
 	HasWETH       bool
 	StableSymbol  string
+	Descriptor    core.PoolDescriptor
+	CompositeKey  string
 }
 
 func FinalizePool(p *PoolConfig) {
+	p.Dex = normalizeDexName(p.Dex)
+	if p.Dex == "" {
+		p.Dex = "uniswap"
+	}
+	p.AMMVersion = normalizeAMMVersion(p.AMMVersion)
+	if p.AMMVersion == "" {
+		p.AMMVersion = "v2"
+	}
+	p.Network = normalizeNetworkName(p.Network)
 	p.HasStable = p.Token0.IsStable || p.Token1.IsStable
 	p.HasWETH = p.Token0.IsWETH || p.Token1.IsWETH
 	switch {
@@ -62,6 +77,27 @@ func FinalizePool(p *PoolConfig) {
 	if p.CanonicalPair == "" {
 		p.CanonicalPair = NormalizePair(*p)
 	}
+	desc := core.PoolDescriptor{
+		Dex:        p.Dex,
+		AMMVersion: p.AMMVersion,
+		Network:    p.Network,
+		Token0: core.PoolToken{
+			Address: p.Token0.Address,
+			Symbol:  p.Token0.Symbol,
+		},
+		Token1: core.PoolToken{
+			Address: p.Token1.Address,
+			Symbol:  p.Token1.Symbol,
+		},
+	}
+	if err := desc.Validate(); err != nil {
+		util.Errorf("uniswap_v2: invalid pool descriptor pair=%s addr=%s err=%v", p.PairName, p.Address.Hex(), err)
+		p.Descriptor = core.PoolDescriptor{}
+		p.CompositeKey = ""
+		return
+	}
+	p.Descriptor = desc
+	p.CompositeKey = desc.CompositeKey()
 }
 
 // TokenMeta описывает параметры токена внутри пула.
@@ -662,18 +698,35 @@ func (c *Connector) publish(state *poolState, snap *poolSnapshot, out chan<- *pb
 		pair = strings.ToUpper(baseSymbol(&meta) + quoteSymbol(&meta))
 	}
 	priceCopy := new(big.Rat).Set(snap.Price)
-	if c.emitPrice(out, pair, priceCopy) {
+	identity := c.poolIdentity(meta)
+	if c.emitPrice(out, pair, priceCopy, identity) {
 		emitted = true
 	}
 	if c.pricer != nil {
-		c.updatePricing(meta, snap, out)
+		c.updatePricing(meta, snap, identity, out)
 	}
 	if emitted && !state.gotFirst {
 		state.gotFirst = true
 	}
 }
 
-func (c *Connector) updatePricing(meta PoolConfig, snap *poolSnapshot, out chan<- *pb.MarketData) {
+func (c *Connector) poolIdentity(meta PoolConfig) util.SymbolIdentity {
+	dex := meta.Descriptor.Dex
+	if dex == "" {
+		dex = meta.Dex
+	}
+	amm := meta.Descriptor.AMMVersion
+	if amm == "" {
+		amm = meta.AMMVersion
+	}
+	network := meta.Descriptor.Network
+	if network == "" {
+		network = meta.Network
+	}
+	return util.ComposeIdentity(dex, amm, network, c.cfg.ChainID, c.exchangeName())
+}
+
+func (c *Connector) updatePricing(meta PoolConfig, snap *poolSnapshot, identity util.SymbolIdentity, out chan<- *pb.MarketData) {
 	if snap == nil || snap.Price == nil || c.pricer == nil {
 		return
 	}
@@ -697,11 +750,11 @@ func (c *Connector) updatePricing(meta PoolConfig, snap *poolSnapshot, out chan<
 	} else {
 		return
 	}
-	c.emitUSD(out, info0)
-	c.emitUSD(out, info1)
+	c.emitUSD(out, info0, identity)
+	c.emitUSD(out, info1, identity)
 }
 
-func (c *Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo) {
+func (c *Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo, identity util.SymbolIdentity) {
 	if c.pricer == nil {
 		return
 	}
@@ -714,7 +767,7 @@ func (c *Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo) {
 		symbol = strings.ToUpper(strings.TrimPrefix(info.Address.Hex(), "0x"))
 	}
 	marketSymbol := symbol + "USD"
-	if c.emitFloat(out, marketSymbol, res.Price) {
+	if c.emitFloat(out, marketSymbol, res.Price, identity) {
 		route := strings.Join(res.Route, "->")
 		if route == "" {
 			route = "direct"
@@ -756,28 +809,40 @@ func reserveToFloat(reserve *big.Int, decimals int) float64 {
 	return val
 }
 
-func (c *Connector) emitPrice(out chan<- *pb.MarketData, symbol string, value *big.Rat) bool {
+func (c *Connector) emitPrice(out chan<- *pb.MarketData, symbol string, value *big.Rat, identity util.SymbolIdentity) bool {
 	val, ok := ratToFloat(value)
 	if !ok {
 		return false
 	}
-	return c.emitFloat(out, symbol, val)
+	return c.emitFloat(out, symbol, val, identity)
 }
 
-func (c *Connector) emitFloat(out chan<- *pb.MarketData, symbol string, value float64) bool {
+func (c *Connector) emitFloat(out chan<- *pb.MarketData, symbol string, value float64, identity util.SymbolIdentity) bool {
 	if value <= 0 || math.IsNaN(value) || math.IsInf(value, 0) {
 		return false
 	}
+	dex := util.NormalizeMarketDex(identity.Dex, c.exchangeName())
+	amm := util.NormalizeMarketAMM(identity.AMMVersion, dex)
+	network := util.NormalizeNetworkName(identity.Network, c.cfg.ChainID)
 	md := &pb.MarketData{
-		Exchange:  c.exchangeName(),
-		Symbol:    symbol,
-		Price:     value,
-		Timestamp: time.Now().UnixMilli(),
-		Network:   c.networkName(),
-		ChainID:   uint32(c.cfg.ChainID),
+		Exchange:   c.exchangeName(),
+		Symbol:     symbol,
+		Price:      value,
+		Timestamp:  time.Now().UnixMilli(),
+		Network:    network,
+		ChainID:    uint32(c.cfg.ChainID),
+		Dex:        dex,
+		AMMVersion: amm,
+	}
+	md.Network = util.NormalizeNetworkName(md.Network, c.cfg.ChainID)
+	if md.Dex == "" {
+		md.Dex = util.NormalizeMarketDex(c.exchangeName(), c.exchangeName())
+	}
+	if md.AMMVersion == "" {
+		md.AMMVersion = util.DefaultAMMForDex(md.Dex)
 	}
 	out <- md
-	util.Debugf("uniswap_v2: emit symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", symbol, value, md.Exchange, md.Network, c.cfg.ChainID)
+	util.Debugf("uniswap_v2: emit symbol=%s price=%.8f exchange=%s dex=%s amm=%s network=%s chain_id=%d", symbol, value, md.Exchange, md.Dex, md.AMMVersion, md.Network, c.cfg.ChainID)
 	return true
 }
 
@@ -979,11 +1044,12 @@ type geckoToken struct {
 
 // PoolSourceOptions описывает дополнительные фильтры при загрузке пулов из общего источника.
 type PoolSourceOptions struct {
-	DexFilters     []string
-	NetworkFilters []string
-	WantedPairs    []string
-	IncludeStable  bool
-	AMMVersions    []string
+	DexFilters      []string
+	NetworkFilters  []string
+	WantedPairs     []string
+	IncludeStable   bool
+	AMMVersions     []string
+	IdentityFilters []string
 }
 
 var (
@@ -1029,6 +1095,15 @@ func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts P
 		}
 	}
 
+	allowedIdentities := make(map[string]struct{}, len(opts.IdentityFilters))
+	for _, key := range opts.IdentityFilters {
+		trimmed := strings.TrimSpace(strings.ToLower(key))
+		if trimmed == "" {
+			continue
+		}
+		allowedIdentities[trimmed] = struct{}{}
+	}
+
 	wanted := make(map[string]struct{})
 	for _, pair := range opts.WantedPairs {
 		key := strings.ToUpper(strings.TrimSpace(pair))
@@ -1040,14 +1115,57 @@ func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts P
 
 	result := make([]PoolConfig, 0, len(file.Entries))
 	seen := make(map[common.Address]bool)
+	seenKeys := make(map[string]struct{})
 	for _, entry := range file.Entries {
+		dexName := strings.TrimSpace(entry.Dex)
+		if dexName == "" && len(opts.DexFilters) == 1 {
+			dexName = opts.DexFilters[0]
+		}
+		if dexName == "" {
+			util.Errorf("uniswap_v2: skip pair=%s reason=missing dex", entry.PairName)
+			continue
+		}
+		dexNorm := normalizeDexName(dexName)
+		if len(opts.DexFilters) > 0 && !dexMatchesAny(dexName, opts.DexFilters) {
+			continue
+		}
+
+		networkName := strings.TrimSpace(entry.Network)
+		if networkName == "" && len(opts.NetworkFilters) == 1 {
+			networkName = opts.NetworkFilters[0]
+		}
+		if networkName == "" {
+			util.Errorf("uniswap_v2: skip pair=%s reason=missing network", entry.PairName)
+			continue
+		}
+		networkNorm := normalizeNetworkName(networkName)
+		if len(opts.NetworkFilters) > 0 && !networkMatchesAny(networkName, opts.NetworkFilters) {
+			continue
+		}
+
+		ammVersion := strings.TrimSpace(entry.AMMVersion)
+		if ammVersion == "" && len(opts.AMMVersions) == 1 {
+			ammVersion = opts.AMMVersions[0]
+		}
+		normAMM := normalizeAMMVersion(ammVersion)
 		if len(allowedAMM) > 0 {
-			if _, ok := allowedAMM[normalizeAMMVersion(entry.AMMVersion)]; !ok {
+			if _, ok := allowedAMM[normAMM]; !ok {
 				continue
 			}
 		}
-		if len(opts.NetworkFilters) > 0 && !networkMatchesAny(entry.Network, opts.NetworkFilters) {
+		if normAMM == "" {
+			util.Errorf("uniswap_v2: skip pair=%s reason=missing amm_version", entry.PairName)
 			continue
+		}
+		identity := identityKey(dexNorm, normAMM, networkNorm)
+		if len(allowedIdentities) > 0 {
+			if identity == "" {
+				util.Debugf("uniswap_v2: skip pair=%s reason=empty identity", entry.PairName)
+				continue
+			}
+			if _, ok := allowedIdentities[strings.ToLower(identity)]; !ok {
+				continue
+			}
 		}
 		addrHex := entry.PoolID
 		if addrHex == "" {
@@ -1096,7 +1214,14 @@ func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts P
 			baseIsToken0 = true
 		}
 
+		network := entry.Network
+		if network == "" && len(opts.NetworkFilters) == 1 {
+			network = opts.NetworkFilters[0]
+		}
 		pool := PoolConfig{
+			Dex:          dexName,
+			AMMVersion:   ammVersion,
+			Network:      networkName,
 			Address:      addr,
 			PairName:     entry.PairName,
 			Token0:       t0,
@@ -1104,6 +1229,10 @@ func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts P
 			BaseIsToken0: baseIsToken0,
 		}
 		FinalizePool(&pool)
+		if pool.CompositeKey == "" {
+			util.Errorf("uniswap_v2: skip pair=%s addr=%s reason=descriptor invalid", entry.PairName, addr.Hex())
+			continue
+		}
 		if len(wanted) > 0 {
 			key := strings.ToUpper(strings.TrimSpace(pool.CanonicalPair))
 			if key == "" {
@@ -1113,6 +1242,11 @@ func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts P
 				continue
 			}
 		}
+		if _, dup := seenKeys[pool.CompositeKey]; dup {
+			util.Debugf("uniswap_v2: skip duplicate composite key=%s pair=%s", pool.CompositeKey, entry.PairName)
+			continue
+		}
+		seenKeys[pool.CompositeKey] = struct{}{}
 		result = append(result, pool)
 		seen[addr] = true
 	}
@@ -1120,6 +1254,10 @@ func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts P
 	if len(result) == 0 && shouldAddHardFallback(opts, registry) {
 		added := 0
 		wethMeta, hasWETH := registry.WETHMeta()
+		fallbackNetwork := normalizeNetworkName(registry.NetworkName())
+		if fallbackNetwork == "" && len(opts.NetworkFilters) > 0 {
+			fallbackNetwork = normalizeNetworkName(opts.NetworkFilters[0])
+		}
 		for _, hw := range hardWethStable {
 			addr := common.HexToAddress(hw.Addr)
 			if seen[addr] {
@@ -1133,6 +1271,9 @@ func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts P
 				continue
 			}
 			pool := PoolConfig{
+				Dex:          "uniswap",
+				AMMVersion:   "v2",
+				Network:      fallbackNetwork,
 				Address:      addr,
 				PairName:     fmt.Sprintf("WETH / %s (hard)", hw.Stable),
 				Token0:       wethMeta,
@@ -1140,12 +1281,20 @@ func LoadPoolsFromSourceWithOptions(path string, registry *TokenRegistry, opts P
 				BaseIsToken0: true,
 			}
 			FinalizePool(&pool)
+			if pool.CompositeKey == "" {
+				util.Errorf("uniswap_v2: skip hard pool addr=%s reason=descriptor invalid", addr.Hex())
+				continue
+			}
 			if len(wanted) > 0 {
 				key := strings.ToUpper(strings.TrimSpace(pool.CanonicalPair))
 				if _, ok := wanted[key]; !ok {
 					continue
 				}
 			}
+			if _, dup := seenKeys[pool.CompositeKey]; dup {
+				continue
+			}
+			seenKeys[pool.CompositeKey] = struct{}{}
 			result = append(result, pool)
 			seen[addr] = true
 			added++

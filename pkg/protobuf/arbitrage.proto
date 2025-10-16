@@ -10,6 +10,8 @@ message MarketData {
     int64 timestamp = 4; // The timestamp of the data
     string network = 5;  // The blockchain network (e.g., ethereum, base)
     uint32 chain_id = 6; // Optional EVM chain ID when applicable
+    string dex = 7;      // Normalized DEX alias or exchange identity
+    string amm_version = 8; // AMM version or venue type (v2, v3, spot)
 }
 
 // ArbitrageOpportunity represents an arbitrage opportunity between exchanges.

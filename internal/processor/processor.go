@@ -28,7 +28,19 @@ func (p *Processor) ProcessMarketData(marketData *pb.MarketData) {
 		return
 	}
 	networkSegment := util.NormalizeNetworkName(marketData.Network, uint64(marketData.ChainID))
-	key := fmt.Sprintf("price:%s:%s:%s", networkSegment, marketData.Exchange, marketData.Symbol)
+	dexSegment := util.NormalizeMarketDex(marketData.Dex, marketData.Exchange)
+	if dexSegment == "" {
+		dexSegment = util.NormalizeMarketDex(marketData.Exchange, marketData.Exchange)
+	}
+	ammSegment := util.NormalizeMarketAMM(marketData.AMMVersion, dexSegment)
+	if ammSegment == "" {
+		ammSegment = util.DefaultAMMForDex(dexSegment)
+	}
+	identityKey := fmt.Sprintf("%s|%s|%s", dexSegment, ammSegment, networkSegment)
+	marketData.Dex = dexSegment
+	marketData.AMMVersion = ammSegment
+	marketData.Network = networkSegment
+	key := fmt.Sprintf("price:%s:%s:%s:%s", networkSegment, dexSegment, ammSegment, marketData.Symbol)
 	if err := p.redis.HSet(key,
 		"price", marketData.Price,
 		"timestamp", marketData.Timestamp,
@@ -36,8 +48,11 @@ func (p *Processor) ProcessMarketData(marketData *pb.MarketData) {
 		"symbol", marketData.Symbol,
 		"network", networkSegment,
 		"chain_id", marketData.ChainID,
+		"dex", dexSegment,
+		"amm_version", ammSegment,
+		"pool_identity", identityKey,
 	); err != nil {
-		util.Errorf("processor: redis hset key=%s exchange=%s network=%s chain=%d err=%v", key, marketData.Exchange, marketData.Network, marketData.ChainID, err)
+		util.Errorf("processor: redis hset key=%s exchange=%s dex=%s amm=%s network=%s chain=%d err=%v", key, marketData.Exchange, dexSegment, ammSegment, networkSegment, marketData.ChainID, err)
 	}
 }
 
@@ -53,12 +68,14 @@ func (p *Processor) Start() {
 		select {
 		case <-ticker.C:
 			data := &pb.MarketData{
-				Exchange:  "example_exchange",
-				Symbol:    "BTC-USDT",
-				Price:     50000.0,
-				Timestamp: time.Now().Unix(),
-				Network:   "example_network",
-				ChainID:   0,
+				Exchange:   "example_exchange",
+				Symbol:     "BTC-USDT",
+				Price:      50000.0,
+				Timestamp:  time.Now().Unix(),
+				Network:    util.NormalizeNetworkName("example_network", 0),
+				ChainID:    0,
+				Dex:        util.NormalizeMarketDex("example_exchange", "example_exchange"),
+				AMMVersion: util.DefaultAMMForDex(util.NormalizeMarketDex("example_exchange", "example_exchange")),
 			}
 			p.ProcessMarketData(data)
 		}

@@ -27,6 +27,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gorilla/websocket"
+	core "github.com/yourusername/screner/internal/dex"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
@@ -40,6 +41,7 @@ const (
 	v3PingIntervalDefault    = 25 * time.Second
 	v3ReconnectBase          = 2 * time.Second
 	v3ReconnectMax           = 30 * time.Second
+	v3DefaultPoolABIPath     = "ABI/Uniswap/V3/UniswapV3Pool.json"
 )
 
 // --- Структуры входного файла GeckoTerminal ---
@@ -172,16 +174,21 @@ type v3TokenMeta struct {
 }
 
 type v3PoolMeta struct {
-	Addr        common.Address
-	PairName    string
-	Token0      v3TokenMeta
-	Token1      v3TokenMeta
-	Loaded      bool // метаданные токенов загружены
-	Loading     bool
-	LoadErr     error
-	HasJSONMeta bool
-	Registered  bool
-	Verified    bool
+	Addr         common.Address
+	PairName     string
+	Dex          string
+	AMMVersion   string
+	Network      string
+	Token0       v3TokenMeta
+	Token1       v3TokenMeta
+	Loaded       bool // метаданные токенов загружены
+	Loading      bool
+	LoadErr      error
+	HasJSONMeta  bool
+	Registered   bool
+	Verified     bool
+	Descriptor   core.PoolDescriptor
+	CompositeKey string
 }
 
 const v3FallbackWETHHex = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
@@ -219,6 +226,8 @@ type v3Engine struct {
 	logAllEvents   bool
 	decodeSwapOnly bool
 
+	poolABIPath string
+
 	out chan<- *pb.MarketData
 
 	registry     *TokenRegistry
@@ -239,6 +248,7 @@ func newV3Engine(ctx context.Context, cfg V3Config, pr pricing.Pricer, out chan<
 		return nil, fmt.Errorf("uniswap_v3: out channel is nil")
 	}
 
+	poolABI := strings.TrimSpace(cfg.PoolABIPath)
 	e := &v3Engine{
 		ctx:          ctx,
 		cfg:          cfg,
@@ -251,6 +261,7 @@ func newV3Engine(ctx context.Context, cfg V3Config, pr pricing.Pricer, out chan<
 		pow10Cache:   make(map[uint8]*big.Int),
 		httpClient:   &http.Client{Timeout: 10 * time.Second},
 		stableLookup: v3FallbackStableSet(),
+		poolABIPath:  poolABI,
 	}
 
 	if cfg.MaxMetaWorkers > 0 {
@@ -299,6 +310,10 @@ func newV3Engine(ctx context.Context, cfg V3Config, pr pricing.Pricer, out chan<
 		e.logPrefix = "uniswap_v3"
 	}
 
+	if e.poolABIPath == "" {
+		e.poolABIPath = v3DefaultPoolABIPath
+	}
+	util.Infof("%s engine pool abi=%s", e.logPrefix, e.poolABIPath)
 	return e, nil
 }
 
@@ -385,25 +400,27 @@ func (e *v3Engine) isStableSymbol(symbol string) bool {
 }
 
 type V3Config struct {
-	Exchange       string
-	Network        string
-	ChainID        uint64
-	WSURL          string
-	HTTPURL        string
-	PoolsPath      string
-	DexFilter      string
-	DexFilters     []string
-	NetworkFilter  string
-	NetworkFilters []string
-	BatchSize      int
-	PingInterval   time.Duration
-	StopOnAckError bool
-	LogAllEvents   bool
-	DecodeSwapOnly bool
-	MaxMetaWorkers int
-	Registry       *TokenRegistry
-	WantedPairs    []string
-	AMMVersions    []string
+	Exchange        string
+	Network         string
+	ChainID         uint64
+	WSURL           string
+	HTTPURL         string
+	PoolsPath       string
+	DexFilter       string
+	DexFilters      []string
+	NetworkFilter   string
+	NetworkFilters  []string
+	BatchSize       int
+	PingInterval    time.Duration
+	StopOnAckError  bool
+	LogAllEvents    bool
+	DecodeSwapOnly  bool
+	MaxMetaWorkers  int
+	Registry        *TokenRegistry
+	WantedPairs     []string
+	AMMVersions     []string
+	IdentityFilters []string
+	PoolABIPath     string
 }
 
 type V3Connector struct {
@@ -455,19 +472,24 @@ func (e *v3Engine) Run() error {
 
 // --- Init / Load ---
 func (e *v3Engine) initABI() error {
-	b, err := os.ReadFile("ABI/Uniswap/V3/UniswapV3Pool.json")
+	path := strings.TrimSpace(e.poolABIPath)
+	if path == "" {
+		path = v3DefaultPoolABIPath
+	}
+	b, err := os.ReadFile(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("uniswap_v3: read abi %s: %w", path, err)
 	}
 	parsed, err := abi.JSON(bytes.NewReader(b))
 	if err != nil {
-		return err
+		return fmt.Errorf("uniswap_v3: parse abi %s: %w", path, err)
 	}
 	e.abi = parsed
 	e.eventBySig = make(map[common.Hash]abi.Event, len(parsed.Events))
 	for _, ev := range e.abi.Events {
 		e.eventBySig[ev.ID] = ev
 	}
+	util.Infof("%s abi loaded path=%s events=%d", e.logPrefix, path, len(parsed.Events))
 	return nil
 }
 
@@ -534,11 +556,28 @@ func (e *v3Engine) loadPools() error {
 		}
 	}
 	ammFilters := e.cfg.AMMVersions
+	dexFilters := e.cfg.DexFilters
+	allowedIdentities := make(map[string]struct{}, len(e.cfg.IdentityFilters))
+	for _, key := range e.cfg.IdentityFilters {
+		norm := strings.ToLower(strings.TrimSpace(key))
+		if norm == "" {
+			continue
+		}
+		allowedIdentities[norm] = struct{}{}
+	}
 
 	e.pools = make(map[common.Address]*v3PoolMeta)
+	seenKeys := make(map[string]struct{})
 	added := 0
 	for _, entry := range f.Entries {
 		if !matchesAnyAMMVersion(entry.AMMVersion, ammFilters) {
+			continue
+		}
+		dexName := strings.TrimSpace(entry.Dex)
+		if dexName == "" && len(dexFilters) == 1 {
+			dexName = dexFilters[0]
+		}
+		if len(dexFilters) > 0 && !dexMatchesAny(dexName, dexFilters) {
 			continue
 		}
 		if len(networkFilters) > 0 && !networkMatchesAny(entry.Network, networkFilters) {
@@ -568,13 +607,40 @@ func (e *v3Engine) loadPools() error {
 			token1.Symbol = v3DefaultSymbol(token1.Address)
 		}
 		hasJSONMeta := token0.Dec > 0 && token1.Dec > 0
-		e.pools[addr] = &v3PoolMeta{
+		meta := &v3PoolMeta{
 			Addr:        addr,
 			PairName:    entry.PairName,
+			Dex:         dexName,
+			AMMVersion:  entry.AMMVersion,
+			Network:     entry.Network,
 			Token0:      token0,
 			Token1:      token1,
 			HasJSONMeta: hasJSONMeta,
 		}
+		if err := e.attachDescriptor(meta); err != nil {
+			util.Errorf("%s skip pool=%s descriptor err=%v", e.logPrefix, entry.PairName, err)
+			continue
+		}
+		if len(allowedIdentities) > 0 {
+			key := strings.ToLower(identityKey(meta.Dex, meta.AMMVersion, meta.Network))
+			if key == "" {
+				util.Debugf("%s skip pool=%s reason=empty identity", e.logPrefix, entry.PairName)
+				continue
+			}
+			if _, ok := allowedIdentities[key]; !ok {
+				continue
+			}
+		}
+		if meta.CompositeKey == "" {
+			util.Errorf("%s skip pool=%s reason=empty composite key", e.logPrefix, entry.PairName)
+			continue
+		}
+		if _, dup := seenKeys[meta.CompositeKey]; dup {
+			util.Debugf("%s skip duplicate composite key=%s pair=%s", e.logPrefix, meta.CompositeKey, entry.PairName)
+			continue
+		}
+		seenKeys[meta.CompositeKey] = struct{}{}
+		e.pools[addr] = meta
 		if hasJSONMeta {
 			util.Debugf("%s pool=%s decimals json token0=%d token1=%d", e.logPrefix, entry.PairName, token0.Dec, token1.Dec)
 		}
@@ -584,6 +650,60 @@ func (e *v3Engine) loadPools() error {
 		}
 	}
 	util.Infof("%s loaded pools=%d source=%s", e.logPrefix, added, path)
+	return nil
+}
+
+func (e *v3Engine) attachDescriptor(meta *v3PoolMeta) error {
+	dexName := strings.TrimSpace(meta.Dex)
+	if dexName == "" {
+		dexName = e.exchange
+	}
+	dexName = normalizeDexName(dexName)
+	if dexName == "" {
+		return fmt.Errorf("pool descriptor: dex is empty")
+	}
+	amm := strings.TrimSpace(meta.AMMVersion)
+	if amm == "" {
+		if len(e.cfg.AMMVersions) > 0 {
+			amm = e.cfg.AMMVersions[0]
+		} else {
+			amm = "v3"
+		}
+	}
+	amm = normalizeAMMVersion(amm)
+	if amm == "" {
+		return fmt.Errorf("pool descriptor: amm_version is empty")
+	}
+	network := strings.TrimSpace(meta.Network)
+	if network == "" {
+		network = e.network
+	}
+	network = normalizeNetworkName(network)
+	if network == "" {
+		return fmt.Errorf("pool descriptor: network is empty")
+	}
+	desc := core.PoolDescriptor{
+		Dex:        dexName,
+		AMMVersion: amm,
+		Network:    network,
+		Token0: core.PoolToken{
+			Address: meta.Token0.Address,
+			Symbol:  meta.Token0.Symbol,
+		},
+		Token1: core.PoolToken{
+			Address: meta.Token1.Address,
+			Symbol:  meta.Token1.Symbol,
+		},
+	}
+	if err := desc.Validate(); err != nil {
+		return err
+	}
+	meta.Dex = desc.Dex
+	meta.AMMVersion = desc.AMMVersion
+	meta.Network = desc.Network
+	meta.Descriptor = desc
+	meta.CompositeKey = desc.CompositeKey()
+	util.Debugf("%s descriptor attached pair=%s key=%s", e.logPrefix, meta.PairName, meta.CompositeKey)
 	return nil
 }
 
@@ -846,8 +966,8 @@ func (e *v3Engine) handleSwap(pm *v3PoolMeta, l v3LogItem) {
 			e.logPrefix, pm.PairName, pm.Addr.Hex(), sqrtPriceX96.String(), priceNote, v3Format(price1Per0, 8), v3Format(price0Per1, 8), amount0.String(), amount1.String(), l.BlockNumber, l.TransactionHash, usdLines)
 	}
 
-	e.emitPair(pm.Token0.Symbol, pm.Token1.Symbol, price1Per0)
-	e.emitPair(pm.Token1.Symbol, pm.Token0.Symbol, price0Per1)
+	e.emitPair(pm, pm.Token0.Symbol, pm.Token1.Symbol, price1Per0)
+	e.emitPair(pm, pm.Token1.Symbol, pm.Token0.Symbol, price0Per1)
 	e.updatePricing(pm, price1Per0, price0Per1, amount0, amount1)
 }
 
@@ -885,7 +1005,7 @@ func v3Format(r *big.Rat, prec int) string {
 	return f.Text('f', prec)
 }
 
-func (e *v3Engine) emitPair(base, quote string, value *big.Rat) {
+func (e *v3Engine) emitPair(pm *v3PoolMeta, base, quote string, value *big.Rat) {
 	if value == nil {
 		return
 	}
@@ -894,10 +1014,10 @@ func (e *v3Engine) emitPair(base, quote string, value *big.Rat) {
 	if base == "" || quote == "" {
 		return
 	}
-	e.publish(base+quote, value)
+	e.publish(pm, base+quote, value)
 }
 
-func (e *v3Engine) publish(symbol string, value *big.Rat) {
+func (e *v3Engine) publish(pm *v3PoolMeta, symbol string, value *big.Rat) {
 	if value == nil || e.out == nil {
 		return
 	}
@@ -905,19 +1025,28 @@ func (e *v3Engine) publish(symbol string, value *big.Rat) {
 	if f64 <= 0 || math.IsInf(f64, 0) || math.IsNaN(f64) {
 		return
 	}
+	identity := e.poolIdentity(pm)
 	md := &pb.MarketData{
-		Exchange:  e.exchange,
-		Symbol:    strings.ToUpper(strings.TrimSpace(symbol)),
-		Price:     f64,
-		Timestamp: time.Now().UnixMilli(),
-		Network:   e.network,
-		ChainID:   uint32(e.chainID),
+		Exchange:   e.exchange,
+		Symbol:     strings.ToUpper(strings.TrimSpace(symbol)),
+		Price:      f64,
+		Timestamp:  time.Now().UnixMilli(),
+		Network:    util.NormalizeNetworkName(identity.Network, e.chainID),
+		ChainID:    uint32(e.chainID),
+		Dex:        util.NormalizeMarketDex(identity.Dex, e.exchange),
+		AMMVersion: util.NormalizeMarketAMM(identity.AMMVersion, e.exchange),
 	}
 	count := atomic.AddUint64(&e.messageCount, 1)
 	if count%500 == 0 {
 		util.Infof("%s emitted %d market data messages", e.logPrefix, count)
 	}
-	util.Debugf("%s emit symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", e.logPrefix, md.Symbol, md.Price, md.Exchange, md.Network, e.chainID)
+	if md.Dex == "" {
+		md.Dex = util.NormalizeMarketDex(e.exchange, e.exchange)
+	}
+	if md.AMMVersion == "" {
+		md.AMMVersion = util.DefaultAMMForDex(md.Dex)
+	}
+	util.Debugf("%s emit symbol=%s price=%.8f exchange=%s dex=%s amm=%s network=%s chain_id=%d", e.logPrefix, md.Symbol, md.Price, md.Exchange, md.Dex, md.AMMVersion, md.Network, e.chainID)
 	e.out <- md
 }
 
@@ -991,11 +1120,12 @@ func (e *v3Engine) updatePricing(pm *v3PoolMeta, price1Per0, price0Per1 *big.Rat
 	} else {
 		return
 	}
-	e.emitUSDWithPricer(pricer, info0, now)
-	e.emitUSDWithPricer(pricer, info1, now)
+	identity := e.poolIdentity(pm)
+	e.emitUSDWithPricer(pricer, pm, info0, identity, now)
+	e.emitUSDWithPricer(pricer, pm, info1, identity, now)
 }
 
-func (e *v3Engine) emitUSDWithPricer(pricer pricing.Pricer, info pricing.TokenInfo, ts time.Time) {
+func (e *v3Engine) emitUSDWithPricer(pricer pricing.Pricer, pm *v3PoolMeta, info pricing.TokenInfo, identity util.SymbolIdentity, ts time.Time) {
 	if pricer == nil || e.out == nil {
 		return
 	}
@@ -1012,18 +1142,45 @@ func (e *v3Engine) emitUSDWithPricer(pricer pricing.Pricer, info pricing.TokenIn
 		ts = time.Now()
 	}
 	md := &pb.MarketData{
-		Exchange:  e.exchange,
-		Symbol:    marketSymbol,
-		Price:     res.Price,
-		Timestamp: ts.UnixMilli(),
-		Network:   e.network,
-		ChainID:   uint32(e.chainID),
+		Exchange:   e.exchange,
+		Symbol:     marketSymbol,
+		Price:      res.Price,
+		Timestamp:  ts.UnixMilli(),
+		Network:    util.NormalizeNetworkName(identity.Network, e.chainID),
+		ChainID:    uint32(e.chainID),
+		Dex:        util.NormalizeMarketDex(identity.Dex, e.exchange),
+		AMMVersion: util.NormalizeMarketAMM(identity.AMMVersion, e.exchange),
+	}
+	if md.Dex == "" {
+		md.Dex = util.NormalizeMarketDex(e.exchange, e.exchange)
+	}
+	if md.AMMVersion == "" {
+		md.AMMVersion = util.DefaultAMMForDex(md.Dex)
 	}
 	e.out <- md
-	util.Debugf("%s emit usd symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", e.logPrefix, marketSymbol, res.Price, md.Exchange, md.Network, e.chainID)
+	util.Debugf("%s emit usd symbol=%s price=%.8f exchange=%s dex=%s amm=%s network=%s chain_id=%d", e.logPrefix, marketSymbol, res.Price, md.Exchange, md.Dex, md.AMMVersion, md.Network, e.chainID)
 	if len(res.Route) > 0 && e.logAllEvents {
 		util.Infof("%s usd %s price=%.8f weight=%.4f network=%s chain_id=%d route=%s", e.logPrefix, marketSymbol, res.Price, res.Weight, md.Network, md.ChainID, strings.Join(res.Route, "->"))
 	}
+}
+
+func (e *v3Engine) poolIdentity(pm *v3PoolMeta) util.SymbolIdentity {
+	if pm == nil {
+		return util.ComposeIdentity("", "", e.network, e.chainID, e.exchange)
+	}
+	dex := pm.Descriptor.Dex
+	if dex == "" {
+		dex = pm.Dex
+	}
+	amm := pm.Descriptor.AMMVersion
+	if amm == "" {
+		amm = pm.AMMVersion
+	}
+	network := pm.Descriptor.Network
+	if network == "" {
+		network = pm.Network
+	}
+	return util.ComposeIdentity(dex, amm, network, e.chainID, e.exchange)
 }
 
 func v3RatToFloat(r *big.Rat) (float64, bool) {

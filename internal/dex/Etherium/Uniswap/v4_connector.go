@@ -21,15 +21,16 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gorilla/websocket"
+	core "github.com/yourusername/screner/internal/dex"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
 )
 
 const (
-	poolManagerABIPath  = "ABI/Uniswap/V4/UniswapV4PoolManager.json"
-	defaultPoolsPath    = "ticker_source/base_pools.json"
-	defaultExchangeName = "uniswap_v4"
+	defaultV4PoolManagerABIPath = "ABI/Uniswap/V4/UniswapV4PoolManager.json"
+	defaultPoolsPath            = "ticker_source/base_pools.json"
+	defaultExchangeName         = "uniswap_v4"
 )
 
 var (
@@ -42,31 +43,36 @@ var (
 
 // V4Config описывает параметры продакшн-коннектора Uniswap V4.
 type V4Config struct {
-	Exchange        string
-	Network         string
-	ChainID         uint64
-	NetworkFilters  []string
-	DexFilters      []string
-	AMMVersions     []string
-	WSURL           string
-	HTTPURL         string
-	PoolManager     common.Address
-	PoolsPath       string
-	Pools           []V4PoolConfig
-	SubscribeBatch  int
-	PingInterval    time.Duration
-	MaxMetaWorkers  int
-	SwapOnly        bool
-	LogAllEvents    bool
-	StopOnAckError  bool
-	Once            bool
-	WantedPairs     []string
-	WantedPairsOnly bool
-	Registry        *TokenRegistry
+	Exchange           string
+	Network            string
+	ChainID            uint64
+	NetworkFilters     []string
+	DexFilters         []string
+	AMMVersions        []string
+	IdentityFilters    []string
+	WSURL              string
+	HTTPURL            string
+	PoolManager        common.Address
+	PoolManagerABIPath string
+	PoolsPath          string
+	Pools              []V4PoolConfig
+	SubscribeBatch     int
+	PingInterval       time.Duration
+	MaxMetaWorkers     int
+	SwapOnly           bool
+	LogAllEvents       bool
+	StopOnAckError     bool
+	Once               bool
+	WantedPairs        []string
+	WantedPairsOnly    bool
+	Registry           *TokenRegistry
 }
 
 // V4PoolConfig хранит метаданные пула для статической подписки.
 type V4PoolConfig struct {
+	Dex           string
+	AMMVersion    string
+	Network       string
 	PoolID        common.Hash
 	PoolAddress   common.Address
 	HookAddress   common.Address
@@ -75,6 +81,59 @@ type V4PoolConfig struct {
 	Token1        TokenMeta
 	BaseIsToken0  bool
 	CanonicalPair string
+	Descriptor    core.PoolDescriptor
+	CompositeKey  string
+}
+
+// AttachDescriptor нормализует идентификаторы пула и формирует композитный ключ.
+func (p *V4PoolConfig) AttachDescriptor(defaultDex, defaultNetwork, defaultAMM string) error {
+	dexName := strings.TrimSpace(p.Dex)
+	if dexName == "" {
+		dexName = defaultDex
+	}
+	dexName = normalizeDexName(dexName)
+	if dexName == "" {
+		return fmt.Errorf("pool descriptor: dex is empty")
+	}
+	amm := strings.TrimSpace(p.AMMVersion)
+	if amm == "" {
+		amm = defaultAMM
+	}
+	amm = normalizeAMMVersion(amm)
+	if amm == "" {
+		return fmt.Errorf("pool descriptor: amm_version is empty")
+	}
+	network := strings.TrimSpace(p.Network)
+	if network == "" {
+		network = defaultNetwork
+	}
+	network = normalizeNetworkName(network)
+	if network == "" {
+		return fmt.Errorf("pool descriptor: network is empty")
+	}
+	desc := core.PoolDescriptor{
+		Dex:        dexName,
+		AMMVersion: amm,
+		Network:    network,
+		Token0: core.PoolToken{
+			Address: p.Token0.Address,
+			Symbol:  p.Token0.Symbol,
+		},
+		Token1: core.PoolToken{
+			Address: p.Token1.Address,
+			Symbol:  p.Token1.Symbol,
+		},
+	}
+	if err := desc.Validate(); err != nil {
+		return err
+	}
+	p.Dex = desc.Dex
+	p.AMMVersion = desc.AMMVersion
+	p.Network = desc.Network
+	p.Descriptor = desc
+	p.CompositeKey = desc.CompositeKey()
+	util.Debugf("uniswap_v4: descriptor attached pair=%s key=%s", p.PairName, p.CompositeKey)
+	return nil
 }
 
 // PoolMeta хранит runtime-метаданные пула и последнюю рассчитанную цену.
@@ -85,6 +144,8 @@ type PoolMeta struct {
 	Token1        TokenMeta
 	BaseIsToken0  bool
 	CanonicalPair string
+	Descriptor    core.PoolDescriptor
+	CompositeKey  string
 	LastPrice     *big.Rat
 	LastTick      int
 	LastLiquidity *big.Int
@@ -251,6 +312,18 @@ func (c *V4Connector) makeTokenInfo(meta TokenMeta) pricing.TokenInfo {
 	return info
 }
 
+func (c *V4Connector) allowIdentity(dex, amm, network string) bool {
+	if len(c.identities) == 0 {
+		return true
+	}
+	key := strings.ToLower(identityKey(dex, amm, network))
+	if key == "" {
+		return false
+	}
+	_, ok := c.identities[key]
+	return ok
+}
+
 // V4Connector отвечает за подписку, парсинг и публикацию котировок V4.
 type V4Connector struct {
 	cfg    V4Config
@@ -259,6 +332,7 @@ type V4Connector struct {
 	poolsMu    sync.RWMutex
 	pools      map[common.Hash]*v4PoolState
 	registered sync.Map
+	identities map[string]struct{}
 
 	abiOnce    sync.Once
 	abiErr     error
@@ -304,6 +378,10 @@ func NewV4Connector(cfg V4Config, pricer pricing.Pricer) (*V4Connector, error) {
 	if cfg.Exchange == "" {
 		cfg.Exchange = defaultExchangeName
 	}
+	cfg.PoolManagerABIPath = strings.TrimSpace(cfg.PoolManagerABIPath)
+	if cfg.PoolManagerABIPath == "" {
+		cfg.PoolManagerABIPath = defaultV4PoolManagerABIPath
+	}
 	if cfg.SubscribeBatch <= 0 {
 		cfg.SubscribeBatch = 150
 	}
@@ -321,11 +399,20 @@ func NewV4Connector(cfg V4Config, pricer pricing.Pricer) (*V4Connector, error) {
 	}
 
 	util.Infof("uniswap_v4: init exchange=%s network=%s chain_id=%d pools_inline=%d wanted_only=%v swap_only=%v", cfg.Exchange, cfg.Network, cfg.ChainID, len(cfg.Pools), cfg.WantedPairsOnly, cfg.SwapOnly)
+	identitySet := make(map[string]struct{}, len(cfg.IdentityFilters))
+	for _, key := range cfg.IdentityFilters {
+		norm := strings.ToLower(strings.TrimSpace(key))
+		if norm == "" {
+			continue
+		}
+		identitySet[norm] = struct{}{}
+	}
 
 	return &V4Connector{
-		cfg:    cfg,
-		pricer: pricer,
-		pools:  make(map[common.Hash]*v4PoolState),
+		cfg:        cfg,
+		pricer:     pricer,
+		pools:      make(map[common.Hash]*v4PoolState),
+		identities: identitySet,
 	}, nil
 }
 
@@ -352,7 +439,7 @@ func (c *V4Connector) tokenSymbol(meta TokenMeta) string {
 	return ""
 }
 
-func (c *V4Connector) emitSpot(out chan<- *pb.MarketData, base TokenMeta, quote TokenMeta, price float64, ts time.Time) {
+func (c *V4Connector) emitSpot(out chan<- *pb.MarketData, identity util.SymbolIdentity, base TokenMeta, quote TokenMeta, price float64, ts time.Time) {
 	if out == nil {
 		return
 	}
@@ -372,13 +459,24 @@ func (c *V4Connector) emitSpot(out chan<- *pb.MarketData, base TokenMeta, quote 
 	if ts.IsZero() {
 		ts = time.Now()
 	}
+	dex := util.NormalizeMarketDex(identity.Dex, c.exchangeName())
+	amm := util.NormalizeMarketAMM(identity.AMMVersion, dex)
+	network := util.NormalizeNetworkName(identity.Network, c.cfg.ChainID)
 	md := &pb.MarketData{
-		Exchange:  c.exchangeName(),
-		Symbol:    symbol,
-		Price:     price,
-		Timestamp: ts.UnixMilli(),
-		Network:   c.networkName(),
-		ChainID:   uint32(c.cfg.ChainID),
+		Exchange:   c.exchangeName(),
+		Symbol:     symbol,
+		Price:      price,
+		Timestamp:  ts.UnixMilli(),
+		Network:    network,
+		ChainID:    uint32(c.cfg.ChainID),
+		Dex:        dex,
+		AMMVersion: amm,
+	}
+	if md.Dex == "" {
+		md.Dex = util.NormalizeMarketDex(c.exchangeName(), c.exchangeName())
+	}
+	if md.AMMVersion == "" {
+		md.AMMVersion = util.DefaultAMMForDex(md.Dex)
 	}
 	out <- md
 	if c.cfg.LogAllEvents {
@@ -388,13 +486,17 @@ func (c *V4Connector) emitSpot(out chan<- *pb.MarketData, base TokenMeta, quote 
 		}
 		util.Infof("uniswap_v4: spot %s price=%.10f exchange=%s network=%s chain_id=%d", symbol, price, md.Exchange, md.Network, c.cfg.ChainID)
 	}
-	util.Debugf("uniswap_v4: emit symbol=%s price=%.10f exchange=%s network=%s chain_id=%d", symbol, price, md.Exchange, md.Network, c.cfg.ChainID)
+	util.Debugf("uniswap_v4: emit symbol=%s price=%.10f exchange=%s dex=%s amm=%s network=%s chain_id=%d", symbol, price, md.Exchange, md.Dex, md.AMMVersion, md.Network, c.cfg.ChainID)
 }
 
 func (c *V4Connector) ensureABI() error {
 	c.abiOnce.Do(func() {
-		util.Infof("uniswap_v4: loading pool manager ABI from %s", poolManagerABIPath)
-		data, err := os.ReadFile(poolManagerABIPath)
+		path := strings.TrimSpace(c.cfg.PoolManagerABIPath)
+		if path == "" {
+			path = defaultV4PoolManagerABIPath
+		}
+		util.Infof("uniswap_v4: loading pool manager ABI from %s", path)
+		data, err := os.ReadFile(path)
 		if err != nil {
 			c.abiErr = fmt.Errorf("uniswap_v4: read ABI: %w", err)
 			return
@@ -410,7 +512,7 @@ func (c *V4Connector) ensureABI() error {
 			events[evt.ID] = evt
 		}
 		c.eventBySig = events
-		util.Infof("uniswap_v4: ABI loaded events=%d", len(events))
+		util.Infof("uniswap_v4: ABI loaded path=%s events=%d", path, len(events))
 	})
 	return c.abiErr
 }
@@ -600,6 +702,25 @@ func (c *V4Connector) normalizeInlinePool(pool V4PoolConfig, wanted map[string]s
 	if normalized.CanonicalPair == "" {
 		normalized.CanonicalPair = canonicalPair(normalized)
 	}
+	if err := normalized.AttachDescriptor(c.exchangeName(), c.networkName(), "v4"); err != nil {
+		return nil, fmt.Errorf("descriptor: %w", err)
+	}
+	if len(c.cfg.AMMVersions) > 0 && !matchesAnyAMMVersion(normalized.AMMVersion, c.cfg.AMMVersions) {
+		util.Debugf("uniswap_v4: skip inline pool pair=%s reason=amm filtered amm=%s filters=%v", normalized.PairName, normalized.AMMVersion, c.cfg.AMMVersions)
+		return nil, nil
+	}
+	if len(c.cfg.DexFilters) > 0 && !dexMatchesAny(normalized.Dex, c.cfg.DexFilters) {
+		util.Debugf("uniswap_v4: skip inline pool pair=%s reason=dex filtered dex=%s filters=%v", normalized.PairName, normalized.Dex, c.cfg.DexFilters)
+		return nil, nil
+	}
+	if len(c.cfg.NetworkFilters) > 0 && !networkMatchesAny(normalized.Network, c.cfg.NetworkFilters) {
+		util.Debugf("uniswap_v4: skip inline pool pair=%s reason=network filtered network=%s filters=%v", normalized.PairName, normalized.Network, c.cfg.NetworkFilters)
+		return nil, nil
+	}
+	if !c.allowIdentity(normalized.Dex, normalized.AMMVersion, normalized.Network) {
+		util.Debugf("uniswap_v4: skip inline pool pair=%s identity=%s|%s|%s", normalized.PairName, normalized.Dex, normalized.AMMVersion, normalized.Network)
+		return nil, nil
+	}
 	return &normalized, nil
 }
 
@@ -627,11 +748,22 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 		}
 	}
 	ammFilters := c.cfg.AMMVersions
+	dexFilters := c.cfg.DexFilters
 	skippedNetwork := 0
 	skippedAMM := 0
+	skippedDex := 0
 	for _, entry := range payload.Entries {
 		if err := ctxErr(ctx); err != nil {
 			return nil, err
+		}
+		dexName := strings.TrimSpace(entry.Dex)
+		if dexName == "" && len(dexFilters) == 1 {
+			dexName = dexFilters[0]
+		}
+		if len(dexFilters) > 0 && !dexMatchesAny(dexName, dexFilters) {
+			skippedDex++
+			util.Debugf("uniswap_v4: skip pool pair=%s reason=dex filtered dex=%s filters=%v", normalizePairName(entry.PairName, entry.Token0.Symbol, entry.Token1.Symbol), dexName, dexFilters)
+			continue
 		}
 		if len(ammFilters) > 0 && !matchesAnyAMMVersion(entry.AMMVersion, ammFilters) {
 			skippedAMM++
@@ -646,7 +778,11 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 				continue
 			}
 		}
-		pool, err := c.poolFromGecko(entry)
+		entryCopy := entry
+		if dexName != "" {
+			entryCopy.Dex = dexName
+		}
+		pool, err := c.poolFromGecko(entryCopy)
 		if err != nil {
 			if errors.Is(err, errStablePool) {
 				util.Infof("uniswap_v4: skip stable pool pair=%s pool_id=%s token0=%s token1=%s", normalizePairName(entry.PairName, entry.Token0.Symbol, entry.Token1.Symbol), safePoolIDHex(entry), strings.ToUpper(strings.TrimSpace(entry.Token0.Symbol)), strings.ToUpper(strings.TrimSpace(entry.Token1.Symbol)))
@@ -658,7 +794,7 @@ func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted
 		result = append(result, pool)
 	}
 
-	util.Infof("uniswap_v4: pools loaded=%d skipped_network=%d skipped_amm=%d filters_network=%v filters_amm=%v", len(result), skippedNetwork, skippedAMM, networkFilters, ammFilters)
+	util.Infof("uniswap_v4: pools loaded=%d skipped_dex=%d skipped_network=%d skipped_amm=%d filters_dex=%v filters_network=%v filters_amm=%v", len(result), skippedDex, skippedNetwork, skippedAMM, dexFilters, networkFilters, ammFilters)
 	return result, nil
 }
 
@@ -686,6 +822,9 @@ func (c *V4Connector) poolFromGecko(entry GeckoEntry) (V4PoolConfig, error) {
 	}
 
 	pool := V4PoolConfig{
+		Dex:           entry.Dex,
+		AMMVersion:    entry.AMMVersion,
+		Network:       entry.Network,
 		PoolID:        pid,
 		PoolAddress:   parseOptionalAddress(entry.PoolAddr),
 		HookAddress:   parseOptionalAddress(entry.PoolKey.Hooks),
@@ -694,6 +833,12 @@ func (c *V4Connector) poolFromGecko(entry GeckoEntry) (V4PoolConfig, error) {
 		Token1:        token1,
 		BaseIsToken0:  baseIsToken0,
 		CanonicalPair: canonicalPair(V4PoolConfig{Token0: token0, Token1: token1, BaseIsToken0: baseIsToken0}),
+	}
+	if err := pool.AttachDescriptor(c.exchangeName(), c.networkName(), "v4"); err != nil {
+		return V4PoolConfig{}, fmt.Errorf("descriptor: %w", err)
+	}
+	if !c.allowIdentity(pool.Dex, pool.AMMVersion, pool.Network) {
+		return V4PoolConfig{}, fmt.Errorf("identity not allowed for dex=%s amm=%s network=%s", pool.Dex, pool.AMMVersion, pool.Network)
 	}
 	return pool, nil
 }
@@ -1464,6 +1609,7 @@ func (c *V4Connector) updatePricing(meta V4PoolConfig, price1Float float64, pric
 	}
 	info0 := c.makeTokenInfo(meta.Token0)
 	info1 := c.makeTokenInfo(meta.Token1)
+	identity := c.poolIdentityFromConfig(meta)
 	updated := false
 	if price1Valid && price1Float > 0 {
 		c.pricer.UpdatePair(info0, info1, price1Float, weight, ts)
@@ -1478,13 +1624,13 @@ func (c *V4Connector) updatePricing(meta V4PoolConfig, price1Float float64, pric
 	}
 	total := atomic.AddUint64(&c.successUpdates, 1)
 	if price1Valid && price1Float > 0 {
-		c.emitSpot(out, meta.Token0, meta.Token1, price1Float, ts)
+		c.emitSpot(out, identity, meta.Token0, meta.Token1, price1Float, ts)
 	}
 	if price0Valid && price0Float > 0 {
-		c.emitSpot(out, meta.Token1, meta.Token0, price0Float, ts)
+		c.emitSpot(out, identity, meta.Token1, meta.Token0, price0Float, ts)
 	}
-	c.emitUSD(out, info0, ts)
-	c.emitUSD(out, info1, ts)
+	c.emitUSD(out, info0, identity, ts)
+	c.emitUSD(out, info1, identity, ts)
 	if total <= 10 || total%200 == 0 {
 		convErr := atomic.LoadUint64(&c.conversionErrors)
 		unknown := atomic.LoadUint64(&c.unknownPoolEvents)
@@ -1497,7 +1643,7 @@ func (c *V4Connector) updatePricing(meta V4PoolConfig, price1Float float64, pric
 	}
 }
 
-func (c *V4Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo, ts time.Time) {
+func (c *V4Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo, identity util.SymbolIdentity, ts time.Time) {
 	if c.pricer == nil || out == nil {
 		return
 	}
@@ -1518,13 +1664,24 @@ func (c *V4Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo,
 	if ts.IsZero() {
 		ts = time.Now()
 	}
+	dex := util.NormalizeMarketDex(identity.Dex, exchange)
+	amm := util.NormalizeMarketAMM(identity.AMMVersion, dex)
+	network := util.NormalizeNetworkName(identity.Network, c.cfg.ChainID)
 	md := &pb.MarketData{
-		Exchange:  exchange,
-		Symbol:    marketSymbol,
-		Price:     res.Price,
-		Timestamp: ts.UnixMilli(),
-		Network:   c.networkName(),
-		ChainID:   uint32(c.cfg.ChainID),
+		Exchange:   exchange,
+		Symbol:     marketSymbol,
+		Price:      res.Price,
+		Timestamp:  ts.UnixMilli(),
+		Network:    network,
+		ChainID:    uint32(c.cfg.ChainID),
+		Dex:        dex,
+		AMMVersion: amm,
+	}
+	if md.Dex == "" {
+		md.Dex = util.NormalizeMarketDex(exchange, exchange)
+	}
+	if md.AMMVersion == "" {
+		md.AMMVersion = util.DefaultAMMForDex(md.Dex)
 	}
 	out <- md
 	if c.cfg.LogAllEvents {
@@ -1538,7 +1695,32 @@ func (c *V4Connector) emitUSD(out chan<- *pb.MarketData, info pricing.TokenInfo,
 		}
 		util.Infof("uniswap_v4: usd %s price=%.8f weight=%.6f route=%s network=%s chain_id=%d", marketSymbol, res.Price, res.Weight, route, md.Network, c.cfg.ChainID)
 	}
-	util.Debugf("uniswap_v4: emit usd symbol=%s price=%.8f exchange=%s network=%s chain_id=%d", marketSymbol, res.Price, md.Exchange, md.Network, c.cfg.ChainID)
+	util.Debugf("uniswap_v4: emit usd symbol=%s price=%.8f exchange=%s dex=%s amm=%s network=%s chain_id=%d", marketSymbol, res.Price, md.Exchange, md.Dex, md.AMMVersion, md.Network, c.cfg.ChainID)
+}
+
+func (c *V4Connector) poolIdentityFromConfig(meta V4PoolConfig) util.SymbolIdentity {
+	dex := meta.Descriptor.Dex
+	if dex == "" {
+		dex = meta.Dex
+	}
+	if dex == "" {
+		dex = c.cfg.Exchange
+	}
+	amm := meta.Descriptor.AMMVersion
+	if amm == "" {
+		amm = meta.AMMVersion
+	}
+	if amm == "" && len(c.cfg.AMMVersions) > 0 {
+		amm = c.cfg.AMMVersions[0]
+	}
+	network := meta.Descriptor.Network
+	if network == "" {
+		network = meta.Network
+	}
+	if network == "" {
+		network = c.cfg.Network
+	}
+	return util.ComposeIdentity(dex, amm, network, c.cfg.ChainID, c.exchangeName())
 }
 func parseAck(raw []byte) (*SubAck, bool) {
 	var ack SubAck

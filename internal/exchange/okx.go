@@ -115,11 +115,17 @@ func (c *OkxClient) ReadLoop(exchangeName string) {
 			util.Errorf("OKX parse last error: %v", err)
 			continue
 		}
+		dexAlias := util.NormalizeMarketDex(exchangeName, exchangeName)
+		amm := util.DefaultAMMForDex(dexAlias)
+		network := util.NormalizeNetworkName("", 0)
 		md := &protobuf.MarketData{
-			Exchange:  strings.ToLower(exchangeName),
-			Symbol:    d.InstId,
-			Price:     price,
-			Timestamp: time.Now().Unix(),
+			Exchange:   strings.ToLower(exchangeName),
+			Symbol:     d.InstId,
+			Price:      price,
+			Timestamp:  time.Now().Unix(),
+			Network:    network,
+			Dex:        dexAlias,
+			AMMVersion: amm,
 		}
 		select {
 		case c.out <- md:
