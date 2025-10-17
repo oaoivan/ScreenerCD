@@ -1,7 +1,6 @@
 package uniswap
 
 import (
-	"bytes"
 	"context"
 	"encoding/hex"
 	"encoding/json"
@@ -9,8 +8,6 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -19,6 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/dex/pricing"
+	basepools "github.com/yourusername/screner/internal/pools/base"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
 )
@@ -51,12 +49,30 @@ func FinalizePool(p *PoolConfig) {
 	p.HasWETH = p.Token0.IsWETH || p.Token1.IsWETH
 	switch {
 	case p.Token0.IsStable:
-		p.StableSymbol = p.Token0.Symbol
+		p.StableSymbol = symbolKey(p.Token0.Symbol)
 	case p.Token1.IsStable:
-		p.StableSymbol = p.Token1.Symbol
+		p.StableSymbol = symbolKey(p.Token1.Symbol)
 	default:
 		p.StableSymbol = ""
 	}
+	baseSymbol := symbolKey(p.Token0.Symbol)
+	quoteSymbol := symbolKey(p.Token1.Symbol)
+	if !p.BaseIsToken0 {
+		baseSymbol, quoteSymbol = quoteSymbol, baseSymbol
+	}
+	if baseSymbol == "" {
+		baseSymbol = p.Token0.Symbol
+		if !p.BaseIsToken0 {
+			baseSymbol = p.Token1.Symbol
+		}
+	}
+	if quoteSymbol == "" {
+		quoteSymbol = p.Token1.Symbol
+		if !p.BaseIsToken0 {
+			quoteSymbol = p.Token0.Symbol
+		}
+	}
+	p.CanonicalPair = strings.ToUpper(baseSymbol + quoteSymbol)
 	if p.CanonicalPair == "" {
 		p.CanonicalPair = NormalizePair(*p)
 	}
@@ -860,195 +876,133 @@ func nextBackoff(cur, max time.Duration) time.Duration {
 
 // --- Вспомогательные структуры и загрузчик пулов ---
 
-type geckoPoolFile struct {
-	Entries []geckoPool `json:"entries"`
-}
+// LoadPoolsFromBase загружает пулы из base_pools.json и возвращает конфигурации V2.
 
-type geckoPool struct {
-	Dex         string     `json:"dex"`
-	Network     string     `json:"network"`
-	PairName    string     `json:"pair_name"`
-	PoolID      string     `json:"pool_id"`
-	PoolAddress string     `json:"pool_address"`
-	Token0      geckoToken `json:"token0"`
-	Token1      geckoToken `json:"token1"`
-}
-
-type geckoToken struct {
-	Address  string      `json:"address"`
-	Symbol   string      `json:"symbol"`
-	Decimals intOrString `json:"decimals"`
-}
-
-var (
-	hardWethStable = []struct {
-		Addr   string
-		Stable string
-	}{
-		{Addr: "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", Stable: "USDC"},
-		{Addr: "0x0d4a11d5EEaaC28EC3F61d100daf4d40471f1852", Stable: "USDT"},
-		{Addr: "0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11", Stable: "DAI"},
+func LoadPoolsFromBase(path string, dexName string, network string) ([]PoolConfig, error) {
+	filter := basepools.Filter{}
+	if trimmed := strings.TrimSpace(dexName); trimmed != "" {
+		filter.Dexes = []string{trimmed}
 	}
-)
-
-// LoadPoolsFromGecko парсит geckoterminal JSON и возвращает набор пулов Uniswap V2 с дефолтным реестром токенов.
-func LoadPoolsFromGecko(path string) ([]PoolConfig, error) {
-	return LoadPoolsFromGeckoWithRegistry(path, nil)
+	if trimmed := strings.TrimSpace(network); trimmed != "" {
+		filter.Networks = []string{trimmed}
+	}
+	return LoadPoolsFromBaseWithRegistry(path, nil, filter)
 }
 
-// LoadPoolsFromGeckoWithRegistry аналогичен LoadPoolsFromGecko, но позволяет передать внешний реестр токенов.
-func LoadPoolsFromGeckoWithRegistry(path string, registry *TokenRegistry) ([]PoolConfig, error) {
+// LoadPoolsFromBaseWithRegistry аналогичен LoadPoolsFromBase, но позволяет передать внешний реестр токенов.
+func LoadPoolsFromBaseWithRegistry(path string, registry *TokenRegistry, filter basepools.Filter) ([]PoolConfig, error) {
+	entries, err := basepools.LoadBasePools(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(filter.Dexes) == 0 {
+		filter.Dexes = []string{"uniswap"}
+	}
+	for i := range filter.Dexes {
+		filter.Dexes[i] = basepools.NormalizeDex(filter.Dexes[i])
+	}
+	if len(filter.Versions) == 0 {
+		filter.Versions = []basepools.Version{basepools.VersionV2}
+	}
+	if len(filter.Networks) > 0 {
+		trimmedNetworks := make([]string, 0, len(filter.Networks))
+		for _, net := range filter.Networks {
+			if n := strings.TrimSpace(net); n != "" {
+				trimmedNetworks = append(trimmedNetworks, n)
+			}
+		}
+		filter.Networks = trimmedNetworks
+	}
+	filtered := basepools.FilterEntries(entries, filter)
+	if len(filtered) == 0 {
+		return nil, fmt.Errorf("uniswap_v2: no pools found in %s", path)
+	}
+
 	if registry == nil {
 		registry = NewTokenRegistry(nil, "")
 	}
 
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	var file geckoPoolFile
-	if err := json.Unmarshal(data, &file); err != nil {
-		return nil, err
-	}
+	result := make([]PoolConfig, 0, len(filtered))
+	seen := make(map[common.Address]struct{}, len(filtered))
 
-	result := make([]PoolConfig, 0, len(file.Entries))
-	seen := make(map[common.Address]bool)
-	for _, entry := range file.Entries {
-		if !strings.EqualFold(entry.Dex, "uniswap_v2") {
+	for _, entry := range filtered {
+		addressHex := strings.TrimSpace(entry.PoolAddress)
+		if addressHex == "" {
+			addressHex = strings.TrimSpace(entry.PoolID)
+		}
+		poolAddress, err := parseRequiredAddress(addressHex)
+		if err != nil {
+			util.Debugf("uniswap_v2: skip pool symbol=%s err=%v", entry.Symbol, err)
 			continue
 		}
-		if !strings.Contains(strings.ToLower(entry.Network), "eth") {
+		if _, ok := seen[poolAddress]; ok {
 			continue
 		}
-		addrHex := entry.PoolID
-		if addrHex == "" {
-			addrHex = entry.PoolAddress
-		}
-		if !common.IsHexAddress(addrHex) {
-			continue
-		}
-		addr := common.HexToAddress(addrHex)
-		if seen[addr] {
-			continue
-		}
+		seen[poolAddress] = struct{}{}
 
-		t0 := normalizeToken(entry.Token0, registry)
-		t1 := normalizeToken(entry.Token1, registry)
-
-		stable0 := t0.IsStable
-		stable1 := t1.IsStable
-		weth0 := t0.IsWETH
-		weth1 := t1.IsWETH
-
-		if stable0 && stable1 {
-			continue
-		}
-		if !stable0 && !stable1 && !weth0 && !weth1 {
-			continue
-		}
-
-		baseIsToken0 := true
-		switch {
-		case (weth0 || weth1) && (stable0 || stable1):
-			if weth0 && stable1 {
-				baseIsToken0 = true
-			} else if stable0 && weth1 {
-				baseIsToken0 = false
-			} else if weth0 {
-				baseIsToken0 = true
-			} else {
-				baseIsToken0 = false
-			}
-		case stable0 || stable1:
-			baseIsToken0 = !stable0
-		case weth0 || weth1:
-			baseIsToken0 = !weth0
-		default:
-			baseIsToken0 = true
-		}
+		token0 := resolveBaseToken(entry.Token0, registry)
+		token1 := resolveBaseToken(entry.Token1, registry)
 
 		pool := PoolConfig{
-			Address:      addr,
-			PairName:     entry.PairName,
-			Token0:       t0,
-			Token1:       t1,
-			BaseIsToken0: baseIsToken0,
+			Address:      poolAddress,
+			PairName:     normalizePair(entry.PairName, token0.Symbol, token1.Symbol),
+			Token0:       token0,
+			Token1:       token1,
+			BaseIsToken0: determineBase(entry, token0, token1),
 		}
 		FinalizePool(&pool)
 		result = append(result, pool)
-		seen[addr] = true
 	}
 
-	added := 0
-	wethMeta, hasWETH := registry.WETHMeta()
-	for _, hw := range hardWethStable {
-		addr := common.HexToAddress(hw.Addr)
-		if seen[addr] {
-			continue
-		}
-		stableMeta, ok := registry.StableBySymbol(hw.Stable)
-		if !ok {
-			util.Debugf("uniswap_v2: skip hard pool %s missing stable %s", addr.Hex(), hw.Stable)
-			continue
-		}
-		if !hasWETH || (wethMeta.Address == common.Address{}) {
-			util.Debugf("uniswap_v2: skip hard pool %s missing WETH meta", addr.Hex())
-			continue
-		}
-		// Make copies to avoid sharing underlying struct references.
-		stableCopy := stableMeta
-		stableCopy.IsStable = true
-		if stableCopy.Decimals == 0 {
-			stableCopy.Decimals = 18
-		}
-		wethCopy := wethMeta
-		if wethCopy.Decimals == 0 {
-			wethCopy.Decimals = 18
-		}
-		wethCopy.IsWETH = true
-
-		var pool PoolConfig
-		switch strings.ToUpper(hw.Stable) {
-		case "USDC":
-			pool = PoolConfig{
-				Address:      addr,
-				PairName:     "USDC / WETH (hard)",
-				Token0:       stableCopy,
-				Token1:       wethCopy,
-				BaseIsToken0: false,
-			}
-		case "USDT":
-			pool = PoolConfig{
-				Address:      addr,
-				PairName:     "WETH / USDT (hard)",
-				Token0:       wethCopy,
-				Token1:       stableCopy,
-				BaseIsToken0: true,
-			}
-		case "DAI":
-			pool = PoolConfig{
-				Address:      addr,
-				PairName:     "DAI / WETH (hard)",
-				Token0:       stableCopy,
-				Token1:       wethCopy,
-				BaseIsToken0: false,
-			}
-		default:
-			continue
-		}
-		FinalizePool(&pool)
-		result = append(result, pool)
-		seen[addr] = true
-		added++
+	if len(result) == 0 {
+		return nil, fmt.Errorf("uniswap_v2: no pools passed validation from %s", path)
 	}
-	if added > 0 {
-		util.Infof("uniswap_v2: added %d hard reference pools", added)
-	}
-
 	return result, nil
 }
 
-// AdjustPoolsOrdering проверяет фактический порядок token0/token1 через RPC и при необходимости переставляет метаданные.
+func resolveBaseToken(token basepools.Token, registry *TokenRegistry) TokenMeta {
+	addr := common.HexToAddress(strings.TrimSpace(token.Address))
+	meta := registry.Resolve(addr, token.Symbol, token.Decimals)
+	if meta.Address == (common.Address{}) {
+		meta.Address = addr
+	}
+	if meta.Symbol == "" {
+		meta.Symbol = symbolKey(token.Symbol)
+	}
+	if meta.Decimals == 0 {
+		meta.Decimals = clampDecimals(token.Decimals)
+		if meta.Decimals == 0 {
+			meta.Decimals = 18
+		}
+	}
+	return meta
+}
+
+func determineBase(entry basepools.Entry, token0, token1 TokenMeta) bool {
+	baseHex := strings.ToLower(strings.TrimSpace(entry.BaseToken))
+	quoteHex := strings.ToLower(strings.TrimSpace(entry.QuoteToken))
+	token0Hex := strings.ToLower(token0.Address.Hex())
+	token1Hex := strings.ToLower(token1.Address.Hex())
+
+	switch {
+	case baseHex != "" && baseHex == token0Hex:
+		return true
+	case baseHex != "" && baseHex == token1Hex:
+		return false
+	case quoteHex != "" && quoteHex == token0Hex:
+		return false
+	case quoteHex != "" && quoteHex == token1Hex:
+		return true
+	case token0.IsStable && !token1.IsStable:
+		return false
+	case token1.IsStable && !token0.IsStable:
+		return true
+	default:
+		return true
+	}
+}
+
 func AdjustPoolsOrdering(ctx context.Context, httpURL string, pools []PoolConfig) ([]PoolConfig, error) {
 	trimmed := strings.TrimSpace(httpURL)
 	if trimmed == "" {
@@ -1182,22 +1136,6 @@ func fetchTokenDecimals(ctx context.Context, client *rpc.Client, addr common.Add
 	return dec, nil
 }
 
-func normalizeToken(token geckoToken, registry *TokenRegistry) TokenMeta {
-	addrTrim := strings.TrimSpace(token.Address)
-	addr := common.HexToAddress(addrTrim)
-	meta := registry.Resolve(addr, token.Symbol, int(token.Decimals))
-	if meta.Address == (common.Address{}) {
-		meta.Address = addr
-	}
-	if meta.Symbol == "" {
-		meta.Symbol = strings.ToUpper(shortAddress(addr.Hex()))
-	}
-	if meta.Decimals == 0 {
-		meta.Decimals = 18
-	}
-	return meta
-}
-
 func shortAddress(addr string) string {
 	addr = strings.TrimPrefix(addr, "0x")
 	if len(addr) <= 6 {
@@ -1206,36 +1144,25 @@ func shortAddress(addr string) string {
 	return strings.ToUpper(addr[:3] + addr[len(addr)-3:])
 }
 
-// intOrString поддерживает декод чисел GeckoTerminal
-type intOrString int
+func parseRequiredAddress(raw string) (common.Address, error) {
+	addr := strings.TrimSpace(raw)
+	if addr == "" {
+		return common.Address{}, fmt.Errorf("empty address")
+	}
+	lower := strings.ToLower(addr)
+	if strings.HasPrefix(lower, "0x") && len(addr) == 66 {
+		addr = "0x" + addr[len(addr)-40:]
+	}
+	if !common.IsHexAddress(addr) {
+		return common.Address{}, fmt.Errorf("invalid address %s", raw)
+	}
+	return common.HexToAddress(addr), nil
+}
 
-func (v *intOrString) UnmarshalJSON(b []byte) error {
-	bb := bytes.TrimSpace(b)
-	if len(bb) == 0 {
-		*v = 0
-		return nil
+func normalizePair(current, symbol0, symbol1 string) string {
+	name := strings.TrimSpace(current)
+	if name == "" {
+		name = fmt.Sprintf("%s/%s", strings.ToUpper(symbol0), strings.ToUpper(symbol1))
 	}
-	if bb[0] == '"' {
-		var s string
-		if err := json.Unmarshal(bb, &s); err != nil {
-			return err
-		}
-		s = strings.TrimSpace(s)
-		if s == "" {
-			*v = 0
-			return nil
-		}
-		n, err := strconv.Atoi(s)
-		if err != nil {
-			return err
-		}
-		*v = intOrString(n)
-		return nil
-	}
-	var n int
-	if err := json.Unmarshal(bb, &n); err != nil {
-		return err
-	}
-	*v = intOrString(n)
-	return nil
+	return strings.ToUpper(name)
 }

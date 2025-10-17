@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 // Быстрый прототип подписки на Uniswap V2 пулы через Alchemy WS.
@@ -350,12 +352,12 @@ func v2NextBackoff(cur, max time.Duration) time.Duration {
 
 // --- Загрузка пулов ---
 func v2LoadPools() error {
-	path := os.Getenv("GECKO_POOLS_JSON")
+	path := os.Getenv("BASE_POOLS_JSON")
 	if path == "" {
 		path = v2GeckoDefaultPath
 	}
 	if path == "" {
-		return fmt.Errorf("pools json path not provided (set GECKO_POOLS_JSON)")
+		return fmt.Errorf("pools json path not provided (set BASE_POOLS_JSON)")
 	}
 	b, err := os.ReadFile(path)
 	if err != nil {

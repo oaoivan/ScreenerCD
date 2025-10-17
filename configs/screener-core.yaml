@@ -5,8 +5,8 @@ api_key: ""
 secret: ""
 
 shared_pools:
-  file: "ticker_source/geckoterminal_pools.json"
-  env: "GECKO_POOLS_JSON"
+  file: "ticker_source/base_pools.json"
+  env: "BASE_POOLS_JSON"
 
 assets_registry:
   file: "configs/assets/tokens.yaml"
@@ -67,10 +67,11 @@ dex_configs:
     log_all_events: false
     stop_on_ack_error: false
     pools_source:
-      file: "ticker_source/geckoterminal_pools.json"
-      env: "GECKO_POOLS_JSON"
-      gecko_dex: "uniswap_v3"
-      gecko_network: "ethereum"
+      file: "ticker_source/base_pools.json"
+      env: "BASE_POOLS_JSON"
+      dex_filter: "uniswap_v3"
+      network_filter: "ethereum"
+      amm_version: "v3"
 
   - name: "uniswap_v4"
     network: "ethereum"
@@ -84,10 +85,11 @@ dex_configs:
     log_all_events: true                                          # включает детальный лог raw-фреймов
     stop_on_ack_error: true                                       # аварийно останавливаемся, если ack вернул ошибку
     pools_source:
-      file: "ticker_source/geckoterminal_pools.json"             # общий список пулов, фильтруемый по dex/network
-      env: "GECKO_POOLS_JSON"
-      gecko_dex: "uniswap_v4"
-      gecko_network: "ethereum"
+      file: "ticker_source/base_pools.json"             # общий список пулов, фильтруемый по dex/network
+      env: "BASE_POOLS_JSON"
+      dex_filter: "uniswap_v4"
+      network_filter: "ethereum"
+      amm_version: "v4"
     wanted_pairs_only: false                                      # подписываемся на все доступные пулы из источника
 
 # Performance tuning
@@ -101,7 +103,7 @@ metrics_period_sec: 5             # период агрегированных л
 # Reference pools for deriving base-asset USD prices
 reference_pools:
   - chain: "ethereum"
-    dex: "uniswap_v3"
+    dex: "uniswap"
     base_token:
       symbol: "WETH"
       address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
@@ -112,7 +114,7 @@ reference_pools:
     fee_tier: 500
 
   - chain: "bsc"
-    dex: "pancakeswap_v2"
+    dex: "pancakeswap"
     base_token:
       symbol: "WBNB"
       address: "0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"

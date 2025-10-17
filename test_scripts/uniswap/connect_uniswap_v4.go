@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -21,7 +23,7 @@ import (
 )
 
 // Скрипт: подписка на Uniswap V4 PoolManager (Ethereum) и вычисление цены для пулов UNI/USDC и LINK/USDC.
-// Требуется: ALCHEMY_API_KEY или ALCHEMY_WS_URL, POOLMANAGER_V4 (адрес), путь к JSON с пулами (GECKO_POOLS_JSON).
+// Требуется: ALCHEMY_API_KEY или ALCHEMY_WS_URL, POOLMANAGER_V4 (адрес), путь к JSON с пулами (BASE_POOLS_JSON).
 // Прерывание: Ctrl+C или таймаут 10 минут.
 
 const (
@@ -212,7 +214,7 @@ func loadABI() error {
 }
 
 func loadPools() error {
-	path := os.Getenv("GECKO_POOLS_JSON")
+	path := os.Getenv("BASE_POOLS_JSON")
 	if path == "" {
 		path = "ticker_source/geckoterminal_pools.json"
 	}

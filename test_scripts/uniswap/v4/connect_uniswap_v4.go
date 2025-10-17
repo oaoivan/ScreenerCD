@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 // Отдельный бинарь для V4, избегаем конфликтов имён с V3 скриптом.
@@ -239,7 +241,7 @@ func v4LoadABI() error {
 }
 
 func v4LoadPools() error {
-	path := os.Getenv("GECKO_POOLS_JSON")
+	path := os.Getenv("BASE_POOLS_JSON")
 	if path == "" {
 		path = "ticker_source/geckoterminal_pools.json"
 	}

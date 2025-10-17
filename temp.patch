@@ -1,0 +1,27 @@
+﻿*** Begin Patch
+*** Update File: internal/launcher/register_dex.go
+@@
+-	pools, err := uniswap.LoadPoolsFromBaseWithRegistry(path, registry)
++	dexFilter := strings.TrimSpace(dexCfg.PoolsSource.DexFilter)
++	if dexFilter == "" {
++		dexFilter = strings.TrimSpace(dexCfg.Name)
++	}
++	dexFilter = basepools.NormalizeDex(dexFilter)
++
++	pools, err := uniswap.LoadPoolsFromBaseWithRegistry(path, registry, dexFilter, strings.TrimSpace(dexCfg.Network))
+*** End Patch
+*** Begin Patch
+*** Update File: internal/dex/Etherium/Uniswap/connect_uniswap_v3_all.go
+@@
+- filter := basepools.Filter{
+-	Dexes:    []string{basepools.NormalizeDex(dexFilter)},
+-	Network: nil,
+-	Versions: []basepools.Version{basepools.VersionV3},
+- }
++ filter := basepools.Filter{
++	Dexes:    []string{basepools.NormalizeDex(dexFilter)},
++	Versions: []basepools.Version{basepools.VersionV3},
++ }
+
+*** End Patch
+

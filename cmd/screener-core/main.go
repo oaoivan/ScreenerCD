@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -16,6 +17,7 @@ import (
 	"github.com/yourusername/screner/internal/config"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	"github.com/yourusername/screner/internal/launcher"
+	basepools "github.com/yourusername/screner/internal/pools/base"
 	"github.com/yourusername/screner/internal/redisclient"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
@@ -111,26 +113,94 @@ func main() {
 		exConfigByName[name] = exCfg
 	}
 
-	baseSymbolCache := make(map[string][]string)
-	loadSymbolsFromFile := func(path string) ([]string, error) {
-		if cached, ok := baseSymbolCache[path]; ok {
-			return cached, nil
+	type symbolCacheKey struct {
+		Path          string
+		Dex           string
+		Network       string
+		Version       string
+		SymbolsOnly   bool
+		IncludeStable bool
+	}
+	symbolCache := make(map[symbolCacheKey][]string)
+	loadSymbols := func(ps config.PoolsSource, explicitPath string) ([]string, string, error) {
+		path := strings.TrimSpace(explicitPath)
+		if path == "" {
+			path = strings.TrimSpace(ps.Resolve())
 		}
-		list, err := util.LoadSymbolsFromFile(path)
-		if err != nil {
-			return nil, err
+		if path == "" {
+			return nil, "", fmt.Errorf("pools source path is empty")
 		}
-		util.Infof("Loaded %d symbols from %s", len(list), path)
-		baseSymbolCache[path] = list
-		return list, nil
+
+		key := symbolCacheKey{
+			Path:          path,
+			Dex:           strings.ToLower(strings.TrimSpace(ps.DexFilter)),
+			Network:       strings.ToLower(strings.TrimSpace(ps.NetworkFilter)),
+			Version:       strings.ToLower(strings.TrimSpace(ps.AmmVersion)),
+			SymbolsOnly:   ps.SymbolsOnly,
+			IncludeStable: ps.IncludeStable,
+		}
+		if cached, ok := symbolCache[key]; ok {
+			return append([]string(nil), cached...), path, nil
+		}
+
+		useBase := ps.SymbolsOnly || key.Dex != "" || key.Network != "" || key.Version != ""
+		if !useBase {
+			baseName := strings.ToLower(filepath.Base(path))
+			if strings.Contains(baseName, "base_pools") {
+				useBase = true
+			}
+		}
+
+		var symbols []string
+		if useBase {
+			entries, err := basepools.LoadBasePools(path)
+			if err != nil {
+				return nil, "", err
+			}
+			filter := basepools.Filter{}
+			if trimmed := strings.TrimSpace(ps.DexFilter); trimmed != "" {
+				filter.Dexes = []string{trimmed}
+			}
+			if trimmed := strings.TrimSpace(ps.NetworkFilter); trimmed != "" {
+				filter.Networks = []string{trimmed}
+			}
+			if trimmed := strings.TrimSpace(ps.AmmVersion); trimmed != "" {
+				if parsed, err := basepools.ParseAMMVersion(trimmed); err == nil {
+					filter.Versions = []basepools.Version{parsed}
+				} else {
+					util.Errorf("invalid amm_version %q for %s: %v", ps.AmmVersion, path, err)
+				}
+			}
+			filtered := basepools.FilterEntries(entries, filter)
+			if len(filtered) == 0 {
+				return nil, "", fmt.Errorf("base pools filter produced zero entries for %s", path)
+			}
+			skipStable := !ps.IncludeStable
+			symbols = basepools.ExtractSymbols(filtered, skipStable)
+			if len(symbols) == 0 {
+				return nil, "", fmt.Errorf("no symbols extracted from %s after filtering", path)
+			}
+			util.Infof("Loaded %d symbols from %s (dex=%s network=%s amm=%s symbols_only=%v)", len(symbols), path, ps.DexFilter, ps.NetworkFilter, ps.AmmVersion, ps.SymbolsOnly)
+		} else {
+			list, err := util.LoadSymbolsFromFile(path)
+			if err != nil {
+				return nil, "", err
+			}
+			symbols = list
+			util.Infof("Loaded %d symbols from %s", len(symbols), path)
+		}
+
+		symbolCache[key] = append([]string(nil), symbols...)
+		return append([]string(nil), symbols...), path, nil
 	}
 
 	var defaultBaseSymbols []string
-	defaultSymbolsSource := sharedPoolsPath
-	if list, err := loadSymbolsFromFile(sharedPoolsPath); err != nil {
+	defaultSymbolsSource := ""
+	if list, source, err := loadSymbols(cfg.SharedPools, sharedPoolsPath); err != nil {
 		util.Fatalf("Failed to load shared pools file %s: %v", sharedPoolsPath, err)
 	} else {
 		defaultBaseSymbols = list
+		defaultSymbolsSource = source
 	}
 
 	const legacySymbolsPath = "Temp/all_contracts_merged_reformatted.json"
@@ -155,20 +225,20 @@ func main() {
 			symbolsByExchange[exKey] = append([]string(nil), exCfg.Symbols...)
 			util.Infof("Exchange %s uses %d inline symbols from config", exKey, len(exCfg.Symbols))
 		case ok && exCfg.SymbolsFile != "":
-			list, err := loadSymbolsFromFile(exCfg.SymbolsFile)
+			list, source, err := loadSymbols(config.PoolsSource{}, exCfg.SymbolsFile)
 			if err != nil {
 				util.Fatalf("Error loading symbols for %s from %s: %v", exKey, exCfg.SymbolsFile, err)
 			}
-			symbolsByExchange[exKey] = baseToQuote(list, exCfg.SymbolsFile)
+			symbolsByExchange[exKey] = baseToQuote(list, source)
 		case len(defaultBaseSymbols) > 0:
 			symbolsByExchange[exKey] = baseToQuote(defaultBaseSymbols, defaultSymbolsSource)
 			util.Infof("Exchange %s uses shared pools source (%d base)", exKey, len(defaultBaseSymbols))
 		default:
-			list, err := loadSymbolsFromFile(legacySymbolsPath)
+			list, source, err := loadSymbols(config.PoolsSource{}, legacySymbolsPath)
 			if err != nil {
 				util.Fatalf("Error loading legacy symbols for %s: %v", exKey, err)
 			}
-			symbolsByExchange[exKey] = baseToQuote(list, legacySymbolsPath)
+			symbolsByExchange[exKey] = baseToQuote(list, source)
 		}
 		if len(symbolsByExchange[exKey]) == 0 {
 			util.Fatalf("No symbols resolved for exchange %s", exKey)

@@ -42,3 +42,105 @@
 2025/10/08 19:40:33 v4_connector.go:290: 2025-10-08T19:40:33+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
 2025/10/08 19:40:33 v4_connector.go:1354: 2025-10-08T19:40:33+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
 2025/10/08 19:40:33 v4_connector.go:290: 2025-10-08T19:40:33+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 15:22:27 logger.go:162: 2025-10-16T15:22:27+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 15:22:27 v4_connector.go:290: 2025-10-16T15:22:27+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 15:22:27 v4_connector.go:1354: 2025-10-16T15:22:27+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 15:22:27 v4_connector.go:290: 2025-10-16T15:22:27+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 15:22:27 v4_connector.go:1354: 2025-10-16T15:22:27+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 15:22:27 v4_connector.go:290: 2025-10-16T15:22:27+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 15:47:38 logger.go:162: 2025-10-16T15:47:38+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 15:47:38 v4_connector.go:290: 2025-10-16T15:47:38+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 15:47:38 v4_connector.go:1354: 2025-10-16T15:47:38+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 15:47:38 v4_connector.go:290: 2025-10-16T15:47:38+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 15:47:38 v4_connector.go:1354: 2025-10-16T15:47:38+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 15:47:38 v4_connector.go:290: 2025-10-16T15:47:38+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 16:23:09 logger.go:162: 2025-10-16T16:23:09+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 16:23:09 v4_connector.go:290: 2025-10-16T16:23:09+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 16:23:09 v4_connector.go:1354: 2025-10-16T16:23:09+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 16:23:09 v4_connector.go:290: 2025-10-16T16:23:09+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 16:23:09 v4_connector.go:1354: 2025-10-16T16:23:09+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 16:23:09 v4_connector.go:290: 2025-10-16T16:23:09+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 17:14:32 logger.go:162: 2025-10-16T17:14:31+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 17:14:32 v4_connector.go:290: 2025-10-16T17:14:32+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 17:14:32 v4_connector.go:1354: 2025-10-16T17:14:32+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 17:14:32 v4_connector.go:290: 2025-10-16T17:14:32+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 17:14:32 v4_connector.go:1354: 2025-10-16T17:14:32+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 17:14:32 v4_connector.go:290: 2025-10-16T17:14:32+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 17:26:54 logger.go:162: 2025-10-16T17:26:54+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 17:26:54 v4_connector.go:290: 2025-10-16T17:26:54+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 17:26:54 v4_connector.go:1354: 2025-10-16T17:26:54+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 17:26:54 v4_connector.go:290: 2025-10-16T17:26:54+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 17:26:54 v4_connector.go:1354: 2025-10-16T17:26:54+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 17:26:54 v4_connector.go:290: 2025-10-16T17:26:54+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:18:58 logger.go:162: 2025-10-16T23:18:58+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 23:18:58 v4_connector.go:290: 2025-10-16T23:18:58+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:18:58 v4_connector.go:1354: 2025-10-16T23:18:58+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:18:58 v4_connector.go:290: 2025-10-16T23:18:58+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:18:58 v4_connector.go:1354: 2025-10-16T23:18:58+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:18:58 v4_connector.go:290: 2025-10-16T23:18:58+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:38:58 logger.go:162: 2025-10-16T23:38:58+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 23:38:58 v4_connector.go:290: 2025-10-16T23:38:58+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:38:58 v4_connector.go:1354: 2025-10-16T23:38:58+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:38:58 v4_connector.go:290: 2025-10-16T23:38:58+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:38:58 v4_connector.go:1354: 2025-10-16T23:38:58+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:38:58 v4_connector.go:290: 2025-10-16T23:38:58+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:45:56 logger.go:162: 2025-10-16T23:45:56+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 23:45:56 v4_connector.go:290: 2025-10-16T23:45:56+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:45:56 v4_connector.go:1354: 2025-10-16T23:45:56+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:45:56 v4_connector.go:290: 2025-10-16T23:45:56+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:45:56 v4_connector.go:1354: 2025-10-16T23:45:56+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:45:56 v4_connector.go:290: 2025-10-16T23:45:56+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:49:24 logger.go:162: 2025-10-16T23:49:24+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 23:49:24 v4_connector.go:290: 2025-10-16T23:49:24+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:49:24 v4_connector.go:1354: 2025-10-16T23:49:24+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:49:24 v4_connector.go:290: 2025-10-16T23:49:24+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:49:24 v4_connector.go:1354: 2025-10-16T23:49:24+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:49:24 v4_connector.go:290: 2025-10-16T23:49:24+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:55:28 logger.go:162: 2025-10-16T23:55:28+03:00 [INFO] logger initialized, output=screner.log
+2025/10/16 23:55:28 v4_connector.go:290: 2025-10-16T23:55:28+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:55:28 v4_connector.go:1354: 2025-10-16T23:55:28+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:55:28 v4_connector.go:290: 2025-10-16T23:55:28+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/16 23:55:28 v4_connector.go:1354: 2025-10-16T23:55:28+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/16 23:55:28 v4_connector.go:290: 2025-10-16T23:55:28+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:27:17 logger.go:162: 2025-10-17T11:27:16+03:00 [INFO] logger initialized, output=screner.log
+2025/10/17 11:27:17 v4_connector.go:236: 2025-10-17T11:27:17+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:27:17 v4_connector.go:1418: 2025-10-17T11:27:17+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 11:27:17 v4_connector.go:236: 2025-10-17T11:27:17+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:27:17 v4_connector.go:1418: 2025-10-17T11:27:17+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 11:27:17 v4_connector.go:236: 2025-10-17T11:27:17+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:31:38 logger.go:162: 2025-10-17T11:31:38+03:00 [INFO] logger initialized, output=screner.log
+2025/10/17 11:31:38 v4_connector.go:236: 2025-10-17T11:31:38+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:31:38 v4_connector.go:1419: 2025-10-17T11:31:38+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 11:31:38 v4_connector.go:236: 2025-10-17T11:31:38+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:31:38 v4_connector.go:1419: 2025-10-17T11:31:38+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 11:31:38 v4_connector.go:236: 2025-10-17T11:31:38+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:35:50 logger.go:162: 2025-10-17T11:35:50+03:00 [INFO] logger initialized, output=screner.log
+2025/10/17 11:35:50 v4_connector.go:236: 2025-10-17T11:35:50+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:35:50 v4_connector.go:1418: 2025-10-17T11:35:50+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 11:35:50 v4_connector.go:236: 2025-10-17T11:35:50+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 11:35:50 v4_connector.go:1418: 2025-10-17T11:35:50+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 11:35:50 v4_connector.go:236: 2025-10-17T11:35:50+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:00:36 logger.go:162: 2025-10-17T13:00:36+03:00 [INFO] logger initialized, output=screner.log
+2025/10/17 13:00:36 v4_connector.go:237: 2025-10-17T13:00:36+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:00:36 v4_connector.go:1425: 2025-10-17T13:00:36+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 13:00:36 v4_connector.go:237: 2025-10-17T13:00:36+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:00:36 v4_connector.go:1425: 2025-10-17T13:00:36+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 13:00:36 v4_connector.go:237: 2025-10-17T13:00:36+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:07:01 logger.go:162: 2025-10-17T13:07:01+03:00 [INFO] logger initialized, output=screner.log
+2025/10/17 13:07:01 v4_connector.go:237: 2025-10-17T13:07:01+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:07:01 v4_connector.go:1430: 2025-10-17T13:07:01+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 13:07:01 v4_connector.go:237: 2025-10-17T13:07:01+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:07:01 v4_connector.go:1430: 2025-10-17T13:07:01+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 13:07:01 v4_connector.go:237: 2025-10-17T13:07:01+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:15:23 logger.go:162: 2025-10-17T13:15:23+03:00 [INFO] logger initialized, output=screner.log
+2025/10/17 13:15:23 v4_connector.go:237: 2025-10-17T13:15:23+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:15:23 v4_connector.go:1430: 2025-10-17T13:15:23+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 13:15:23 v4_connector.go:237: 2025-10-17T13:15:23+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:15:23 v4_connector.go:1430: 2025-10-17T13:15:23+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 13:15:23 v4_connector.go:237: 2025-10-17T13:15:23+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:20:59 logger.go:162: 2025-10-17T13:20:59+03:00 [INFO] logger initialized, output=screner.log
+2025/10/17 13:20:59 v4_connector.go:237: 2025-10-17T13:20:59+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:20:59 v4_connector.go:1430: 2025-10-17T13:20:59+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 13:20:59 v4_connector.go:237: 2025-10-17T13:20:59+03:00 [INFO] uniswap_v4: init exchange=univ4-custom network=ethereum pools_inline=0 wanted_only=false swap_only=false
+2025/10/17 13:20:59 v4_connector.go:1430: 2025-10-17T13:20:59+03:00 [INFO] uniswap_v4: metrics success=1 conversion_errors=0 unknown_pools=0
+2025/10/17 13:20:59 v4_connector.go:237: 2025-10-17T13:20:59+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 network=ethereum pools_inline=0 wanted_only=false swap_only=false

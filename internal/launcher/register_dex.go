@@ -11,6 +11,7 @@ import (
 	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/config"
 	uniswap "github.com/yourusername/screner/internal/dex/Etherium/Uniswap"
+	basepools "github.com/yourusername/screner/internal/pools/base"
 	"github.com/yourusername/screner/internal/util"
 )
 
@@ -88,13 +89,38 @@ func buildUniswapV2Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 	}
 	path := dexCfg.ResolvePoolsPath(sharedPools)
 	registry := uniswap.NewTokenRegistry(assetsProvider, dexCfg.Network)
-	pools, err := uniswap.LoadPoolsFromGeckoWithRegistry(path, registry)
+	dexFilter := strings.TrimSpace(dexCfg.PoolsSource.DexFilter)
+	if dexFilter == "" {
+		dexFilter = strings.TrimSpace(dexCfg.Name)
+	}
+	dexFilter = basepools.NormalizeDex(dexFilter)
+
+	filter := basepools.Filter{}
+	if dexFilter != "" {
+		filter.Dexes = []string{dexFilter}
+	}
+	if net := strings.TrimSpace(dexCfg.PoolsSource.NetworkFilter); net != "" {
+		filter.Networks = []string{net}
+	} else if net := strings.TrimSpace(dexCfg.Network); net != "" {
+		filter.Networks = []string{net}
+	}
+	ammFilter := strings.TrimSpace(dexCfg.PoolsSource.AmmVersionFilter)
+	if ammFilter == "" {
+		ammFilter = strings.TrimSpace(dexCfg.PoolsSource.AmmVersion)
+	}
+	if ammFilter != "" {
+		if v, err := basepools.ParseAMMVersion(ammFilter); err == nil && v != basepools.VersionUnknown {
+			filter.Versions = []basepools.Version{v}
+		}
+	}
+	pools, err := uniswap.LoadPoolsFromBaseWithRegistry(path, registry, filter)
 	if err != nil {
 		return uniswap.Config{}, err
 	}
 	for i := range pools {
 		uniswap.FinalizePool(&pools[i])
 	}
+	util.Infof("uniswap_v2: pools source=%s filters dex=%v networks=%v versions=%v total=%d", path, filter.Dexes, filter.Networks, filter.Versions, len(pools))
 	batch := dexCfg.SubscribeBatch
 	if batch <= 0 {
 		batch = 150
@@ -125,13 +151,18 @@ func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 	}
 	ps := dexCfg.PoolsSource
 	registry := uniswap.NewTokenRegistry(assetsProvider, dexCfg.Network)
+	ammFilter := strings.TrimSpace(ps.AmmVersionFilter)
+	if ammFilter == "" {
+		ammFilter = strings.TrimSpace(ps.AmmVersion)
+	}
 	cfg := uniswap.V3Config{
 		Exchange:       dexCfg.Name,
 		WSURL:          wsURL,
 		HTTPURL:        httpURL,
 		PoolsPath:      path,
-		DexFilter:      ps.GeckoDex,
-		NetworkFilter:  ps.GeckoNetwork,
+		DexFilter:      ps.DexFilter,
+		NetworkFilter:  ps.NetworkFilter,
+		AmmVersion:     ammFilter,
 		BatchSize:      dexCfg.SubscribeBatch,
 		PingInterval:   time.Duration(dexCfg.PingInterval) * time.Second,
 		StopOnAckError: dexCfg.StopOnAckError,
@@ -146,6 +177,7 @@ func buildUniswapV3Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 	if cfg.PingInterval <= 0 {
 		cfg.PingInterval = 25 * time.Second
 	}
+	util.Infof("uniswap_v3 config: pools_path=%s dex_filter=%s network_filter=%s amm_filter=%s batch=%d", cfg.PoolsPath, strings.TrimSpace(cfg.DexFilter), strings.TrimSpace(cfg.NetworkFilter), strings.TrimSpace(cfg.AmmVersion), cfg.BatchSize)
 	return cfg, nil
 }
 
@@ -266,6 +298,7 @@ func buildUniswapV4Config(dexCfg config.DexConfig, sharedPools string, assetsPro
 	if cfg.Exchange == "" {
 		cfg.Exchange = "uniswap_v4"
 	}
+	util.Infof("uniswap_v4 config: inline_pools=%d pools_path=%s wanted_only=%v", len(inlinePools), cfg.PoolsPath, cfg.WantedPairsOnly)
 
 	return cfg, nil
 }
@@ -300,8 +333,24 @@ func convertDexPoolsToV4(pools []config.DexPoolConfig, registry *uniswap.TokenRe
 			pairName = fmt.Sprintf("%s/%s", token0.Symbol, token1.Symbol)
 		}
 
+		poolAddr, err := parseOptionalHexAddress(entry.PoolAddress)
+		if err != nil {
+			return nil, fmt.Errorf("uniswap_v4: pool %d pool_address: %w", idx, err)
+		}
+		hookAddr, err := parseOptionalHexAddress(entry.HookAddress)
+		if err != nil {
+			return nil, fmt.Errorf("uniswap_v4: pool %d hook_address: %w", idx, err)
+		}
+		tickSpacing := entry.TickSpacing
+		if tickSpacing < 0 {
+			return nil, fmt.Errorf("uniswap_v4: pool %d invalid tick_spacing=%d", idx, tickSpacing)
+		}
+
 		result = append(result, uniswap.V4PoolConfig{
 			PoolID:        pid,
+			PoolAddress:   poolAddr,
+			HookAddress:   hookAddr,
+			TickSpacing:   tickSpacing,
 			PairName:      pairName,
 			Token0:        token0,
 			Token1:        token1,
@@ -331,6 +380,21 @@ func buildTokenMetaForV4(registry *uniswap.TokenRegistry, addrStr, symbol string
 		}
 	}
 	return meta, nil
+}
+
+func parseOptionalHexAddress(raw string) (common.Address, error) {
+	addr := strings.TrimSpace(raw)
+	if addr == "" {
+		return common.Address{}, nil
+	}
+	lower := strings.ToLower(addr)
+	if strings.HasPrefix(lower, "0x") && len(lower) == 66 {
+		lower = "0x" + lower[len(lower)-40:]
+	}
+	if !common.IsHexAddress(lower) {
+		return common.Address{}, fmt.Errorf("invalid address %s", raw)
+	}
+	return common.HexToAddress(lower), nil
 }
 
 func mergeWantedPairs(primary, secondary []string) []string {

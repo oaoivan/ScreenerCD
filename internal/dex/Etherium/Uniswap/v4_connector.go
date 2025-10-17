@@ -10,7 +10,6 @@ import (
 	"math/big"
 	"os"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -21,24 +20,34 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gorilla/websocket"
 	"github.com/yourusername/screner/internal/dex/pricing"
+	basepools "github.com/yourusername/screner/internal/pools/base"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
 )
 
 const (
 	poolManagerABIPath  = "ABI/Uniswap/V4/UniswapV4PoolManager.json"
-	defaultPoolsPath    = "ticker_source/geckoterminal_pools.json"
+	defaultPoolsPath    = "ticker_source/base_pools.json"
 	defaultExchangeName = "uniswap_v4"
 )
 
 var (
+	v4StableFallback = map[string]struct{}{
+		"USDC": {},
+		"USDT": {},
+		"DAI":  {},
+		"TUSD": {},
+		"USD1": {},
+		"USD":  {},
+	}
+
 	twoPow192       = new(big.Int).Lsh(big.NewInt(1), 192)
 	pow10Cache      sync.Map
 	errOnceComplete = errors.New("uniswap_v4: once completed")
 	errStablePool   = errors.New("uniswap_v4: stable-stable pool skipped")
 )
 
-// V4Config описывает параметры продакшн-коннектора Uniswap V4.
+// V4Config РѕРїРёСЃС‹РІР°РµС‚ РїР°СЂР°РјРµС‚СЂС‹ РїСЂРѕРґР°РєС€РЅ-РєРѕРЅРЅРµРєС‚РѕСЂР° Uniswap V4.
 type V4Config struct {
 	Exchange        string
 	Network         string
@@ -59,11 +68,12 @@ type V4Config struct {
 	Registry        *TokenRegistry
 }
 
-// V4PoolConfig хранит метаданные пула для статической подписки.
+// V4PoolConfig С…СЂР°РЅРёС‚ РјРµС‚Р°РґР°РЅРЅС‹Рµ РїСѓР»Р° РґР»СЏ СЃС‚Р°С‚РёС‡РµСЃРєРѕР№ РїРѕРґРїРёСЃРєРё.
 type V4PoolConfig struct {
 	PoolID        common.Hash
 	PoolAddress   common.Address
 	HookAddress   common.Address
+	TickSpacing   int
 	PairName      string
 	Token0        TokenMeta
 	Token1        TokenMeta
@@ -71,7 +81,7 @@ type V4PoolConfig struct {
 	CanonicalPair string
 }
 
-// PoolMeta хранит runtime-метаданные пула и последнюю рассчитанную цену.
+// PoolMeta С…СЂР°РЅРёС‚ runtime-РјРµС‚Р°РґР°РЅРЅС‹Рµ РїСѓР»Р° Рё РїРѕСЃР»РµРґРЅСЋСЋ СЂР°СЃСЃС‡РёС‚Р°РЅРЅСѓСЋ С†РµРЅСѓ.
 type PoolMeta struct {
 	ID            common.Hash
 	PairName      string
@@ -85,70 +95,7 @@ type PoolMeta struct {
 	LastUpdate    time.Time
 }
 
-// GeckoEntry описывает запись GeckoTerminal с параметрами пула.
-type GeckoEntry struct {
-	Dex        string `json:"dex"`
-	Network    string `json:"network"`
-	lastUpdate time.Time
-	PairName   string       `json:"pair_name"`
-	PoolID     string       `json:"pool_id"`
-	PoolAddr   string       `json:"pool_address"`
-	Token0     GeckoToken   `json:"token0"`
-	Token1     GeckoToken   `json:"token1"`
-	PoolKey    GeckoPoolKey `json:"pool_key"`
-}
-
-type GeckoPoolKey struct {
-	Hooks string `json:"hooks"`
-}
-
-// GeckoToken описывает структуру токена из GeckoTerminal.
-type GeckoToken struct {
-	Address  string         `json:"address"`
-	Symbol   string         `json:"symbol"`
-	Decimals geckoIntOrText `json:"decimals"`
-}
-
-// GeckoPayload агрегирует массив GeckoEntry.
-type GeckoPayload struct {
-	Entries []GeckoEntry `json:"entries"`
-}
-
-// geckoIntOrText поддерживает хранение decimals как строки или числа.
-type geckoIntOrText int
-
-func (v *geckoIntOrText) UnmarshalJSON(data []byte) error {
-	data = bytes.TrimSpace(data)
-	if len(data) == 0 || bytes.Equal(data, []byte("null")) {
-		*v = 0
-		return nil
-	}
-	if data[0] == '"' {
-		var s string
-		if err := json.Unmarshal(data, &s); err != nil {
-			return err
-		}
-		s = strings.TrimSpace(s)
-		if s == "" {
-			*v = 0
-			return nil
-		}
-		n, err := strconv.Atoi(s)
-		if err != nil {
-			return err
-		}
-		*v = geckoIntOrText(n)
-		return nil
-	}
-	var n int
-	if err := json.Unmarshal(data, &n); err != nil {
-		return err
-	}
-	*v = geckoIntOrText(n)
-	return nil
-}
-
-// RPCRequest описывает JSON-RPC запрос для подписки на логи.
+// RPCRequest РѕРїРёСЃС‹РІР°РµС‚ JSON-RPC Р·Р°РїСЂРѕСЃ РґР»СЏ РїРѕРґРїРёСЃРєРё РЅР° Р»РѕРіРё.
 type RPCRequest struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      int           `json:"id"`
@@ -156,13 +103,13 @@ type RPCRequest struct {
 	Params  []interface{} `json:"params"`
 }
 
-// RPCError описывает стандартную ошибку JSON-RPC.
+// RPCError РѕРїРёСЃС‹РІР°РµС‚ СЃС‚Р°РЅРґР°СЂС‚РЅСѓСЋ РѕС€РёР±РєСѓ JSON-RPC.
 type RPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
-// SubAck описывает ack-ответ на подписку.
+// SubAck РѕРїРёСЃС‹РІР°РµС‚ ack-РѕС‚РІРµС‚ РЅР° РїРѕРґРїРёСЃРєСѓ.
 type SubAck struct {
 	JSONRPC string    `json:"jsonrpc"`
 	ID      int       `json:"id"`
@@ -170,7 +117,7 @@ type SubAck struct {
 	Error   *RPCError `json:"error,omitempty"`
 }
 
-// SubNote описывает уведомление об очередном событии от eth_subscribe.
+// SubNote РѕРїРёСЃС‹РІР°РµС‚ СѓРІРµРґРѕРјР»РµРЅРёРµ РѕР± РѕС‡РµСЂРµРґРЅРѕРј СЃРѕР±С‹С‚РёРё РѕС‚ eth_subscribe.
 type SubNote struct {
 	JSONRPC string `json:"jsonrpc"`
 	Method  string `json:"method"`
@@ -180,7 +127,7 @@ type SubNote struct {
 	} `json:"params"`
 }
 
-// LogEvent описывает структуру Ethereum log.
+// LogEvent РѕРїРёСЃС‹РІР°РµС‚ СЃС‚СЂСѓРєС‚СѓСЂСѓ Ethereum log.
 type LogEvent struct {
 	Address          string   `json:"address"`
 	BlockHash        string   `json:"blockHash"`
@@ -221,7 +168,7 @@ func (c *V4Connector) registerToken(meta TokenMeta) {
 	}
 }
 
-// V4Connector отвечает за подписку, парсинг и публикацию котировок V4.
+// V4Connector РѕС‚РІРµС‡Р°РµС‚ Р·Р° РїРѕРґРїРёСЃРєСѓ, РїР°СЂСЃРёРЅРі Рё РїСѓР±Р»РёРєР°С†РёСЋ РєРѕС‚РёСЂРѕРІРѕРє V4.
 type V4Connector struct {
 	cfg    V4Config
 	pricer pricing.Pricer
@@ -240,7 +187,7 @@ type V4Connector struct {
 	unknownPoolEvents uint64
 }
 
-// выборочное хранение состояния пула (lazy metadata, кэш цены и т.д.).
+// РІС‹Р±РѕСЂРѕС‡РЅРѕРµ С…СЂР°РЅРµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїСѓР»Р° (lazy metadata, РєСЌС€ С†РµРЅС‹ Рё С‚.Рґ.).
 type v4PoolState struct {
 	meta           V4PoolConfig
 	registered     bool
@@ -261,7 +208,7 @@ type v4PoolState struct {
 	lastUpdate     time.Time
 }
 
-// NewV4Connector создаёт коннектор с базовыми проверками параметров.
+// NewV4Connector СЃРѕР·РґР°С‘С‚ РєРѕРЅРЅРµРєС‚РѕСЂ СЃ Р±Р°Р·РѕРІС‹РјРё РїСЂРѕРІРµСЂРєР°РјРё РїР°СЂР°РјРµС‚СЂРѕРІ.
 func NewV4Connector(cfg V4Config, pricer pricing.Pricer) (*V4Connector, error) {
 	if pricer == nil {
 		return nil, fmt.Errorf("uniswap_v4: pricer is required")
@@ -375,7 +322,7 @@ func (c *V4Connector) ensureABI() error {
 	return c.abiErr
 }
 
-// Run запускает главный цикл подписки и публикации котировок.
+// Run Р·Р°РїСѓСЃРєР°РµС‚ РіР»Р°РІРЅС‹Р№ С†РёРєР» РїРѕРґРїРёСЃРєРё Рё РїСѓР±Р»РёРєР°С†РёРё РєРѕС‚РёСЂРѕРІРѕРє.
 func (c *V4Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error {
 	util.Infof("uniswap_v4: starting connector run")
 	if err := c.ensureABI(); err != nil {
@@ -438,7 +385,7 @@ func (c *V4Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error 
 	}
 }
 
-// bootstrapPools формирует карту статических пулов перед запуском подписки.
+// bootstrapPools С„РѕСЂРјРёСЂСѓРµС‚ РєР°СЂС‚Сѓ СЃС‚Р°С‚РёС‡РµСЃРєРёС… РїСѓР»РѕРІ РїРµСЂРµРґ Р·Р°РїСѓСЃРєРѕРј РїРѕРґРїРёСЃРєРё.
 func (c *V4Connector) bootstrapPools(ctx context.Context) error {
 	util.Infof("uniswap_v4: bootstrap pools begin path=%s inline=%d", c.cfg.PoolsPath, len(c.cfg.Pools))
 
@@ -532,7 +479,7 @@ func (c *V4Connector) bootstrapPools(ctx context.Context) error {
 	return nil
 }
 
-// normalizeInlinePool валидирует inline-конфиги и приводит метаданные к единому виду.
+// normalizeInlinePool РІР°Р»РёРґРёСЂСѓРµС‚ inline-РєРѕРЅС„РёРіРё Рё РїСЂРёРІРѕРґРёС‚ РјРµС‚Р°РґР°РЅРЅС‹Рµ Рє РµРґРёРЅРѕРјСѓ РІРёРґСѓ.
 func (c *V4Connector) normalizeInlinePool(pool V4PoolConfig, wanted map[string]struct{}, filter bool) (*V4PoolConfig, error) {
 	if filter {
 		if _, ok := wanted[pairKey(pool.PairName)]; !ok {
@@ -563,147 +510,276 @@ func (c *V4Connector) normalizeInlinePool(pool V4PoolConfig, wanted map[string]s
 	return &normalized, nil
 }
 
-// loadPoolsFromFile читает JSON GeckoTerminal и собирает список пулов.
+// loadPoolsFromFile С‡РёС‚Р°РµС‚ JSON GeckoTerminal Рё СЃРѕР±РёСЂР°РµС‚ СЃРїРёСЃРѕРє РїСѓР»РѕРІ.
+// loadPoolsFromFile reads base_pools.json and returns V4 pool configs.
 func (c *V4Connector) loadPoolsFromFile(ctx context.Context, path string, wanted map[string]struct{}, filter bool) ([]V4PoolConfig, error) {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		path = strings.TrimSpace(os.Getenv("BASE_POOLS_JSON"))
+	}
 	if path == "" {
 		path = defaultPoolsPath
 	}
-	util.Infof("uniswap_v4: loading pools from file=%s", path)
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("uniswap_v4: read pools file: %w", err)
-	}
-	var payload GeckoPayload
-	if err := json.Unmarshal(data, &payload); err != nil {
-		return nil, fmt.Errorf("uniswap_v4: decode pools file: %w", err)
-	}
-	util.Infof("uniswap_v4: pools file entries=%d", len(payload.Entries))
 
-	result := make([]V4PoolConfig, 0, len(payload.Entries))
+	util.Infof("uniswap_v4: loading pools from file=%s", path)
+
+	entries, err := basepools.LoadBasePools(path)
+	if err != nil {
+		return nil, fmt.Errorf("uniswap_v4: load base pools: %w", err)
+	}
+
+	filterSpec := basepools.Filter{
+		Dexes:    []string{basepools.NormalizeDex("uniswap")},
+		Versions: []basepools.Version{basepools.VersionV4},
+	}
+
 	networkFilter := strings.TrimSpace(c.cfg.Network)
-	skippedNetwork := 0
-	for _, entry := range payload.Entries {
+	if networkFilter != "" {
+		filterSpec.Networks = []string{networkFilter}
+	}
+
+	filtered := basepools.FilterEntries(entries, filterSpec)
+	util.Infof("uniswap_v4: base pools total=%d filtered=%d network=%s", len(entries), len(filtered), networkFilter)
+
+	result := make([]V4PoolConfig, 0, len(filtered))
+	skippedManager := 0
+	skippedStable := 0
+
+	for _, entry := range filtered {
 		if err := ctxErr(ctx); err != nil {
 			return nil, err
 		}
-		if !strings.EqualFold(entry.Dex, "uniswap_v4") {
-			continue
+
+		poolAddrHint := strings.TrimSpace(entry.PoolAddress)
+		if poolAddrHint == "" {
+			poolAddrHint = strings.TrimSpace(entry.PoolID)
 		}
-		if networkFilter != "" && !strings.EqualFold(entry.Network, networkFilter) {
-			skippedNetwork++
-			continue
-		}
-		if filter {
-			if _, ok := wanted[pairKey(entry.PairName)]; !ok {
-				continue
-			}
-		}
-		pool, err := c.poolFromGecko(entry)
+
+		pool, manager, err := convertBaseEntryToV4(entry)
 		if err != nil {
-			if errors.Is(err, errStablePool) {
-				util.Infof("uniswap_v4: skip stable pool pair=%s pool_id=%s token0=%s token1=%s", normalizePairName(entry.PairName, entry.Token0.Symbol, entry.Token1.Symbol), strings.TrimSpace(entry.PoolID), strings.ToUpper(strings.TrimSpace(entry.Token0.Symbol)), strings.ToUpper(strings.TrimSpace(entry.Token1.Symbol)))
-				continue
-			}
-			util.Errorf("uniswap_v4: skip pool %s: %v", entry.PairName, err)
+			util.Errorf("uniswap_v4: skip pool symbol=%s pool_address=%s file=%s err=%v", strings.TrimSpace(entry.Symbol), poolAddrHint, path, err)
 			continue
 		}
+
+		if manager != (common.Address{}) && c.cfg.PoolManager != (common.Address{}) && manager != c.cfg.PoolManager {
+			skippedManager++
+			util.Debugf("uniswap_v4: skip pool=%s manager mismatch entry=%s expected=%s pool_address=%s file=%s", pool.PairName, manager.Hex(), c.cfg.PoolManager.Hex(), poolAddrHint, path)
+			continue
+		}
+
+		if pool.Token0.IsStable && pool.Token1.IsStable {
+			skippedStable++
+			util.Infof("uniswap_v4: skip stable pool pair=%s pool_id=%s pool_address=%s file=%s", pool.PairName, pool.PoolID.Hex(), poolAddrHint, path)
+			continue
+		}
+
+		if filter {
+			if _, ok := wanted[pairKey(pool.PairName)]; !ok {
+				continue
+			}
+		}
+
+		token0, err := c.enrichTokenMeta(pool.Token0)
+		if err != nil {
+			util.Errorf("uniswap_v4: skip pool=%s token0: %v pool_address=%s file=%s", pool.PairName, err, poolAddrHint, path)
+			continue
+		}
+
+		token1, err := c.enrichTokenMeta(pool.Token1)
+		if err != nil {
+			util.Errorf("uniswap_v4: skip pool=%s token1: %v pool_address=%s file=%s", pool.PairName, err, poolAddrHint, path)
+			continue
+		}
+
+		pool.Token0 = token0
+		pool.Token1 = token1
+		pool.PairName = normalizePairName(pool.PairName, token0.Symbol, token1.Symbol)
+		if pool.CanonicalPair == "" {
+			pool.CanonicalPair = canonicalPair(pool)
+		}
+
 		result = append(result, pool)
 	}
 
-	util.Infof("uniswap_v4: pools loaded from file=%d skipped_network=%d filter=%s", len(result), skippedNetwork, networkFilter)
+	if skippedManager > 0 {
+		util.Infof("uniswap_v4: pools skipped by manager mismatch=%d", skippedManager)
+	}
+	if skippedStable > 0 {
+		util.Infof("uniswap_v4: pools skipped stable-stable=%d", skippedStable)
+	}
+
 	return result, nil
 }
 
-// poolFromGecko конвертирует запись GeckoTerminal в конфиг пула V4.
-func (c *V4Connector) poolFromGecko(entry GeckoEntry) (V4PoolConfig, error) {
-	poolID := strings.TrimSpace(entry.PoolID)
-	if !strings.HasPrefix(poolID, "0x") || len(poolID) != 66 {
-		return V4PoolConfig{}, fmt.Errorf("invalid pool_id=%s", entry.PoolID)
+func convertBaseEntryToV4(entry basepools.Entry) (V4PoolConfig, common.Address, error) {
+	version, _ := basepools.ParseAMMVersion(entry.AMMVersion)
+	if version != basepools.VersionUnknown && version != basepools.VersionV4 {
+		return V4PoolConfig{}, common.Address{}, fmt.Errorf("entry amm_version=%s is not compatible", entry.AMMVersion)
 	}
-	pid := common.HexToHash(poolID)
 
-	token0, err := c.buildTokenMeta(entry.Token0.Address, entry.Token0.Symbol, int(entry.Token0.Decimals))
+	manager, err := parseRequiredBaseAddress(entry.PoolManager)
 	if err != nil {
-		return V4PoolConfig{}, fmt.Errorf("token0 %s: %w", entry.Token0.Symbol, err)
+		return V4PoolConfig{}, common.Address{}, fmt.Errorf("pool_manager %w", err)
 	}
-	token1, err := c.buildTokenMeta(entry.Token1.Address, entry.Token1.Symbol, int(entry.Token1.Decimals))
+
+	hashHex := strings.TrimSpace(entry.PoolID)
+	if hashHex == "" {
+		hashHex = strings.TrimSpace(entry.PoolAddress)
+	}
+	poolID, err := parseRequiredPoolHash(hashHex)
 	if err != nil {
-		return V4PoolConfig{}, fmt.Errorf("token1 %s: %w", entry.Token1.Symbol, err)
+		return V4PoolConfig{}, common.Address{}, fmt.Errorf("pool_id %w", err)
 	}
 
-	baseIsToken0 := chooseBaseToken(token0, token1)
-	pairName := normalizePairName(entry.PairName, token0.Symbol, token1.Symbol)
+	token0, err := tokenMetaFromBase(entry.Token0)
+	if err != nil {
+		return V4PoolConfig{}, common.Address{}, fmt.Errorf("token0 %w", err)
+	}
+	token1, err := tokenMetaFromBase(entry.Token1)
+	if err != nil {
+		return V4PoolConfig{}, common.Address{}, fmt.Errorf("token1 %w", err)
+	}
 
-	if token0.IsStable && token1.IsStable {
-		return V4PoolConfig{}, fmt.Errorf("%w pair=%s", errStablePool, pairName)
+	hookAddr, _ := parseOptionalBaseAddress(entry.PoolKey.Hooks)
+	poolAddr, _ := parseOptionalBaseAddress(entry.PoolAddress)
+
+	baseIsToken0 := chooseBaseFromEntry(entry, token0, token1)
+	tickSpacing := 0
+	if entry.PoolKey.TickSpacing != nil {
+		tickSpacing = *entry.PoolKey.TickSpacing
 	}
 
 	pool := V4PoolConfig{
-		PoolID:        pid,
-		PoolAddress:   parseOptionalAddress(entry.PoolAddr),
-		HookAddress:   parseOptionalAddress(entry.PoolKey.Hooks),
-		PairName:      pairName,
+		PoolID:        poolID,
+		PoolAddress:   poolAddr,
+		HookAddress:   hookAddr,
+		TickSpacing:   tickSpacing,
+		PairName:      normalizePairName(entry.PairName, token0.Symbol, token1.Symbol),
 		Token0:        token0,
 		Token1:        token1,
 		BaseIsToken0:  baseIsToken0,
-		CanonicalPair: canonicalPair(V4PoolConfig{Token0: token0, Token1: token1, BaseIsToken0: baseIsToken0}),
+		CanonicalPair: "",
 	}
-	return pool, nil
+	return pool, manager, nil
 }
 
-func parseOptionalAddress(raw string) common.Address {
-	addr := strings.TrimSpace(raw)
-	if addr == "" {
-		return common.Address{}
+func tokenMetaFromBase(token basepools.Token) (TokenMeta, error) {
+	addr, err := parseRequiredBaseAddress(token.Address)
+	if err != nil {
+		return TokenMeta{}, err
 	}
-	if strings.HasPrefix(strings.ToLower(addr), "0x") && len(addr) == 66 {
-		// 32-byte value (likely pool_id) — not an address, silently ignore
-		return common.Address{}
-	}
-	if !common.IsHexAddress(addr) {
-		util.Infof("uniswap_v4: skip invalid address=%s", raw)
-		return common.Address{}
-	}
-	return common.HexToAddress(addr)
-}
 
-// buildTokenMeta нормализует токен из JSON и обогащает его через реестр.
-func (c *V4Connector) buildTokenMeta(addr, symbol string, decimals int) (TokenMeta, error) {
-	addrTrim := strings.TrimSpace(addr)
-	if !common.IsHexAddress(addrTrim) {
-		return TokenMeta{}, fmt.Errorf("invalid address=%s", addr)
+	symbol := strings.ToUpper(strings.TrimSpace(token.Symbol))
+	decimals := clampDecimals(token.Decimals)
+	if decimals == 0 {
+		decimals = 18
 	}
-	address := common.HexToAddress(addrTrim)
-	meta := TokenMeta{Address: address, Symbol: strings.ToUpper(strings.TrimSpace(symbol)), Decimals: clampDecimals(decimals)}
-	if c.cfg.Registry != nil {
-		resolved := c.cfg.Registry.Resolve(address, symbol, decimals)
-		if resolved.Address != (common.Address{}) {
-			meta = resolved
-		} else {
-			meta.IsStable = resolved.IsStable
-			meta.IsWETH = resolved.IsWETH
-			if resolved.Symbol != "" {
-				meta.Symbol = resolved.Symbol
-			}
-			if resolved.Decimals != 0 {
-				meta.Decimals = clampDecimals(resolved.Decimals)
-			}
-		}
+
+	meta := TokenMeta{
+		Address:  addr,
+		Symbol:   symbol,
+		Decimals: decimals,
 	}
+
 	if meta.Symbol == "" {
-		meta.Symbol = strings.ToUpper(shortAddress(address.Hex()))
+		meta.Symbol = strings.ToUpper(shortAddress(addr.Hex()))
 	}
-	meta.Decimals = clampDecimals(meta.Decimals)
-	if meta.Decimals == 0 {
-		meta.Decimals = 18
+
+	symKey := strings.ToUpper(meta.Symbol)
+	if basepools.IsStableSymbol(symKey) || isFallbackStable(symKey) {
+		meta.IsStable = true
 	}
-	if meta.Decimals <= 0 {
-		return TokenMeta{}, fmt.Errorf("invalid decimals for %s", meta.Symbol)
+	if strings.EqualFold(meta.Symbol, "WETH") {
+		meta.IsWETH = true
 	}
+
 	return meta, nil
 }
 
-// enrichTokenMeta приводит inline-описания токенов к формату с валидным символом и decimals.
+func parseRequiredBaseAddress(raw string) (common.Address, error) {
+	addr := strings.TrimSpace(raw)
+	if addr == "" {
+		return common.Address{}, fmt.Errorf("empty address")
+	}
+	norm := normalizeHexAddress(addr)
+	if !common.IsHexAddress(norm) {
+		return common.Address{}, fmt.Errorf("invalid address=%s", raw)
+	}
+	return common.HexToAddress(norm), nil
+}
+
+func parseOptionalBaseAddress(raw string) (common.Address, error) {
+	addr := strings.TrimSpace(raw)
+	if addr == "" {
+		return common.Address{}, nil
+	}
+	norm := normalizeHexAddress(addr)
+	if !common.IsHexAddress(norm) {
+		return common.Address{}, fmt.Errorf("invalid address=%s", raw)
+	}
+	return common.HexToAddress(norm), nil
+}
+
+func normalizeHexAddress(raw string) string {
+	addr := strings.TrimSpace(raw)
+	addr = strings.ToLower(addr)
+	if strings.HasPrefix(addr, "0x") {
+		if len(addr) == 66 {
+			return "0x" + addr[len(addr)-40:]
+		}
+		return addr
+	}
+	if len(addr) == 64 {
+		return "0x" + addr[len(addr)-40:]
+	}
+	return "0x" + addr
+}
+
+func parseRequiredPoolHash(raw string) (common.Hash, error) {
+	hash := strings.TrimSpace(raw)
+	if hash == "" {
+		return common.Hash{}, fmt.Errorf("empty hash")
+	}
+	hash = strings.ToLower(hash)
+	if !strings.HasPrefix(hash, "0x") {
+		hash = "0x" + hash
+	}
+	if len(hash) != 66 {
+		return common.Hash{}, fmt.Errorf("invalid hash=%s", raw)
+	}
+	return common.HexToHash(hash), nil
+}
+
+func isFallbackStable(symbol string) bool {
+	_, ok := v4StableFallback[strings.ToUpper(strings.TrimSpace(symbol))]
+	return ok
+}
+
+func chooseBaseFromEntry(entry basepools.Entry, token0, token1 TokenMeta) bool {
+	baseAddr := strings.ToLower(strings.TrimSpace(entry.BaseToken))
+	quoteAddr := strings.ToLower(strings.TrimSpace(entry.QuoteToken))
+	token0Addr := strings.ToLower(token0.Address.Hex())
+	token1Addr := strings.ToLower(token1.Address.Hex())
+
+	switch {
+	case baseAddr != "" && baseAddr == token0Addr:
+		return true
+	case baseAddr != "" && baseAddr == token1Addr:
+		return false
+	case quoteAddr != "" && quoteAddr == token0Addr:
+		return false
+	case quoteAddr != "" && quoteAddr == token1Addr:
+		return true
+	case token0.IsStable && !token1.IsStable:
+		return false
+	case token1.IsStable && !token0.IsStable:
+		return true
+	default:
+		return true
+	}
+}
+
+// enrichTokenMeta РїСЂРёРІРѕРґРёС‚ inline-РѕРїРёСЃР°РЅРёСЏ С‚РѕРєРµРЅРѕРІ Рє С„РѕСЂРјР°С‚Сѓ СЃ РІР°Р»РёРґРЅС‹Рј СЃРёРјРІРѕР»РѕРј Рё decimals.
 func (c *V4Connector) enrichTokenMeta(meta TokenMeta) (TokenMeta, error) {
 	if meta.Address == (common.Address{}) {
 		return TokenMeta{}, fmt.Errorf("empty address")
@@ -738,7 +814,7 @@ func (c *V4Connector) enrichTokenMeta(meta TokenMeta) (TokenMeta, error) {
 	return meta, nil
 }
 
-// chooseBaseToken определяет базовую сторону пары, отдавая приоритет нестейбл токену.
+// chooseBaseToken РѕРїСЂРµРґРµР»СЏРµС‚ Р±Р°Р·РѕРІСѓСЋ СЃС‚РѕСЂРѕРЅСѓ РїР°СЂС‹, РѕС‚РґР°РІР°СЏ РїСЂРёРѕСЂРёС‚РµС‚ РЅРµСЃС‚РµР№Р±Р» С‚РѕРєРµРЅСѓ.
 func chooseBaseToken(token0, token1 TokenMeta) bool {
 	switch {
 	case token0.IsStable && !token1.IsStable:
@@ -750,7 +826,7 @@ func chooseBaseToken(token0, token1 TokenMeta) bool {
 	}
 }
 
-// canonicalPair строит канонический идентификатор пары.
+// canonicalPair СЃС‚СЂРѕРёС‚ РєР°РЅРѕРЅРёС‡РµСЃРєРёР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїР°СЂС‹.
 func canonicalPair(pool V4PoolConfig) string {
 	base := pool.Token0.Symbol
 	quote := pool.Token1.Symbol
@@ -760,7 +836,7 @@ func canonicalPair(pool V4PoolConfig) string {
 	return base + quote
 }
 
-// normalizePairName приводит название пары к формату TOKEN/QUOTE.
+// normalizePairName РїСЂРёРІРѕРґРёС‚ РЅР°Р·РІР°РЅРёРµ РїР°СЂС‹ Рє С„РѕСЂРјР°С‚Сѓ TOKEN/QUOTE.
 func normalizePairName(current, symbol0, symbol1 string) string {
 	name := strings.TrimSpace(current)
 	if name == "" {
@@ -769,7 +845,7 @@ func normalizePairName(current, symbol0, symbol1 string) string {
 	return strings.ToUpper(name)
 }
 
-// poolBaseSymbol возвращает символ базового токена.
+// poolBaseSymbol РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРёРјРІРѕР» Р±Р°Р·РѕРІРѕРіРѕ С‚РѕРєРµРЅР°.
 func poolBaseSymbol(pool *V4PoolConfig) string {
 	if pool.BaseIsToken0 {
 		return pool.Token0.Symbol
@@ -777,7 +853,7 @@ func poolBaseSymbol(pool *V4PoolConfig) string {
 	return pool.Token1.Symbol
 }
 
-// poolQuoteSymbol возвращает символ котируемого токена.
+// poolQuoteSymbol РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРёРјРІРѕР» РєРѕС‚РёСЂСѓРµРјРѕРіРѕ С‚РѕРєРµРЅР°.
 func poolQuoteSymbol(pool *V4PoolConfig) string {
 	if pool.BaseIsToken0 {
 		return pool.Token1.Symbol
@@ -785,12 +861,12 @@ func poolQuoteSymbol(pool *V4PoolConfig) string {
 	return pool.Token0.Symbol
 }
 
-// pairKey нормализует имя пары для фильтров.
+// pairKey РЅРѕСЂРјР°Р»РёР·СѓРµС‚ РёРјСЏ РїР°СЂС‹ РґР»СЏ С„РёР»СЊС‚СЂРѕРІ.
 func pairKey(name string) string {
 	return strings.ToUpper(strings.TrimSpace(name))
 }
 
-// ctxErr проверяет отмену контекста, чтобы прерывать длительные операции.
+// ctxErr РїСЂРѕРІРµСЂСЏРµС‚ РѕС‚РјРµРЅСѓ РєРѕРЅС‚РµРєСЃС‚Р°, С‡С‚РѕР±С‹ РїСЂРµСЂС‹РІР°С‚СЊ РґР»РёС‚РµР»СЊРЅС‹Рµ РѕРїРµСЂР°С†РёРё.
 func ctxErr(ctx context.Context) error {
 	if ctx == nil {
 		return nil

@@ -1,0 +1,208 @@
+{
+  "generated_from": "ticker_source/base_pools.json",
+  "entries": [
+    {
+      "label": "eth_v2",
+      "symbol": "USDC",
+      "amm_version": "v2",
+      "dex": "uniswap",
+      "network": "ethereum",
+      "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "pool_address": "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+      "liquidity_usd": 24635838.1804,
+      "source": "geckoterminal",
+      "pair_name": "WETH / USDC",
+      "pool_created_at": "2021-10-11T01:35:30Z",
+      "token0": {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
+      },
+      "token1": {
+        "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
+      },
+      "pool_key": {
+        "currency0": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "fee": null,
+        "tickSpacing": null,
+        "hooks": null,
+        "status": "unavailable"
+      }
+    },
+    {
+      "label": "eth_v3",
+      "symbol": "USDC",
+      "amm_version": "v3",
+      "dex": "uniswap",
+      "network": "ethereum",
+      "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "pool_address": "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
+      "liquidity_usd": 73749071.5602,
+      "source": "geckoterminal",
+      "pair_name": "WETH / USDC 0.05%",
+      "pool_created_at": "2021-12-29T12:35:14Z",
+      "fee_percent": "0.05%",
+      "token0": {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "symbol": "WETH",
+        "decimals": 18,
+        "source": "rpc"
+      },
+      "token1": {
+        "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "symbol": "USDC",
+        "decimals": 6,
+        "source": "rpc"
+      },
+      "pool_key": {
+        "currency0": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "fee": null,
+        "tickSpacing": null,
+        "hooks": null,
+        "status": "unavailable"
+      }
+    },
+    {
+      "label": "eth_v4",
+      "symbol": "AAVE",
+      "amm_version": "v4",
+      "dex": "uniswap",
+      "network": "ethereum",
+      "token_address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+      "pool_address": "0x1c60dc7ce348dc9f1e8992c027350acfda4ba66e2365aa87cbdd98c490185088",
+      "liquidity_usd": 545690.49,
+      "source": "geckoterminal",
+      "pair_name": "stkAAVE / AAVE 0.3%",
+      "pool_created_at": "2025-01-30T12:58:23+00:00",
+      "fee_percent": "0.3%",
+      "token0": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "symbol": "ETH",
+        "decimals": 18,
+        "source": "pool_manager_rpc"
+      },
+      "token1": {
+        "address": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
+        "symbol": "AAVE",
+        "decimals": 18,
+        "source": "rpc"
+      },
+      "pool_key": {
+        "currency0": "0x0000000000000000000000000000000000000000",
+        "currency1": "0x72e4f9f808c49a2a61de9c5896298920dc4eeea9",
+        "fee": 3000,
+        "tickSpacing": 60,
+        "hooks": "0x0000000000000000000000000000000000000000",
+        "status": "ok"
+      },
+      "pool_manager": "0x000000000004444c5dc75cb358380d2e3de08a90"
+    },
+    {
+      "label": "bsc_v2",
+      "symbol": "ASTER",
+      "amm_version": "v2",
+      "dex": "uniswap",
+      "network": "binance-smart-chain",
+      "token_address": "0x000ae314e2a2172a039b26378814c252734f556a",
+      "pool_address": "0x7d98804119551f915a75ce278526ac7ee5077087",
+      "liquidity_usd": 2909206.56,
+      "source": "dexscreener",
+      "pair_name": "ASTER/WBNB",
+      "pool_created_at": "2025-09-19T08:20:54+00:00",
+      "token0": {
+        "address": "0x000ae314e2a2172a039b26378814c252734f556a",
+        "symbol": "ASTER",
+        "decimals": 18,
+        "source": "rpc"
+      },
+      "token1": {
+        "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        "symbol": "WBNB",
+        "decimals": 18,
+        "source": "rpc"
+      },
+      "pool_key": {
+        "currency0": "0x000ae314e2a2172a039b26378814c252734f556a",
+        "currency1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        "fee": null,
+        "tickSpacing": null,
+        "hooks": null,
+        "status": "unavailable"
+      }
+    },
+    {
+      "label": "bsc_v3",
+      "symbol": "ASTER",
+      "amm_version": "v3",
+      "dex": "pancakeswap",
+      "network": "binance-smart-chain",
+      "token_address": "0x000ae314e2a2172a039b26378814c252734f556a",
+      "pool_address": "0x1b451880bd8ed2db08f707d18bee6a874e068d1879cab60dc7262b65d1e1ca2f",
+      "liquidity_usd": 1305673.9581,
+      "source": "geckoterminal",
+      "pair_name": "ASTER / BNB 0.007%",
+      "pool_created_at": "2025-09-19T01:00:20Z",
+      "fee_percent": "0.007%",
+      "token0": {
+        "address": "0x000ae314e2a2172a039b26378814c252734f556a",
+        "symbol": "ASTER",
+        "decimals": 18,
+        "source": "rpc"
+      },
+      "token1": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "symbol": "BNB",
+        "decimals": 18,
+        "source": "native"
+      },
+      "pool_key": {
+        "currency0": "0x000ae314e2a2172a039b26378814c252734f556a",
+        "currency1": "0x0000000000000000000000000000000000000000",
+        "fee": null,
+        "tickSpacing": null,
+        "hooks": null,
+        "status": "unavailable"
+      }
+    },
+    {
+      "label": "bsc_v4",
+      "symbol": "ASTER",
+      "amm_version": "v4",
+      "dex": "uniswap",
+      "network": "binance-smart-chain",
+      "token_address": "0x000ae314e2a2172a039b26378814c252734f556a",
+      "pool_address": "0x3a608869e61332c70e634f7a39293176e9a44b4ddf5ddcce177582f57b955479",
+      "liquidity_usd": 1042276.1392,
+      "source": "geckoterminal",
+      "pair_name": "ASTER / USDT 0.5%",
+      "pool_created_at": "2025-09-19T18:43:06Z",
+      "fee_percent": "0.5%",
+      "token0": {
+        "address": "0x000ae314e2a2172a039b26378814c252734f556a",
+        "symbol": "ASTER",
+        "decimals": 18,
+        "source": "rpc"
+      },
+      "token1": {
+        "address": "0x55d398326f99059ff775485246999027b3197955",
+        "symbol": "USDT",
+        "decimals": 18,
+        "source": "rpc"
+      },
+      "pool_key": {
+        "currency0": "0x000ae314e2a2172a039b26378814c252734f556a",
+        "currency1": "0x55d398326f99059ff775485246999027b3197955",
+        "fee": null,
+        "tickSpacing": null,
+        "hooks": null,
+        "status": "unavailable"
+      }
+    }
+  ]
+}

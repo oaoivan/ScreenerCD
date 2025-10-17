@@ -1,97 +1,42 @@
- # Arbitrage Screener
+# Arbitrage Screener
 
 ## Overview
-The Arbitrage Screener is a high-performance monitoring tool designed to identify arbitrage opportunities between centralized exchanges (CEX) and decentralized exchanges (DEX) in real-time. The project leverages various technologies to ensure efficient data processing and user-friendly interaction.
+The Arbitrage Screener monitors price updates from multiple CEX and DEX venues, normalises the data, and exposes derived USD prices through Redis. The current implementation focuses on a single-user desktop workflow but keeps the ingestion core decoupled for future UI integrations.
 
 ## Project Structure
-The project is organized into several key directories:
+- **cmd/** – entrypoints (`screener-core`).
+- **internal/** – core business logic (configuration, launchers, connectors, pricing, Redis workers).
+- **pkg/** – protobuf definitions and shared models.
+- **configs/** – deployment templates, including `screener-core.yaml`.
+- **ticker_source/** – shared datasets (`base_pools.json`) consumed by DEX connectors.
+- **scripts/**, **test_scripts/** – helper and diagnostic tools.
 
-- **cmd/**: Contains the entry point for the Screener Core service.
-- **internal/**: Houses the core logic, including configuration management, exchange connectors, data processing, and Redis interactions.
-- **pkg/**: Contains Protobuf definitions and common data models.
-- **configs/**: Configuration files for the Screener Core service.
-- **web/**: Legacy web prototype assets (HTML, CSS, JavaScript).
-- **scripts/**: Utility scripts for generating Protobuf code.
-- **tests/**: Integration tests documentation.
-- **Dockerfile.screener-core**: Container build definition for the Screener Core service.
+## Data Flow
+1. `cmd/screener-core` loads `configs/screener-core.yaml`, builds launchers from `internal/launcher`, and allocates a shared channel.
+2. Each connector pushes `protobuf.MarketData` into the channel; Redis workers batch-write `price:*` hashes.
+3. `internal/dex/pricing` keeps stable anchors and resolves derived USD quotes using a graph search.
+4. Metrics and health logs are printed via `util.Infof`/`util.Errorf`, allowing quick inspection of pool sources and message rates.
 
-## Technologies Used
-- **Programming Language**: Go (for backend services)
-- **Database/Cache**: Redis
-- **Data Serialization**: Protocol Buffers
-- **Containerization**: Docker, Docker Compose
-- **Frontend (prototype)**: HTML, CSS, JavaScript (with protobuf.js)
-
-## Architecture
-
-```mermaid
-flowchart LR
-   Config[screener-core.yaml\n(YAML config)] --> Resolver[Symbol resolver\ninline → symbols_file → default]
-   Resolver --> Bybit[Bybit connector]
-   Resolver --> Gate[Gate connector]
-   Resolver --> Bitget[Bitget connector]
-   Resolver --> OKX[OKX connector]
-
-   Bybit --> Channel[dataChannel\nshared buffer]
-   Gate --> Channel
-   Bitget --> Channel
-   OKX --> Channel
-
-   Channel --> Workers[Redis worker pool\nbatch HSET]
-   Workers --> Redis[(Redis)]
-   Redis --> Desktop[Desktop client\nreads price:* keys]
-
-   Workers --> Logs[Logs & metrics\napp.log]
-```
-
-Symbol lists are defined per exchange in the YAML config: each entry can provide inline pairs or a `symbols_file`, and falls back to the global `default_symbols_file` when unspecified. Для всех коннекторов стартует единая фабрика `internal/launcher`: достаточно зарегистрировать builder под нужным именем и прописать настройки в YAML — `main.go` автоматически подберёт его по ключу. Для DEX-коннекторов дополнительно требуется рабочий `http_url`, чтобы перед подпиской через RPC проверить `token0/token1` и корректно привести цены к USD. При добавлении новой площадки не забудьте расширить `configs/assets/tokens.yaml`, иначе графовый прайсер не увидит свежие стейблы и нативные токены.
+## Symbol & Pool Sources
+- **CEX symbols**: each exchange block in the YAML config can list inline pairs, point to a `symbols_file`, or inherit `default_symbols_file`.
+- **DEX pools**: launchers load `ticker_source/base_pools.json` through `basepools.Filter`. Filters come from `DexConfig.PoolsSource` (`DexFilter`, `NetworkFilter`, `AmmVersionFilter`). Inline overrides remain available via `DexConfig.Pools`.
+- Keep reference pools (`reference_pools` in the config) aligned with `basepools.NormalizeDex` (e.g. `uniswap`, `pancakeswap`).
 
 ## Getting Started
-To set up the project, follow these steps:
+```bash
+git clone <repository-url>
+cd screner
+# Install Go (>=1.21) and Docker if you plan to run Redis locally
 
-1. **Clone the repository**:
-   ```
-   git clone <repository-url>
-   cd screner
-   ```
+# Run unit tests
+go test ./...
 
-2. **Install dependencies**:
-   Ensure you have Go and Docker installed on your machine.
+# Start Redis + screener-core
+docker-compose up
+```
+`base_pools.json` ships with the repository; regenerate it with the internal tooling, then restart `screener-core` to apply new pools.
 
-3. **Build the service**:
-   Use the provided Dockerfile to build the image for the Screener Core.
-
-4. **Run the application**:
-   Use Docker Compose to start the Screener Core together with Redis:
-   ```
-   docker-compose up
-   ```
-
-5. **Использование данных**:
-   Screener Core публикует маркет-данные в Redis. Настраиваемый десктопный клиент может читать эти ключи напрямую.
-
-## Быстрый старт (единые скрипты)
-
-В корне добавлены утилиты для запуска/остановки и статуса:
-
-- `scripts/start_all.sh`
-   - По умолчанию: запускает локальный `screener-core` (go build) и поднимает Redis через Docker Compose при необходимости.
-   - Ключи:
-      - `--docker-all` — запустить весь стек в Docker (`redis + screener-core`).
-      - `--no-build` — не собирать бинарник, использовать существующий `build/screener-core`.
-      - `--clean-log` — обнулить `screner.log` перед стартом.
-   - Переменные окружения: `REDIS_HOST` (default `localhost`), `REDIS_PORT` (default `6379`).
-
-- `scripts/stop_all.sh`
-   - Останавливает локальный `screener-core` по PID.
-   - Ключ `--docker-all` — остановит docker compose сервисы.
-
-- `scripts/status_all.sh`
-   - Показывает состояние docker compose, PING Redis + счётчики ключей, локальный PID, последние строки логов.
-
-Логи приложения: `screner.log`. PID локального процесса: `build/screener-core.pid`.
-## Contributing
-Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+## References
+- `docs/project_documentation.md` – architecture deep dive.
+- `docs/uniswap_v4_integration_plan.md` – migration checklist for V4.
+- `AGENTS.md` – coordination guidelines for automation.

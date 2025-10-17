@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -9,7 +11,7 @@ import (
 )
 
 func main() {
-	pools, err := uniswap.LoadPoolsFromGecko("ticker_source/geckoterminal_pools.json")
+	pools, err := uniswap.LoadPoolsFromBase("ticker_source/base_pools.json", "uniswap_v2", "")
 	if err != nil {
 		log.Fatal(err)
 	}

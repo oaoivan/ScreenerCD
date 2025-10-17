@@ -16,8 +16,6 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -28,6 +26,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gorilla/websocket"
 	"github.com/yourusername/screner/internal/dex/pricing"
+	basepools "github.com/yourusername/screner/internal/pools/base"
 	"github.com/yourusername/screner/internal/util"
 	pb "github.com/yourusername/screner/pkg/protobuf"
 )
@@ -35,7 +34,6 @@ import (
 // --- Константы ---
 const (
 	v3DefaultMainnetTemplate = "wss://eth-mainnet.g.alchemy.com/v2/%s"
-	v3GeckoDefaultPath       = ""
 	v3BatchSizeDefault       = 150
 	v3PingIntervalDefault    = 25 * time.Second
 	v3ReconnectBase          = 2 * time.Second
@@ -47,81 +45,6 @@ var (
 )
 
 // --- Структуры входного файла GeckoTerminal ---
-type v3IntOrString int
-
-func (v *v3IntOrString) UnmarshalJSON(b []byte) error {
-	bb := bytes.TrimSpace(b)
-	if len(bb) == 0 {
-		*v = 0
-		return nil
-	}
-	if bb[0] == '"' {
-		var s string
-		if err := json.Unmarshal(bb, &s); err != nil {
-			return err
-		}
-		s = strings.TrimSpace(s)
-		if s == "" {
-			*v = 0
-			return nil
-		}
-		n, err := strconv.Atoi(s)
-		if err != nil {
-			return err
-		}
-		*v = v3IntOrString(n)
-		return nil
-	}
-	var n int
-	if err := json.Unmarshal(bb, &n); err != nil {
-		return err
-	}
-	*v = v3IntOrString(n)
-	return nil
-}
-
-type v3GeckoPool struct {
-	Dex         string `json:"dex"`
-	PairName    string `json:"pair_name"`
-	PoolID      string `json:"pool_id"`
-	PoolAddress string `json:"pool_address"`
-	Network     string `json:"network"`
-	Token0      struct {
-		Address  string        `json:"address"`
-		Symbol   string        `json:"symbol"`
-		Decimals v3IntOrString `json:"decimals"`
-	} `json:"token0"`
-	Token1 struct {
-		Address  string        `json:"address"`
-		Symbol   string        `json:"symbol"`
-		Decimals v3IntOrString `json:"decimals"`
-	} `json:"token1"`
-}
-
-type v3GeckoFile struct {
-	Entries []v3GeckoPool `json:"entries"`
-}
-
-func v3TokenMetaFromJSON(address, symbol string, decimals v3IntOrString) v3TokenMeta {
-	meta := v3TokenMeta{}
-	addr := strings.TrimSpace(address)
-	if common.IsHexAddress(addr) {
-		meta.Address = common.HexToAddress(addr)
-	}
-	sym := strings.TrimSpace(symbol)
-	if sym != "" {
-		meta.Symbol = strings.ToUpper(sym)
-	}
-	dec := int(decimals)
-	if dec < 0 {
-		dec = 0
-	}
-	if dec > 255 {
-		dec = 255
-	}
-	meta.Dec = uint8(dec)
-	return meta
-}
 
 func v3DefaultSymbol(addr common.Address) string {
 	hex := strings.ToUpper(strings.TrimPrefix(addr.Hex(), "0x"))
@@ -176,9 +99,13 @@ type v3TokenMeta struct {
 
 type v3PoolMeta struct {
 	Addr        common.Address
+	PoolID      common.Address
 	PairName    string
 	Token0      v3TokenMeta
 	Token1      v3TokenMeta
+	Fee         uint32
+	TickSpacing int
+	HookAddr    common.Address
 	Loaded      bool // метаданные токенов загружены
 	Loading     bool
 	LoadErr     error
@@ -192,6 +119,7 @@ const v3FallbackWETHHex = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 
 var (
 	v3Pools          = make(map[common.Address]*v3PoolMeta)
+	v3PoolOrder      []common.Address
 	v3BatchSize      int
 	v3ABI            abi.ABI
 	v3EventBySig     = make(map[common.Hash]abi.Event)
@@ -315,6 +243,7 @@ type V3Config struct {
 	PoolsPath      string
 	DexFilter      string
 	NetworkFilter  string
+	AmmVersion     string
 	BatchSize      int
 	PingInterval   time.Duration
 	StopOnAckError bool
@@ -476,74 +405,131 @@ func v3ResolveWS(cfg *V3Config) error {
 func v3LoadPools(cfg V3Config) error {
 	path := strings.TrimSpace(cfg.PoolsPath)
 	if path == "" {
-		path = strings.TrimSpace(os.Getenv("GECKO_POOLS_JSON"))
-	}
-	if path == "" {
-		path = v3GeckoDefaultPath
+		path = strings.TrimSpace(os.Getenv("BASE_POOLS_JSON"))
 	}
 	if path == "" {
 		return fmt.Errorf("uniswap_v3: pools path not provided")
 	}
-	b, err := os.ReadFile(path)
+
+	entries, err := basepools.LoadBasePools(path)
 	if err != nil {
 		return err
 	}
-	var f v3GeckoFile
-	if err := json.Unmarshal(b, &f); err != nil {
-		return err
-	}
+
 	dexFilter := strings.TrimSpace(cfg.DexFilter)
 	if dexFilter == "" {
-		dexFilter = "uniswap_v3"
+		dexFilter = "uniswap"
 	}
-	networkFilter := strings.ToLower(strings.TrimSpace(cfg.NetworkFilter))
+	filter := basepools.Filter{
+		Dexes:    []string{basepools.NormalizeDex(dexFilter)},
+		Versions: []basepools.Version{basepools.VersionV3},
+	}
+	if trimmed := strings.TrimSpace(cfg.NetworkFilter); trimmed != "" {
+		filter.Networks = []string{trimmed}
+	}
+
+	filtered := basepools.FilterEntries(entries, filter)
+	if len(filtered) == 0 {
+		return fmt.Errorf("uniswap_v3: no pools found in %s", path)
+	}
 
 	v3Pools = make(map[common.Address]*v3PoolMeta)
+	v3PoolOrder = make([]common.Address, 0, len(filtered))
 	added := 0
-	for _, e := range f.Entries {
-		if dexFilter != "" && !strings.EqualFold(e.Dex, dexFilter) {
+	for _, entry := range filtered {
+		pairLabel := strings.TrimSpace(entry.PairName)
+		if pairLabel == "" {
+			pairLabel = strings.TrimSpace(entry.Symbol)
+		}
+
+		poolAddrHex := strings.TrimSpace(entry.PoolAddress)
+		if poolAddrHex == "" {
+			util.Errorf("uniswap_v3: skip pool pair=%s reason=missing pool_address", pairLabel)
 			continue
 		}
-		if networkFilter != "" && !strings.Contains(strings.ToLower(e.Network), networkFilter) {
+		if !common.IsHexAddress(poolAddrHex) {
+			util.Errorf("uniswap_v3: skip pool pair=%s reason=invalid pool_address=%s", pairLabel, poolAddrHex)
 			continue
 		}
-		addrHex := e.PoolID
-		if addrHex == "" {
-			addrHex = e.PoolAddress
-		}
-		if !common.IsHexAddress(addrHex) {
+
+		poolIDHex := strings.TrimSpace(entry.PoolID)
+		if poolIDHex == "" {
+			util.Errorf("uniswap_v3: skip pool pair=%s address=%s reason=missing pool_id", pairLabel, poolAddrHex)
 			continue
 		}
-		addr := common.HexToAddress(addrHex)
+		if !common.IsHexAddress(poolIDHex) {
+			util.Errorf("uniswap_v3: skip pool pair=%s reason=invalid pool_id=%s", pairLabel, poolIDHex)
+			continue
+		}
+
+		addr := common.HexToAddress(poolAddrHex)
+		poolID := common.HexToAddress(poolIDHex)
+		if addr != poolID {
+			util.Errorf("uniswap_v3: skip pool pair=%s reason=pool_id/address mismatch pool_id=%s pool_address=%s", pairLabel, poolIDHex, poolAddrHex)
+			continue
+		}
+
 		if _, exists := v3Pools[addr]; exists {
 			continue
 		}
-		token0 := v3TokenMetaFromJSON(e.Token0.Address, e.Token0.Symbol, e.Token0.Decimals)
-		token1 := v3TokenMetaFromJSON(e.Token1.Address, e.Token1.Symbol, e.Token1.Decimals)
-		if (token0.Address == common.Address{}) || (token1.Address == common.Address{}) {
-			util.Debugf("uniswap_v3 skip pool=%s reason=missing token address", e.PairName)
+
+		token0Addr := strings.TrimSpace(entry.Token0.Address)
+		token1Addr := strings.TrimSpace(entry.Token1.Address)
+		if !common.IsHexAddress(token0Addr) || !common.IsHexAddress(token1Addr) {
+			util.Debugf("uniswap_v3: skip pool %s reason=missing token address", entry.PairName)
 			continue
 		}
+
+		token0 := v3TokenMeta{Address: common.HexToAddress(token0Addr), Symbol: entry.Token0.Symbol, Dec: clampDecimalsUint8(entry.Token0.Decimals)}
+		token1 := v3TokenMeta{Address: common.HexToAddress(token1Addr), Symbol: entry.Token1.Symbol, Dec: clampDecimalsUint8(entry.Token1.Decimals)}
+
 		if token0.Symbol == "" {
 			token0.Symbol = v3DefaultSymbol(token0.Address)
 		}
 		if token1.Symbol == "" {
 			token1.Symbol = v3DefaultSymbol(token1.Address)
 		}
-		hasJSONMeta := token0.Dec > 0 && token1.Dec > 0
+
+		hasMeta := token0.Dec > 0 && token1.Dec > 0
+		pairName := strings.TrimSpace(entry.PairName)
+		if pairName == "" {
+			pairName = fmt.Sprintf("%s/%s", token0.Symbol, token1.Symbol)
+		}
+
+		var fee uint32
+		if entry.PoolKey.Fee != nil && *entry.PoolKey.Fee >= 0 {
+			fee = uint32(*entry.PoolKey.Fee)
+		}
+		tickSpacing := 0
+		if entry.PoolKey.TickSpacing != nil {
+			tickSpacing = *entry.PoolKey.TickSpacing
+		}
+		var hookAddr common.Address
+		if hookHex := strings.TrimSpace(entry.PoolKey.Hooks); common.IsHexAddress(hookHex) {
+			hookAddr = common.HexToAddress(hookHex)
+		}
+
+		preloaded := hasMeta
 		v3Pools[addr] = &v3PoolMeta{
 			Addr:        addr,
-			PairName:    e.PairName,
+			PoolID:      poolID,
+			PairName:    pairName,
 			Token0:      token0,
 			Token1:      token1,
-			HasJSONMeta: hasJSONMeta,
+			Fee:         fee,
+			TickSpacing: tickSpacing,
+			HookAddr:    hookAddr,
+			HasJSONMeta: hasMeta,
+			Loaded:      preloaded,
+			Verified:    preloaded,
 		}
-		if hasJSONMeta {
-			util.Debugf("uniswap_v3 pool=%s decimals json token0=%d token1=%d", e.PairName, token0.Dec, token1.Dec)
+		v3PoolOrder = append(v3PoolOrder, addr)
+		if hasMeta {
+			util.Debugf("uniswap_v3: pool=%s decimals meta token0=%d token1=%d", pairName, token0.Dec, token1.Dec)
 		}
 		added++
 		if added <= 20 {
-			util.Infof("uniswap_v3 add pool %s addr=%s", e.PairName, addr.Hex())
+			util.Infof("uniswap_v3 add pool %s addr=%s fee=%d tickSpacing=%d", pairName, addr.Hex(), fee, tickSpacing)
 		}
 	}
 	util.Infof("uniswap_v3 loaded pools=%d source=%s", added, path)
@@ -628,11 +614,20 @@ func v3Dial() (*websocket.Conn, error) {
 }
 
 func v3SubscribeAll(conn *websocket.Conn) error {
-	addresses := make([]string, 0, len(v3Pools))
-	for a := range v3Pools {
-		addresses = append(addresses, a.Hex())
+	if v3BatchSize <= 0 {
+		v3BatchSize = v3BatchSizeDefault
 	}
-	sort.Strings(addresses)
+	addresses := make([]string, 0, len(v3PoolOrder))
+	for _, addr := range v3PoolOrder {
+		if pm, ok := v3Pools[addr]; ok && pm != nil {
+			addresses = append(addresses, addr.Hex())
+			continue
+		}
+		util.Debugf("uniswap_v3: skip obsolete pool addr=%s during subscribe", addr.Hex())
+	}
+	if len(addresses) == 0 {
+		return fmt.Errorf("uniswap_v3: no pools available for subscription")
+	}
 	batches := 0
 	id := 1
 	for start := 0; start < len(addresses); start += v3BatchSize {
@@ -649,7 +644,12 @@ func v3SubscribeAll(conn *websocket.Conn) error {
 		batches++
 		id++
 	}
-	util.Infof("uniswap_v3 total subscribe batches=%d", batches)
+	if len(v3PoolOrder) > 0 {
+		if pm := v3Pools[v3PoolOrder[0]]; pm != nil {
+			util.Debugf("uniswap_v3 first subscription pair=%s fee=%d tickSpacing=%d", pm.PairName, pm.Fee, pm.TickSpacing)
+		}
+	}
+	util.Infof("uniswap_v3 total subscribe batches=%d batch_size=%d", batches, v3BatchSize)
 	return nil
 }
 
@@ -1436,4 +1436,14 @@ func v3LoadDotEnv(path string) {
 		}
 		util.Infof("uniswap_v3 .env %s=%s", k, disp)
 	}
+}
+
+func clampDecimalsUint8(dec int) uint8 {
+	if dec < 0 {
+		dec = 0
+	}
+	if dec > 255 {
+		dec = 255
+	}
+	return uint8(dec)
 }

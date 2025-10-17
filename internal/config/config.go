@@ -79,6 +79,7 @@ const (
 	maxPingInterval   = 120
 	minMetaWorkers    = 1
 	maxMetaWorkers    = 64
+	defaultBasePools  = "ticker_source/base_pools.json"
 )
 
 // ResolvePoolsPath возвращает путь для конкретного DEX коннектора с учётом shared fallback.
@@ -88,6 +89,12 @@ func (d DexConfig) ResolvePoolsPath(shared string) string {
 	}
 	if path := strings.TrimSpace(os.ExpandEnv(d.PoolsFile)); path != "" {
 		return path
+	}
+	if path := strings.TrimSpace(shared); path != "" {
+		return path
+	}
+	if stat, err := os.Stat(defaultBasePools); err == nil && !stat.IsDir() {
+		return defaultBasePools
 	}
 	return strings.TrimSpace(shared)
 }
@@ -132,6 +139,20 @@ func (d DexConfig) Validate() error {
 		return fmt.Errorf("wanted_pairs must be provided when wanted_pairs_only=true")
 	}
 
+	usingExternalPools := strings.TrimSpace(d.PoolsSource.Resolve()) != ""
+	if usingExternalPools {
+		if strings.TrimSpace(d.PoolsSource.DexFilter) == "" {
+			return fmt.Errorf("pools_source.dex_filter must be specified for %s", name)
+		}
+		ammFilter := strings.TrimSpace(d.PoolsSource.AmmVersionFilter)
+		if ammFilter == "" {
+			ammFilter = strings.TrimSpace(d.PoolsSource.AmmVersion)
+		}
+		if ammFilter == "" {
+			return fmt.Errorf("pools_source.amm_version_filter must be specified for %s", name)
+		}
+	}
+
 	if strings.EqualFold(name, "uniswap_v4") {
 		if strings.TrimSpace(d.HTTPURL) == "" {
 			return fmt.Errorf("http_url is required for uniswap_v4")
@@ -166,6 +187,9 @@ type DexPoolConfig struct {
 	Token1Decimals uint8  `yaml:"token1_decimals"`
 	BaseIsToken0   bool   `yaml:"base_is_token0"`
 	CanonicalPair  string `yaml:"canonical_pair"`
+	PoolAddress    string `yaml:"pool_address"`
+	HookAddress    string `yaml:"hook_address"`
+	TickSpacing    int    `yaml:"tick_spacing"`
 }
 
 type FileSource struct {
@@ -187,12 +211,15 @@ func (fs FileSource) Resolve() string {
 
 // PoolsSource задаёт параметры внешнего списка пулов, например GeckoTerminal JSON.
 type PoolsSource struct {
-	File          string   `yaml:"file"`
-	Env           string   `yaml:"env"`
-	GeckoDex      string   `yaml:"gecko_dex"`
-	GeckoNetwork  string   `yaml:"gecko_network"`
-	IncludeStable bool     `yaml:"include_stable"`
-	WantedPairs   []string `yaml:"wanted_pairs"`
+	File             string   `yaml:"file"`
+	Env              string   `yaml:"env"`
+	DexFilter        string   `yaml:"dex_filter"`
+	NetworkFilter    string   `yaml:"network_filter"`
+	AmmVersionFilter string   `yaml:"amm_version_filter"`
+	AmmVersion       string   `yaml:"amm_version"`
+	SymbolsOnly      bool     `yaml:"symbols_only"`
+	IncludeStable    bool     `yaml:"include_stable"`
+	WantedPairs      []string `yaml:"wanted_pairs"`
 }
 
 // Resolve возвращает итоговый путь к файлу пулов с учётом env и подстановок.
@@ -220,6 +247,9 @@ func (c *Config) ResolveSharedPoolsPath() string {
 		if path := strings.TrimSpace(os.ExpandEnv(dex.PoolsFile)); path != "" {
 			return path
 		}
+	}
+	if stat, err := os.Stat(defaultBasePools); err == nil && !stat.IsDir() {
+		return defaultBasePools
 	}
 	return ""
 }
