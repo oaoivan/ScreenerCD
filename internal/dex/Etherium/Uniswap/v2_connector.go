@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/yourusername/screner/internal/assets"
 	"github.com/yourusername/screner/internal/dex/pricing"
 	basepools "github.com/yourusername/screner/internal/pools/base"
@@ -341,13 +340,6 @@ func (c *Connector) Run(ctx context.Context, out chan<- *pb.MarketData) error {
 	}
 
 	pools := c.cfg.Pools
-	if adjusted, err := AdjustPoolsOrdering(ctx, c.cfg.HTTPURL, pools); err != nil {
-		util.Errorf("uniswap_v2: adjust pool order failed: %v", err)
-	} else {
-		pools = adjusted
-		c.cfg.Pools = adjusted
-	}
-
 	c.pools = make(map[common.Address]*poolState, len(pools))
 	for _, pool := range pools {
 		ps := &poolState{meta: pool}
@@ -778,9 +770,9 @@ func computeSnapshot(pool PoolConfig, rawData string) (*poolSnapshot, error) {
 
 	var price *big.Rat
 	if pool.BaseIsToken0 {
-		price = ratio(r1, pool.Token1.Decimals, r0, pool.Token0.Decimals)
-	} else {
 		price = ratio(r0, pool.Token0.Decimals, r1, pool.Token1.Decimals)
+	} else {
+		price = ratio(r1, pool.Token1.Decimals, r0, pool.Token0.Decimals)
 	}
 	return &poolSnapshot{Price: price, Reserve0: r0, Reserve1: r1}, nil
 }
@@ -943,6 +935,11 @@ func LoadPoolsFromBaseWithRegistry(path string, registry *TokenRegistry, filter 
 
 		token0 := resolveBaseToken(entry.Token0, registry)
 		token1 := resolveBaseToken(entry.Token1, registry)
+		// Uniswap V2 pairs sort token0/token1 lexicographically by address. Normalise order
+		// so that our metadata matches the on-chain layout without performing RPC calls.
+		if token0.Address.Big().Cmp(token1.Address.Big()) > 0 {
+			token0, token1 = token1, token0
+		}
 
 		pool := PoolConfig{
 			Address:      poolAddress,
@@ -994,6 +991,10 @@ func determineBase(entry basepools.Entry, token0, token1 TokenMeta) bool {
 		return false
 	case quoteHex != "" && quoteHex == token1Hex:
 		return true
+	case token0.IsWETH && !token1.IsWETH:
+		return false
+	case token1.IsWETH && !token0.IsWETH:
+		return true
 	case token0.IsStable && !token1.IsStable:
 		return false
 	case token1.IsStable && !token0.IsStable:
@@ -1003,137 +1004,9 @@ func determineBase(entry basepools.Entry, token0, token1 TokenMeta) bool {
 	}
 }
 
-func AdjustPoolsOrdering(ctx context.Context, httpURL string, pools []PoolConfig) ([]PoolConfig, error) {
-	trimmed := strings.TrimSpace(httpURL)
-	if trimmed == "" {
-		return pools, nil
-	}
-	client, err := rpc.DialContext(ctx, trimmed)
-	if err != nil {
-		return nil, err
-	}
-	defer client.Close()
-
-	decimalsCache := make(map[common.Address]int)
-
-	for i := range pools {
-		pool := &pools[i]
-		if err := ensurePoolOrder(ctx, client, pool); err != nil {
-			util.Debugf("uniswap_v2: ensurePoolOrder failed for %s (%s): %v", pool.PairName, pool.Address.Hex(), err)
-		}
-		updateTokenDecimals(ctx, client, pool, decimalsCache)
-	}
-	return pools, nil
-}
-
-func ensurePoolOrder(ctx context.Context, client *rpc.Client, pool *PoolConfig) error {
-	t0, t1, err := fetchPairTokens(ctx, client, pool.Address)
-	if err != nil {
-		return err
-	}
-	if t0 == pool.Token0.Address && t1 == pool.Token1.Address {
-		return nil
-	}
-	if t0 == pool.Token1.Address && t1 == pool.Token0.Address {
-		swapPoolTokens(pool)
-		FinalizePool(pool)
-		return nil
-	}
-	return fmt.Errorf("token mismatch pool=%s meta0=%s meta1=%s actual0=%s actual1=%s", pool.PairName, pool.Token0.Address.Hex(), pool.Token1.Address.Hex(), t0.Hex(), t1.Hex())
-}
-
-func fetchPairTokens(ctx context.Context, client *rpc.Client, pair common.Address) (common.Address, common.Address, error) {
-	t0, err := callAddress(ctx, client, pair, "0x0dfe1681")
-	if err != nil {
-		return common.Address{}, common.Address{}, err
-	}
-	t1, err := callAddress(ctx, client, pair, "0xd21220a7")
-	if err != nil {
-		return common.Address{}, common.Address{}, err
-	}
-	return t0, t1, nil
-}
-
-func callAddress(ctx context.Context, client *rpc.Client, pair common.Address, data string) (common.Address, error) {
-	var result string
-	call := map[string]string{"to": pair.Hex(), "data": data}
-	ctx, cancel := context.WithTimeout(ctx, 4*time.Second)
-	defer cancel()
-	if err := client.CallContext(ctx, &result, "eth_call", call, "latest"); err != nil {
-		return common.Address{}, err
-	}
-	return parseAddressResult(result)
-}
-
-func parseAddressResult(res string) (common.Address, error) {
-	res = strings.TrimSpace(res)
-	if !strings.HasPrefix(res, "0x") {
-		return common.Address{}, fmt.Errorf("unexpected eth_call result %s", res)
-	}
-	b, err := hex.DecodeString(strings.TrimPrefix(res, "0x"))
-	if err != nil {
-		return common.Address{}, err
-	}
-	if len(b) < 32 {
-		return common.Address{}, fmt.Errorf("eth_call result too short: %d", len(b))
-	}
-	return common.BytesToAddress(b[12:]), nil
-}
-
 func swapPoolTokens(pool *PoolConfig) {
 	pool.Token0, pool.Token1 = pool.Token1, pool.Token0
 	pool.BaseIsToken0 = !pool.BaseIsToken0
-}
-
-func updateTokenDecimals(ctx context.Context, client *rpc.Client, pool *PoolConfig, cache map[common.Address]int) {
-	updateMetaDecimals := func(meta *TokenMeta) {
-		if meta.IsStable || meta.IsWETH {
-			return
-		}
-		if meta.Decimals > 0 && meta.Decimals <= 18 && meta.Decimals >= 10 {
-			return
-		}
-		if cached, ok := cache[meta.Address]; ok {
-			meta.Decimals = cached
-			return
-		}
-		if dec, err := fetchTokenDecimals(ctx, client, meta.Address); err == nil && dec > 0 {
-			meta.Decimals = dec
-			cache[meta.Address] = dec
-			util.Infof("uniswap_v2: updated decimals addr=%s symbol=%s decimals=%d", meta.Address.Hex(), meta.Symbol, dec)
-		} else if err != nil {
-			util.Debugf("uniswap_v2: fetch decimals failed addr=%s: %v", meta.Address.Hex(), err)
-		}
-	}
-	updateMetaDecimals(&pool.Token0)
-	updateMetaDecimals(&pool.Token1)
-	FinalizePool(pool)
-}
-
-func fetchTokenDecimals(ctx context.Context, client *rpc.Client, addr common.Address) (int, error) {
-	ctx, cancel := context.WithTimeout(ctx, 4*time.Second)
-	defer cancel()
-	var result string
-	call := map[string]string{"to": addr.Hex(), "data": "0x313ce567"}
-	if err := client.CallContext(ctx, &result, "eth_call", call, "latest"); err != nil {
-		return 0, err
-	}
-	res := strings.TrimPrefix(strings.TrimSpace(result), "0x")
-	if res == "" {
-		return 0, errors.New("empty decimals result")
-	}
-	data, err := hex.DecodeString(res)
-	if err != nil {
-		return 0, err
-	}
-	if len(data) == 0 {
-		return 0, errors.New("no data for decimals")
-	}
-	dec := int(new(big.Int).SetBytes(data).Int64())
-	if dec <= 0 {
-		return 0, fmt.Errorf("invalid decimals %d", dec)
-	}
-	return dec, nil
 }
 
 func shortAddress(addr string) string {

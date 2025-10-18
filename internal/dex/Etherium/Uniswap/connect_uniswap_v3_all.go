@@ -452,21 +452,19 @@ func v3LoadPools(cfg V3Config) error {
 			continue
 		}
 
+		addr := common.HexToAddress(poolAddrHex)
 		poolIDHex := strings.TrimSpace(entry.PoolID)
 		if poolIDHex == "" {
-			util.Errorf("uniswap_v3: skip pool pair=%s address=%s reason=missing pool_id", pairLabel, poolAddrHex)
-			continue
+			poolIDHex = poolAddrHex
 		}
 		if !common.IsHexAddress(poolIDHex) {
 			util.Errorf("uniswap_v3: skip pool pair=%s reason=invalid pool_id=%s", pairLabel, poolIDHex)
 			continue
 		}
-
-		addr := common.HexToAddress(poolAddrHex)
 		poolID := common.HexToAddress(poolIDHex)
-		if addr != poolID {
-			util.Errorf("uniswap_v3: skip pool pair=%s reason=pool_id/address mismatch pool_id=%s pool_address=%s", pairLabel, poolIDHex, poolAddrHex)
-			continue
+		if poolID != addr {
+			util.Infof("uniswap_v3: pool pair=%s using pool_address=%s while pool_id=%s differs", pairLabel, poolAddrHex, poolIDHex)
+			poolID = addr
 		}
 
 		if _, exists := v3Pools[addr]; exists {

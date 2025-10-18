@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"log"
@@ -26,7 +27,7 @@ type lineLimitedWriter struct {
 }
 
 func newLineLimitedWriter(path string, maxLines int) (*lineLimitedWriter, error) {
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0o666)
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0o666)
 	if err != nil {
 		return nil, err
 	}
@@ -41,6 +42,9 @@ func newLineLimitedWriter(path string, maxLines int) (*lineLimitedWriter, error)
 func (w *lineLimitedWriter) Write(p []byte) (int, error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
+	if _, err := w.file.Seek(0, io.SeekEnd); err != nil {
+		return 0, err
+	}
 	n, err := w.file.Write(p)
 	if err != nil {
 		return n, err
@@ -64,54 +68,39 @@ func (w *lineLimitedWriter) Sync() error {
 }
 
 func (w *lineLimitedWriter) trimUnlocked() error {
-	info, err := w.file.Stat()
-	if err != nil {
-		return err
-	}
-	size := info.Size()
-	if size <= 0 {
+	if w.maxLines <= 0 {
 		return nil
 	}
 
-	var (
-		offset             = size
-		newlineCount       = 0
-		cutoff       int64 = 0
-	)
-	const bufSize = 8192
-	buf := make([]byte, bufSize)
-
-	for offset > 0 && newlineCount <= w.maxLines {
-		readSize := bufSize
-		if int64(readSize) > offset {
-			readSize = int(offset)
-		}
-		offset -= int64(readSize)
-		if _, err := w.file.ReadAt(buf[:readSize], offset); err != nil {
-			return err
-		}
-		for i := readSize - 1; i >= 0; i-- {
-			if buf[i] == '\n' {
-				newlineCount++
-				if newlineCount > w.maxLines {
-					cutoff = offset + int64(i) + 1
-					break
-				}
-			}
-		}
-		if cutoff != 0 {
-			break
-		}
-	}
-
-	if newlineCount <= w.maxLines || cutoff == 0 {
-		return nil
-	}
-
-	tailLen := size - cutoff
-	tail := make([]byte, tailLen)
-	if _, err := w.file.ReadAt(tail, cutoff); err != nil {
+	if _, err := w.file.Seek(0, io.SeekStart); err != nil {
 		return err
+	}
+
+	scanner := bufio.NewScanner(w.file)
+	lines := make([]string, w.maxLines)
+	count := 0
+	idx := 0
+
+	for scanner.Scan() {
+		lines[idx] = scanner.Text()
+		idx = (idx + 1) % w.maxLines
+		if count < w.maxLines {
+			count++
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	if count < w.maxLines {
+		_, err := w.file.Seek(0, io.SeekEnd)
+		return err
+	}
+
+	ordered := make([]string, count)
+	start := idx % w.maxLines
+	for i := 0; i < count; i++ {
+		ordered[i] = lines[(start+i)%w.maxLines]
 	}
 
 	if err := w.file.Truncate(0); err != nil {
@@ -120,13 +109,15 @@ func (w *lineLimitedWriter) trimUnlocked() error {
 	if _, err := w.file.Seek(0, io.SeekStart); err != nil {
 		return err
 	}
-	if _, err := w.file.Write(tail); err != nil {
-		return err
+	for _, line := range ordered {
+		if _, err := w.file.WriteString(line); err != nil {
+			return err
+		}
+		if _, err := w.file.WriteString("\n"); err != nil {
+			return err
+		}
 	}
-	if err := w.file.Sync(); err != nil {
-		return err
-	}
-	_, err = w.file.Seek(0, io.SeekEnd)
+	_, err := w.file.Seek(0, io.SeekEnd)
 	return err
 }
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-11T17:49:01+00:00",
+  "generated_at": "2025-10-17T15:03:24+00:00",
   "sources": [
     "build_base_pools",
     "collect_uniswap_pools",
@@ -615,7 +615,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "pharaoh",
+      "dex": "pharaoh-exchange",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0x184b487c7e811f1d9734d49e78293e00b3768079",
@@ -680,7 +680,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "blackhole",
+      "dex": "blackhole-v3",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0x23ff0b5370bf33725918e6105108f3fa2c4b8a05",
@@ -704,16 +704,16 @@
       "pool_key": {
         "currency0": "0x152b9d0fdc40c096757f570a51e494bd4b943e50",
         "currency1": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "traderjoe",
+      "dex": "traderjoe-v2-2-avalanche",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0x2823299af89285ff1a1abf58db37ce57006fef5d",
@@ -777,7 +777,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "blackhole",
+      "dex": "blackhole-v3",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0x41100c6d2c6920b10d12cd8d59c8a9aa2ef56fc7",
@@ -801,16 +801,16 @@
       "pool_key": {
         "currency0": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         "currency1": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "traderjoe",
+      "dex": "traderjoe-v2-1-avalanche",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0x4224f6f4c9280509724db2dbac314621e4465c29",
@@ -1033,7 +1033,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap-v3-avalanche",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0x804226ca4edb38e7ef56d16d16e92dc3223347a0",
@@ -1057,10 +1057,10 @@
       "pool_key": {
         "currency0": "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7",
         "currency1": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -1098,7 +1098,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "blackhole",
+      "dex": "blackhole-v3",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0x859592a4a469610e573f96ef87a0e5565f9a94c8",
@@ -1131,7 +1131,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "traderjoe",
+      "dex": "traderjoe-v2-2-avalanche",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0x864d4e5ee7318e97483db7eb0912e09f161516ea",
@@ -1195,7 +1195,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "pharaoh",
+      "dex": "pharaoh-exchange",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0xa20c959b19f114e9c2d81547734cdc1110bd773d",
@@ -1323,7 +1323,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "pharaoh",
+      "dex": "pharaoh-exchange",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0xca7bd86983a2474f3c7cb45207bc16760cee07cf",
@@ -1419,7 +1419,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap-v3-avalanche",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0xd1356d360f37932059e5b89b7992692aa234eda6",
@@ -1443,16 +1443,16 @@
       "pool_key": {
         "currency0": "0x152b9d0fdc40c096757f570a51e494bd4b943e50",
         "currency1": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap-v3-avalanche",
       "network": "avalanche",
       "token_address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "pool_address": "0xfae3f424a0a47706811521e3ee268f00cfb5c45e",
@@ -1476,10 +1476,10 @@
       "pool_key": {
         "currency0": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         "currency1": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -1547,7 +1547,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0x0c3b466104545efa096b8f944c1e524e1d0d4888",
@@ -1675,7 +1675,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0x37e769d2dcf3e3e8dfc37c0df83eeb56edfc0fd2",
@@ -1707,7 +1707,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0x3b3b3dcff8669297bef410cddcea4c362074135a",
@@ -1770,7 +1770,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v3",
-      "dex": "aerodrome",
+      "dex": "aerodrome-slipstream",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0x4a021ba3ab1f0121e7df76f345c547db86cb3468",
@@ -1794,10 +1794,10 @@
       "pool_key": {
         "currency0": "0x7300b37dfdfab110d83290a29dfb31b1740219fe",
         "currency1": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -1835,7 +1835,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0x7464850cc1cfb54a2223229b77b1bca2f888d946",
@@ -1899,7 +1899,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0x98f3957f0d077d0fdc02ca694ba32aea38151f47",
@@ -1963,7 +1963,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0xa1dddb82501e8fe2d92ad0e8ba331313f501de72",
@@ -1995,7 +1995,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0xa8e64fb120ce8796594670bae72279c8aa1e5359",
@@ -2090,7 +2090,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "unknown",
-      "dex": "0x03c01acae3d0173a93d819efdc832c7c4f153b06",
+      "dex": "0x03C01Acae3D0173a93d819efDc832C7C4F153B06",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0xc221293c1517ec1834d346761e937298e6004635",
@@ -2121,7 +2121,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0xd418dfe7670c21f682e041f34250c114db5d7789",
@@ -2153,7 +2153,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0xd87ea5f46615e1175c909610766e853faa5f94be",
@@ -2185,7 +2185,7 @@
     {
       "symbol": "VIRTUAL",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "pool_address": "0xe10604ad5bfca65f17a25747133a40ee3ea608a7",
@@ -3074,7 +3074,7 @@
     {
       "symbol": "BRETT",
       "amm_version": "unknown",
-      "dex": "0x03c01acae3d0173a93d819efdc832c7c4f153b06",
+      "dex": "0x03C01Acae3D0173a93d819efDc832C7C4F153B06",
       "network": "base",
       "token_address": "0x532f27101965dd16442e59d40670faf5ebb142e4",
       "pool_address": "0x1bb53dc3741c85d58e454addddde2f26b4cec9b7",
@@ -3548,7 +3548,7 @@
     {
       "symbol": "MAV",
       "amm_version": "v2",
-      "dex": "maverick",
+      "dex": "maverick-v2-base",
       "network": "base",
       "token_address": "0x64b88c73a5dfa78d1713fe1b4c69a22d7e0faaa7",
       "pool_address": "0x6d94a757839ea95fa4870cedd56a0604601733d0",
@@ -3802,7 +3802,7 @@
     {
       "symbol": "USDC",
       "amm_version": "unknown",
-  "dex": "alien-base",
+      "dex": "alien-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x0e635f8eeed4f7279d56692d552f034ece136019",
@@ -3834,7 +3834,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "aerodrome",
+      "dex": "aerodrome-slipstream",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x3e66e55e97ce60096f74b7c475e8249f2d31a9fb",
@@ -3858,16 +3858,16 @@
       "pool_key": {
         "currency0": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
         "currency1": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "aerodrome",
+      "dex": "aerodrome-slipstream",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x4e962bb3889bf030368f56810a9c96b83cb3e778",
@@ -3891,16 +3891,16 @@
       "pool_key": {
         "currency0": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "unknown",
-  "dex": "hydrex-integral",
+      "dex": "hydrex-integral",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x51f0b932855986b0e621c9d4db6eee1f4644d3d2",
@@ -3933,7 +3933,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap-v3-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x6c561b446416e1a00e8e93e221854d6ea4171372",
@@ -3957,16 +3957,16 @@
       "pool_key": {
         "currency0": "0x4200000000000000000000000000000000000006",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x6cdcb1c4a4d1c3c6d054b27ac5b77e89eafb971d",
@@ -3998,7 +3998,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x72ab388e2e2f6facef59e3c3fa2c4e29011c2d38",
@@ -4022,16 +4022,16 @@
       "pool_key": {
         "currency0": "0x4200000000000000000000000000000000000006",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "aerodrome",
+      "dex": "aerodrome-slipstream",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x7501bc8bb51616f79bfa524e464fb7b41f0b10fb",
@@ -4055,16 +4055,16 @@
       "pool_key": {
         "currency0": "0x526728dbc96689597f85ae4cd716d4f7fccbae9d",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-v2-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0x88a43bbdf9d098eec7bceda4e2494615dfd9bb9c",
@@ -4159,7 +4159,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "aerodrome",
+      "dex": "aerodrome-slipstream",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xb2cc224c1c9fee385f8ad6a55b4d94e92359dc59",
@@ -4183,16 +4183,16 @@
       "pool_key": {
         "currency0": "0x4200000000000000000000000000000000000006",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xb775272e537cc670c65dc852908ad47015244eaf",
@@ -4216,16 +4216,16 @@
       "pool_key": {
         "currency0": "0x4200000000000000000000000000000000000006",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xb94b22332abf5f89877a14cc88f2abc48c34b3df",
@@ -4249,16 +4249,16 @@
       "pool_key": {
         "currency0": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xcdac0d6c6c59727a65f871236188350531885c43",
@@ -4290,7 +4290,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xcefc8b799a8ee5d9b312aeca73262645d664aaf7",
@@ -4322,7 +4322,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap-v3-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xd0b53d9277642d899df5c87a3966a349a798f224",
@@ -4346,16 +4346,16 @@
       "pool_key": {
         "currency0": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
         "currency1": "0x4200000000000000000000000000000000000006",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap-v3-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xd364eb55e17700b54bd75feb3f14582ed7a29444",
@@ -4379,16 +4379,16 @@
       "pool_key": {
         "currency0": "0x9e6a46f294bb67c20f1d1e7afb0bbef614403b55",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "aerodrome",
+      "dex": "aerodrome-slipstream",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xdbc6998296caa1652a810dc8d3baf4a8294330f1",
@@ -4412,16 +4412,16 @@
       "pool_key": {
         "currency0": "0x4200000000000000000000000000000000000006",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "aerodrome",
+      "dex": "aerodrome-slipstream",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xe30d5bf485f7476ac15884a28ffb3c9cea635dcb",
@@ -4445,16 +4445,16 @@
       "pool_key": {
         "currency0": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "aerodrome",
+      "dex": "aerodrome-slipstream",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xe846373c1a92b167b4e9cd5d8e4d6b1db9e90ec7",
@@ -4478,16 +4478,16 @@
       "pool_key": {
         "currency0": "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap-v3-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xedc625b74537ee3a10874f53d170e9c17a906b9c",
@@ -4511,16 +4511,16 @@
       "pool_key": {
         "currency0": "0x1111111111166b7fe7bd91427724b487980afc69",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap-v3-base",
       "network": "base",
       "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "pool_address": "0xfbb6eed8e7aa03b138556eedaf5d271a5e1e43ef",
@@ -4544,10 +4544,10 @@
       "pool_key": {
         "currency0": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
         "currency1": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -4679,7 +4679,7 @@
     {
       "symbol": "CRV",
       "amm_version": "v1",
-      "dex": "curve",
+      "dex": "curve-base",
       "network": "base",
       "token_address": "0x8ee73c484a26e0a5df2ee2a4960b789967dd0415",
       "pool_address": "0xde37e221442fa15c35dc19fbae11ed106ba52fb2",
@@ -4839,7 +4839,7 @@
     {
       "symbol": "AERO",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
       "pool_address": "0x41fe2f2fd39e87e7e92a62e04e689be807066a44",
@@ -4934,7 +4934,7 @@
     {
       "symbol": "AERO",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
       "pool_address": "0x7810f8f3253ced11e8c56c6c8497f3134055d44c",
@@ -5029,7 +5029,7 @@
     {
       "symbol": "AERO",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
       "pool_address": "0x82a0c1a0d4ef0c0ca3cfda3ad1aa78309cc6139b",
@@ -5061,7 +5061,7 @@
     {
       "symbol": "AERO",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
       "pool_address": "0x8b49c7ec53cb4ca3666bb16727fc5c5f6d12226f",
@@ -5124,7 +5124,7 @@
     {
       "symbol": "AERO",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
       "pool_address": "0xbbf71aad6e1f8d180d3b1d898528654c1d18b2ff",
@@ -6036,7 +6036,7 @@
     {
       "symbol": "COW",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-base",
       "network": "base",
       "token_address": "0xc694a91e6b071bf030a18bd3053a7fe09b6dae69",
       "pool_address": "0xff028c1ec4559d3aa2b0859aa582925b5cc28069",
@@ -6060,10 +6060,10 @@
       "pool_key": {
         "currency0": "0xc694a91e6b071bf030a18bd3053a7fe09b6dae69",
         "currency1": "0x4200000000000000000000000000000000000006",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -6289,7 +6289,7 @@
     {
       "symbol": "ICNT",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-base",
       "network": "base",
       "token_address": "0xe0cd4cacddcbf4f36e845407ce53e87717b6601d",
       "pool_address": "0x18ffd6755a815a7a015fba3c4d4907306de05f7721f6bcbf35b9f9275666a797",
@@ -6355,7 +6355,7 @@
     {
       "symbol": "ICNT",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-base",
       "network": "base",
       "token_address": "0xe0cd4cacddcbf4f36e845407ce53e87717b6601d",
       "pool_address": "0x595b32168ff15541c8a3fd24bae714cda44560cb3c89e077b4d6e13469cf3bd2",
@@ -6640,7 +6640,7 @@
     {
       "symbol": "YALA",
       "amm_version": "v2",
-      "dex": "aerodrome",
+      "dex": "aerodrome-base",
       "network": "base",
       "token_address": "0xf970706063b7853877f39515c96932d49d5ac9cd",
       "pool_address": "0x5fbc09191ae0659167d9550eabdf499b80ad01af",
@@ -6735,7 +6735,7 @@
     {
       "symbol": "ASTER",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0x000ae314e2a2172a039b26378814c252734f556a",
       "pool_address": "0x1b451880bd8ed2db08f707d18bee6a874e068d1879cab60dc7262b65d1e1ca2f",
@@ -6800,7 +6800,7 @@
     {
       "symbol": "ASTER",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x000ae314e2a2172a039b26378814c252734f556a",
       "pool_address": "0x3a608869e61332c70e634f7a39293176e9a44b4ddf5ddcce177582f57b955479",
@@ -6961,7 +6961,7 @@
     {
       "symbol": "ASTER",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x000ae314e2a2172a039b26378814c252734f556a",
       "pool_address": "0xa2f42df048786b9d003a73922f9d408e33448223",
@@ -6985,10 +6985,10 @@
       "pool_key": {
         "currency0": "0x0a43fc31a73013089df59194872ecae4cae14444",
         "currency1": "0x000ae314e2a2172a039b26378814c252734f556a",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -7090,7 +7090,7 @@
     {
       "symbol": "ASTER",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x000ae314e2a2172a039b26378814c252734f556a",
       "pool_address": "0xeca1948e7998babc1f56a0d3b87fc0bc5ca25e73b54637d55fe1d01ea7bcce15",
@@ -7442,7 +7442,7 @@
     {
       "symbol": "CAKE",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
       "pool_address": "0x47516855520496b84a169f7bb92ace7ffb6e8c535bccb52a308ccff113aeccfb",
@@ -7475,7 +7475,7 @@
     {
       "symbol": "CAKE",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
       "pool_address": "0x54c27041dfa246727d9351613eb35da028ddf377225d8db9e68ca3b569b5ba24",
@@ -7508,7 +7508,7 @@
     {
       "symbol": "CAKE",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
       "pool_address": "0x737a7d974a19bafb34c8d74d898188c9b59689b91f291fa6ade69f71fa0f5afa",
@@ -7573,7 +7573,7 @@
     {
       "symbol": "CAKE",
       "amm_version": "v2",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap_v2",
       "network": "binance-smart-chain",
       "token_address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
       "pool_address": "0x804678fa97d91b974ec2af3c843270886528a9e6",
@@ -7669,7 +7669,7 @@
     {
       "symbol": "CAKE",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
       "pool_address": "0x96ba1e7f6fb45efe6245f53acd1110886f1fb657",
@@ -7693,10 +7693,10 @@
       "pool_key": {
         "currency0": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
         "currency1": "0x4cfac133438b25c22434ed56106eaf8503ec65ea",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -7797,7 +7797,7 @@
     {
       "symbol": "CAKE",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
       "pool_address": "0xaf12088595c0d5615f1e9da6033a435705d60037c2a4230dd5e135aab9dcfeb5",
@@ -8054,7 +8054,7 @@
     {
       "symbol": "CYBER",
       "amm_version": "v2",
-      "dex": "iziswap",
+      "dex": "iziswap-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x14778860e937f509e651192a90589de711fb88a9",
       "pool_address": "0xf37f8430271b3f572cd4eef92e9f7a0e089f39dd",
@@ -8503,7 +8503,7 @@
     {
       "symbol": "TAIKO",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0x30c60b20c25b2810ca524810467a0c342294fc61",
       "pool_address": "0xd4ae60e9bdb1d3aebb00bdf41c4fd7080c1dd3e4d862a43ff0827e6f92f5ecc0",
@@ -9016,7 +9016,7 @@
     {
       "symbol": "ORBS",
       "amm_version": "v2",
-      "dex": "thena",
+      "dex": "thena-fusion",
       "network": "binance-smart-chain",
       "token_address": "0x43a8cab15d06d3a5fe5854d714c37e7e9246f170",
       "pool_address": "0x130348553b3dea5d65767dc390eff257f9a9181d",
@@ -9654,7 +9654,7 @@
     {
       "symbol": "MUBARAK",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x5c85d6c6825ab4032337f11ee92a72df936b46f6",
       "pool_address": "0xb3a00da6b021d2f894d274a8b9215a52822e513b",
@@ -9678,10 +9678,10 @@
       "pool_key": {
         "currency0": "0x5c85d6c6825ab4032337f11ee92a72df936b46f6",
         "currency1": "0xce57283ce0e7446364e0bc479b5de5d74b5e0ffc",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -10615,7 +10615,7 @@
     {
       "symbol": "$ALT",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8457ca5040ad67fdebbcc8edce889a335bc0fbfb",
       "pool_address": "0x7ce89af3a3e9d05d77dc5b52a6a26cbe3c3520a4",
@@ -10639,10 +10639,10 @@
       "pool_key": {
         "currency0": "0x40abb3bcc49c12dcb27cb1ff0517e12d7c40d5c8",
         "currency1": "0x8457ca5040ad67fdebbcc8edce889a335bc0fbfb",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -10840,7 +10840,7 @@
     {
       "symbol": "DOT",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8",
       "pool_address": "0x68d466f1e56adc139913a1c362639f045c83e6706adfc6d770ca4ac3fd436da6",
@@ -10905,7 +10905,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0x461f6989943a0820c12db66bd962d245b587eb3c",
@@ -10929,10 +10929,10 @@
       "pool_key": {
         "currency0": "0x3aee7602b612de36088f3ffed8c8f10e86ebf2bf",
         "currency1": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -11034,7 +11034,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0x6045479ab46df901e7c86977ed22ddeb80728165",
@@ -11058,10 +11058,10 @@
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "currency1": "0xc08cd26474722ce93f4d0c34d16201461c10aa8c",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -11099,7 +11099,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0x751817452f48fb01980f7931290a7f4514764353",
@@ -11123,16 +11123,16 @@
       "pool_key": {
         "currency0": "0x6ea8211a1e47dbd8b55c487c0b906ebc57b94444",
         "currency1": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USD1",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0x7a4420381162847a2d98511d41be1b210a1284f5",
@@ -11156,16 +11156,16 @@
       "pool_key": {
         "currency0": "0x208bf3e7da9639f1eaefa2de78c23396b0682025",
         "currency1": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USD1",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0x810a3deb7efb375b61c6ff5fe0536552d03b20cf",
@@ -11198,7 +11198,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0x870befcb3ad1cb06f727f4defb9bc726898f740a",
@@ -11295,7 +11295,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0xa367cf05a311507cb0362f4149a0c30a956803aa",
@@ -11319,10 +11319,10 @@
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "currency1": "0xabe8e5cabe24cb36df9540088fd7ce1175b9bc52",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -11360,7 +11360,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0xc81b1a49946263c22b89b3aad98f7561be9b4a84",
@@ -11426,7 +11426,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0xe38b4d4dc90e6a0859bee047689d97db7fd94621",
@@ -11450,10 +11450,10 @@
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "currency1": "0xb3b02e4a9fb2bd28cc2ff97b0ab3f6b3ec1ee9d2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -11651,7 +11651,7 @@
     {
       "symbol": "MITO",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0x8e1e6bf7e13c400269987b65ab2b5724b016caef",
       "pool_address": "0xe1dc79604b4e2951d6829978d7f073034c757ca77d231012c405f9003c00096c",
@@ -12068,7 +12068,7 @@
     {
       "symbol": "ACT",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0x9f3bcbe48e8b754f331dfc694a894e8e686ac31d",
       "pool_address": "0x05c7cc4507068972d51162986b702635cb0c6536d97cf4a028d27fff8dce997d",
@@ -12771,7 +12771,7 @@
     {
       "symbol": "UNI",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-bsc",
       "network": "binance-smart-chain",
       "token_address": "0xbf5140a22578168fd562dccf235e5d43a02ce9b1",
       "pool_address": "0xebdba6f4e39303a548049e4b9f78c13de17c931b",
@@ -12804,7 +12804,7 @@
     {
       "symbol": "COOKIE",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-infinity-clmm",
       "network": "binance-smart-chain",
       "token_address": "0xc0041ef357b183448b235a8ea73ce4e4ec8c265f",
       "pool_address": "0xc4c38b2b57c75945547f7355b67f53cff46eec211c65c22c3e8215f1603b59ff",
@@ -13253,7 +13253,7 @@
     {
       "symbol": "OBT",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-bsc",
       "network": "binance-smart-chain",
       "token_address": "0xcef5b397051fc92026249670e918c0ad7b8585e4",
       "pool_address": "0xb2fa4f71a15ba16911495067477bcdca421c4cdd",
@@ -13277,10 +13277,10 @@
       "pool_key": {
         "currency0": "0x3e5e19a42b75f518a11d50392e3224618ba1f56e",
         "currency1": "0xcef5b397051fc92026249670e918c0ad7b8585e4",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -13318,7 +13318,7 @@
     {
       "symbol": "XVS",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-bsc",
       "network": "binance-smart-chain",
       "token_address": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
       "pool_address": "0x05770b345390a446464e9641030da926ba668530",
@@ -13351,7 +13351,7 @@
     {
       "symbol": "XVS",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap-bsc",
       "network": "binance-smart-chain",
       "token_address": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
       "pool_address": "0x33e904775b851508f2ec510f85ab89943e049212",
@@ -14244,7 +14244,7 @@
     {
       "symbol": "THE",
       "amm_version": "v3",
-      "dex": "thena",
+      "dex": "thena-v3",
       "network": "binance-smart-chain",
       "token_address": "0xf4c8e32eadec4bfe97e0f595add0f4450a863a11",
       "pool_address": "0xc268ee337543a62115d46109d6771f1cf068063b",
@@ -14697,11 +14697,11 @@
       "pool_address": "0x6cde5f5a192fbf3fd84df983aa6dc30dbd9f8fac",
       "liquidity_usd": 524815.74,
       "source": "dexscreener",
-      "pair_name": "USD\u20ae/CELO",
+      "pair_name": "USD₮/CELO",
       "pool_created_at": "2024-03-28T22:58:23+00:00",
       "token0": {
         "address": "0x48065fbbe25f71c9282ddf5e1cd6d6a887483d5e",
-        "symbol": "USD\u20ae",
+        "symbol": "USD₮",
         "decimals": 6,
         "source": "rpc"
       },
@@ -14761,7 +14761,7 @@
       "pool_address": "0x1a810e0b6c2dd5629afa2f0c898b9512c6f78846",
       "liquidity_usd": 3840140.86,
       "source": "dexscreener",
-      "pair_name": "USDC/USD\u20ae",
+      "pair_name": "USDC/USD₮",
       "pool_created_at": "2024-03-28T17:29:58+00:00",
       "token0": {
         "address": "0xceba9300f2b948710d2653dd7b07f33a8b32118c",
@@ -14771,7 +14771,7 @@
       },
       "token1": {
         "address": "0x48065fbbe25f71c9282ddf5e1cd6d6a887483d5e",
-        "symbol": "USD\u20ae",
+        "symbol": "USD₮",
         "decimals": 6,
         "source": "rpc"
       },
@@ -15299,7 +15299,7 @@
     {
       "symbol": "DOLO",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
       "pool_address": "0x2d97d14362ae5a19a15adb230cf8840ee7e133bf942fd8efd754ae4d078727ea",
@@ -15333,7 +15333,7 @@
     {
       "symbol": "LA",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x0fc2a55d5bd13033f1ee0cdd11f60f7efe66f467",
       "pool_address": "0x8cdb1395728161d10ac6d886c557064e01703a71",
@@ -15357,16 +15357,16 @@
       "pool_key": {
         "currency0": "0x0fc2a55d5bd13033f1ee0cdd11f60f7efe66f467",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "TAIKO",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x10dea67478c5f8c5e2d90e5e9b26dbe60c54d800",
       "pool_address": "0xe92f2bec2b40908f18c0777c79fd27f8a6894140",
@@ -15390,10 +15390,10 @@
       "pool_key": {
         "currency0": "0x10dea67478c5f8c5e2d90e5e9b26dbe60c54d800",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -15654,7 +15654,7 @@
     {
       "symbol": "CAKE",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-ethereum",
       "network": "ethereum",
       "token_address": "0x152649ea73beab28c5b49b26eb48f7ead6d4c898",
       "pool_address": "0x7990e760b1f9a399dcc61ad8314f2ec2c7f663dd",
@@ -15687,7 +15687,7 @@
     {
       "symbol": "CAKE",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-ethereum",
       "network": "ethereum",
       "token_address": "0x152649ea73beab28c5b49b26eb48f7ead6d4c898",
       "pool_address": "0xa1bc808d2facafbb8f90d5c98f1949f7029e33af",
@@ -15711,10 +15711,10 @@
       "pool_key": {
         "currency0": "0x3cf5aab770d2895ad9b4acef518c78b10b27e74d",
         "currency1": "0x152649ea73beab28c5b49b26eb48f7ead6d4c898",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -15816,7 +15816,7 @@
     {
       "symbol": "UNI",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
       "pool_address": "0x0619062b988576fe2d39b33ff23fb1a0330c0ac7",
@@ -15840,10 +15840,10 @@
       "pool_key": {
         "currency0": "0x111111111117dc0aa78b770fa6a738034120c302",
         "currency1": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -15945,7 +15945,7 @@
     {
       "symbol": "UNI",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
       "pool_address": "0x59c38b6775ded821f010dbd30ecabdcf84e04756",
@@ -15969,16 +15969,16 @@
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
         "currency1": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "UNI",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
       "pool_address": "0x82bb4ca79e5a6bf93064f043ea3fabf7a9036596",
@@ -16002,10 +16002,10 @@
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
         "currency1": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -16522,7 +16522,7 @@
     {
       "symbol": "FXS",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
       "pool_address": "0x5e1508a3f290f91d49e5354282feb2498ab922b2d2ada6a3640642c83f50df01",
@@ -17003,7 +17003,7 @@
     {
       "symbol": "PAXG",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "pool_address": "0x218c659b6bbb73d47c7926fc90d9893342534b84",
@@ -17099,7 +17099,7 @@
     {
       "symbol": "PAXG",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "pool_address": "0x6924d7319b4d74d2ce3a52e732ba1ba03d0100f848ce819a21be25b3085e39be",
@@ -17133,7 +17133,7 @@
     {
       "symbol": "PAXG",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "pool_address": "0x6924d7319b4d74d2ce3a52e732ba1ba03d0100f848ce819a21be25b3085e39be",
@@ -17199,7 +17199,7 @@
     {
       "symbol": "PAXG",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-ethereum",
       "network": "ethereum",
       "token_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "pool_address": "0x6b61d8680c4f9e560c8306807908553f95c749c5",
@@ -17223,10 +17223,10 @@
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "currency1": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -17263,7 +17263,7 @@
     {
       "symbol": "PAXG",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "pool_address": "0x8a7e585048bda875e64024118c506b14f78166dd",
@@ -17287,10 +17287,10 @@
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -17424,7 +17424,7 @@
     {
       "symbol": "PAXG",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "pool_address": "0xdd4c3ef43db234c7b7a95197f575c672ac4604f3",
@@ -17448,16 +17448,16 @@
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "currency1": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "PAXG",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
       "pool_address": "0xed7ef9a9a05a48858a507c080def0405ad1eaa3e",
@@ -17481,10 +17481,10 @@
       "pool_key": {
         "currency0": "0x45804880de22913dafe09f4980848ece6ecbaf78",
         "currency1": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -17874,7 +17874,7 @@
     {
       "symbol": "USDE",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
       "pool_address": "0x862fc0a67623a4e6f0776103340836c91728b06d",
@@ -18002,7 +18002,7 @@
     {
       "symbol": "USDE",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
       "pool_address": "0xb0960263e39c70c9b6e9ea2a382b18095264a364",
@@ -18034,7 +18034,7 @@
     {
       "symbol": "USDE",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
       "pool_address": "0xc6ca3e74e4af761ee4d0fba922b72408aac3a819",
@@ -18130,7 +18130,7 @@
     {
       "symbol": "USDE",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
       "pool_address": "0xf063bd202e45d6b2843102cb4ece339026645d4a",
@@ -18578,7 +18578,7 @@
     {
       "symbol": "CVX",
       "amm_version": "v3",
-      "dex": "sushiswap",
+      "dex": "sushiswap-v3-ethereum",
       "network": "ethereum",
       "token_address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
       "pool_address": "0xfc6424aaf30979459c8d0bb8856bef6ea2aa5d2e",
@@ -18602,16 +18602,16 @@
       "pool_key": {
         "currency0": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
         "currency1": "0xc81b27ac184a631a0cbde20b51c734664b04d5b3",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "LINK",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x514910771af9ca656af840dff83e8264ecf986ca",
       "pool_address": "0x14243ea6bb3d64c8d54a1f47b077e23394d6528a",
@@ -18635,10 +18635,10 @@
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
         "currency1": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -18676,7 +18676,7 @@
     {
       "symbol": "LINK",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x514910771af9ca656af840dff83e8264ecf986ca",
       "pool_address": "0x3c68b924745758b3df239bfec327fde1ae72e3e6",
@@ -18700,10 +18700,10 @@
       "pool_key": {
         "currency0": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
         "currency1": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -18741,7 +18741,7 @@
     {
       "symbol": "LINK",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x514910771af9ca656af840dff83e8264ecf986ca",
       "pool_address": "0x51d1026e35d0f9aa0ff243ebc84bb923852c1fc3",
@@ -18765,10 +18765,10 @@
       "pool_key": {
         "currency0": "0xa95c5ebb86e0de73b4fb8c47a45b792cfea28c23",
         "currency1": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -19189,7 +19189,7 @@
     {
       "symbol": "ENA",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x57e114b691db790c35207b2e685d4a43181e6061",
       "pool_address": "0x0598690ad1daffc3ac47fd6adcaeac547c067e26",
@@ -19213,10 +19213,10 @@
       "pool_key": {
         "currency0": "0x57e114b691db790c35207b2e685d4a43181e6061",
         "currency1": "0x8be3460a480c80728a8c4d7a5d5303c85ba7b3b9",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -19894,7 +19894,7 @@
     {
       "symbol": "GNO",
       "amm_version": "v2",
-      "dex": "balancer",
+      "dex": "balancer_ethereum",
       "network": "ethereum",
       "token_address": "0x6810e776880c02933d47db1b9fc05908e5386b96",
       "pool_address": "0x92762b42a06dcdddc5b7362cfb01e631c4d44b40",
@@ -19958,7 +19958,7 @@
     {
       "symbol": "XAUT",
       "amm_version": "v3",
-      "dex": "pancakeswap",
+      "dex": "pancakeswap-v3-ethereum",
       "network": "ethereum",
       "token_address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
       "pool_address": "0x0c592152111098ac7e5c9c0b007bb2e7985d7542",
@@ -19982,16 +19982,16 @@
       "pool_key": {
         "currency0": "0x957e0fdfbd1c2f97648318b2f057e327996ec367",
         "currency1": "0x68749665ff8d2d112fa859aa293f07a622782f38",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "XAUT",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
       "pool_address": "0x218c659b6bbb73d47c7926fc90d9893342534b84",
@@ -20343,7 +20343,7 @@
     {
       "symbol": "1000PEPE",
       "amm_version": "v2",
-      "dex": "balancer",
+      "dex": "balancer_ethereum",
       "network": "ethereum",
       "token_address": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
       "pool_address": "0x9d0d36cc9e989598f01a4656e0efff73896c30ed",
@@ -21016,7 +21016,7 @@
     {
       "symbol": "MAV",
       "amm_version": "v2",
-      "dex": "maverick",
+      "dex": "maverick-v2-eth",
       "network": "ethereum",
       "token_address": "0x7448c7456a97769f6cd04f1e83a4a23ccdc46abd",
       "pool_address": "0x97a3eb00eb67e6e92d43dfe9c28f5211e05e2342",
@@ -21113,7 +21113,7 @@
     {
       "symbol": "10000ELON",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
       "pool_address": "0x0e325e6b4f2143a2d875b6d5284a40453400e131",
@@ -21137,10 +21137,10 @@
       "pool_key": {
         "currency0": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
         "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -21274,7 +21274,7 @@
     {
       "symbol": "10000ELON",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
       "pool_address": "0xe333e366503f620e0242796431dc74fffd258e66",
@@ -21298,10 +21298,10 @@
       "pool_key": {
         "currency0": "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
         "currency1": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -21403,7 +21403,7 @@
     {
       "symbol": "TREE",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-ethereum",
       "network": "ethereum",
       "token_address": "0x77146784315ba81904d654466968e3a7c196d1f3",
       "pool_address": "0xdaba3d8ccf79ef289a7e2dbce51871b39ea445a2",
@@ -21531,7 +21531,7 @@
     {
       "symbol": "GLM",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x7dd9c5cba05e151c895fde1cf355c9a1d5da6429",
       "pool_address": "0xfe4ec8f377be9e1e95a49d4e0d20f52d07b1ff0d",
@@ -21555,10 +21555,10 @@
       "pool_key": {
         "currency0": "0x7dd9c5cba05e151c895fde1cf355c9a1d5da6429",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -21596,7 +21596,7 @@
     {
       "symbol": "AAVE",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
       "pool_address": "0x1c60dc7ce348dc9f1e8992c027350acfda4ba66e2365aa87cbdd98c490185088",
@@ -21694,7 +21694,7 @@
     {
       "symbol": "AAVE",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
       "pool_address": "0x3687b338d229dc2aaa69ca4b2a7a90795017a997",
@@ -21718,10 +21718,10 @@
       "pool_key": {
         "currency0": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
         "currency1": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -21886,7 +21886,7 @@
     {
       "symbol": "AAVE",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
       "pool_address": "0xcb6518667f27e8c652afb47250a2aac4d4872c3a",
@@ -21910,10 +21910,10 @@
       "pool_key": {
         "currency0": "0x111111111117dc0aa78b770fa6a738034120c302",
         "currency1": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -22462,7 +22462,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0x4637ea6ecf7e16c99e67e941ab4d7d52eac7c73d",
@@ -22486,10 +22486,10 @@
       "pool_key": {
         "currency0": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
         "currency1": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -22559,7 +22559,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap_v2",
       "network": "ethereum",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0xd5675c91b3002559b78592cc08ce07d9b17edafa",
@@ -22591,7 +22591,7 @@
     {
       "symbol": "USD1",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap_v2",
       "network": "ethereum",
       "token_address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "pool_address": "0xdabc816b691c8c2135f087a32eeb09a3f548938e",
@@ -22847,7 +22847,7 @@
     {
       "symbol": "SHIB1000",
       "amm_version": "unknown",
-      "dex": "0xd9ce49caf7299daf18fffcb2b84a44fd33412509",
+      "dex": "0xD9CE49caf7299DaF18ffFcB2b84a44fD33412509",
       "network": "ethereum",
       "token_address": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
       "pool_address": "0xab21798d88ee0854f99f1d148c1e59f238e561fe",
@@ -23263,7 +23263,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0x5777d92f208679db4b9778590fa3cab3ac9e2168",
@@ -23287,16 +23287,16 @@
       "pool_key": {
         "currency0": "0x6b175474e89094c44da98b954eedeac495271d0f",
         "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0x667701e51b4d1ca244f17c78f7ab8744b4c99f9b",
@@ -23455,7 +23455,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
@@ -23479,16 +23479,16 @@
       "pool_key": {
         "currency0": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 500,
+        "tickSpacing": 10,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47",
@@ -23554,7 +23554,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47",
@@ -23588,7 +23588,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0x8aa4e11cbdf30eedc92100f4c8a31ff748e201d44712cc8c90d189edaa8e4e47",
@@ -23622,7 +23622,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8",
@@ -23646,16 +23646,16 @@
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0x99ac8ca7087fa4a2a1fb6357269965a2014abc35",
@@ -23679,16 +23679,16 @@
       "pool_key": {
         "currency0": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
         "currency1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "uniswap",
+      "dex": "uniswap_v2",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
@@ -23816,7 +23816,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0xde632c3a214d5f14c1d8ddf0b92f8bcd188fee45",
@@ -23880,7 +23880,7 @@
     {
       "symbol": "USDC",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0xe0554a476a092703abdb3ef35c80e0d76d32939f",
@@ -23904,16 +23904,16 @@
       "pool_key": {
         "currency0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 100,
+        "tickSpacing": 1,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "USDC",
       "amm_version": "v2",
-      "dex": "fluid",
+      "dex": "fluid-ethereum",
       "network": "ethereum",
       "token_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "pool_address": "0xea734b615888c669667038d11950f44b177f15c0",
@@ -24266,7 +24266,7 @@
     {
       "symbol": "STG",
       "amm_version": "v2",
-      "dex": "balancer",
+      "dex": "balancer_ethereum",
       "network": "ethereum",
       "token_address": "0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6",
       "pool_address": "0x639883476960a23b38579acfd7d71561a0f408cf",
@@ -25514,7 +25514,7 @@
     {
       "symbol": "T",
       "amm_version": "v2",
-      "dex": "balancer",
+      "dex": "balancer_ethereum",
       "network": "ethereum",
       "token_address": "0xcdf7028ceab81fa0c6971208e83fa7872994bee5",
       "pool_address": "0x6228f64d5ba8376652bfe7e36569d595347cf6fb",
@@ -25962,7 +25962,7 @@
     {
       "symbol": "CRV",
       "amm_version": "v4",
-      "dex": "uniswap",
+      "dex": "uniswap-v4-ethereum",
       "network": "ethereum",
       "token_address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
       "pool_address": "0x540a21655573a3b1d18812d51660b515cafede7ccb1d978c064ba79360916557",
@@ -26028,7 +26028,7 @@
     {
       "symbol": "CRV",
       "amm_version": "v3",
-      "dex": "uniswap",
+      "dex": "uniswap_v3",
       "network": "ethereum",
       "token_address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
       "pool_address": "0x645c3a387b8633df1d4d71ca4b50d27233bcb887",
@@ -26052,10 +26052,10 @@
       "pool_key": {
         "currency0": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
         "currency1": "0xd533a949740bb3306d119cc777fa900ba034cd52",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -26573,7 +26573,7 @@
     {
       "symbol": "COW",
       "amm_version": "v2",
-      "dex": "balancer",
+      "dex": "balancer_ethereum",
       "network": "ethereum",
       "token_address": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
       "pool_address": "0x92762b42a06dcdddc5b7362cfb01e631c4d44b40",
@@ -26638,7 +26638,7 @@
     {
       "symbol": "COW",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-ethereum",
       "network": "ethereum",
       "token_address": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
       "pool_address": "0xd321300ef77067d4a868f117d37706eb81368e98",
@@ -26662,10 +26662,10 @@
       "pool_key": {
         "currency0": "0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -26765,7 +26765,7 @@
     {
       "symbol": "KNC",
       "amm_version": "v3",
-      "dex": "kyberswap",
+      "dex": "kyberswap_elastic",
       "network": "ethereum",
       "token_address": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202",
       "pool_address": "0x0d6154b875df5cc0a1cbb315065b6d2fdb364e8d",
@@ -26798,7 +26798,7 @@
     {
       "symbol": "KNC",
       "amm_version": "v3",
-      "dex": "kyberswap",
+      "dex": "kyberswap_elastic",
       "network": "ethereum",
       "token_address": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202",
       "pool_address": "0x74675a0aa6644db97c0424eddd1461e53ac482b2",
@@ -26831,7 +26831,7 @@
     {
       "symbol": "KNC",
       "amm_version": "v3",
-      "dex": "kyberswap",
+      "dex": "kyberswap_elastic",
       "network": "ethereum",
       "token_address": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202",
       "pool_address": "0x8990b58ab653c9954415f4544e8deb72c2b12ed8",
@@ -26855,16 +26855,16 @@
       "pool_key": {
         "currency0": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202",
         "currency1": "0x514910771af9ca656af840dff83e8264ecf986ca",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
       "symbol": "KNC",
       "amm_version": "v3",
-      "dex": "kyberswap",
+      "dex": "kyberswap_elastic",
       "network": "ethereum",
       "token_address": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202",
       "pool_address": "0xb5e643250ff59311071c5008f722488543dd7b3c",
@@ -26888,10 +26888,10 @@
       "pool_key": {
         "currency0": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 10000,
+        "tickSpacing": 200,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {
@@ -26993,7 +26993,7 @@
     {
       "symbol": "SPX",
       "amm_version": "v2",
-      "dex": "balancer",
+      "dex": "balancer_ethereum",
       "network": "ethereum",
       "token_address": "0xe0f63a424a4439cbe457d80e4f4b51ad25b2c56c",
       "pool_address": "0x9d0d36cc9e989598f01a4656e0efff73896c30ed",
@@ -27218,7 +27218,7 @@
     {
       "symbol": "EIGEN",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-ethereum",
       "network": "ethereum",
       "token_address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
       "pool_address": "0x56aa0bfb4db1f96212246a293c327901d4e3f7cf",
@@ -27251,7 +27251,7 @@
     {
       "symbol": "EIGEN",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-ethereum",
       "network": "ethereum",
       "token_address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
       "pool_address": "0x80f2da21d405432289367f596f4cf4d5c419566a",
@@ -27284,7 +27284,7 @@
     {
       "symbol": "EIGEN",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-ethereum",
       "network": "ethereum",
       "token_address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
       "pool_address": "0x991fa18251d742eb06b2c022f8eb77b89657c372",
@@ -27317,7 +27317,7 @@
     {
       "symbol": "EIGEN",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-ethereum",
       "network": "ethereum",
       "token_address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
       "pool_address": "0xb9e3ad4d3035fb9801079073d8d9745eb2e0a035",
@@ -27350,7 +27350,7 @@
     {
       "symbol": "EIGEN",
       "amm_version": "v3",
-      "dex": "balancer",
+      "dex": "balancer-v3-ethereum",
       "network": "ethereum",
       "token_address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
       "pool_address": "0xbda917a67c7d9ae67da92c4ea87e10e5d6c11b54",
@@ -27374,10 +27374,10 @@
       "pool_key": {
         "currency0": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
         "currency1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "fee": null,
-        "tickSpacing": null,
+        "fee": 3000,
+        "tickSpacing": 60,
         "hooks": null,
-        "status": "unavailable"
+        "status": "ok"
       }
     },
     {

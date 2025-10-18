@@ -1,0 +1,596 @@
+2025/10/17 16:25:06 logger.go:150: 2025-10-17T16:25:06+03:00 [INFO] logger initialized, output=screner.log
+2025/10/17 16:25:06 main.go:64: 2025-10-17T16:25:06+03:00 [INFO] starting Screener Core - multi-exchange with shared channel
+2025/10/17 16:25:06 main.go:84: 2025-10-17T16:25:06+03:00 [INFO] Assets registry loaded: configs/assets/tokens.yaml
+2025/10/17 16:25:06 client.go:17: 2025-10-17T16:25:06+03:00 [INFO] initializing Redis client: addr=localhost:6379 db=0
+2025/10/17 16:25:06 main.go:92: 2025-10-17T16:25:06+03:00 [INFO] Redis client initialized: localhost:6379
+2025/10/17 16:25:06 main.go:102: 2025-10-17T16:25:06+03:00 [INFO] Exchanges from config: gate, bybit, bitget, okx
+2025/10/17 16:25:06 main.go:123: 2025-10-17T16:25:06+03:00 [INFO] Loaded 295 symbols from ticker_source/base_pools.json
+2025/10/17 16:25:06 main.go:149: 2025-10-17T16:25:06+03:00 [INFO] Exchange gate prepared 295 symbols (quote=USDT) from ticker_source/base_pools.json
+2025/10/17 16:25:06 main.go:165: 2025-10-17T16:25:06+03:00 [INFO] Exchange gate uses shared pools source (295 base)
+2025/10/17 16:25:06 main.go:149: 2025-10-17T16:25:06+03:00 [INFO] Exchange bybit prepared 295 symbols (quote=USDT) from ticker_source/base_pools.json
+2025/10/17 16:25:06 main.go:165: 2025-10-17T16:25:06+03:00 [INFO] Exchange bybit uses shared pools source (295 base)
+2025/10/17 16:25:06 main.go:149: 2025-10-17T16:25:06+03:00 [INFO] Exchange bitget prepared 295 symbols (quote=USDT) from ticker_source/base_pools.json
+2025/10/17 16:25:06 main.go:165: 2025-10-17T16:25:06+03:00 [INFO] Exchange bitget uses shared pools source (295 base)
+2025/10/17 16:25:06 main.go:149: 2025-10-17T16:25:06+03:00 [INFO] Exchange okx prepared 295 symbols (quote=USDT) from ticker_source/base_pools.json
+2025/10/17 16:25:06 main.go:165: 2025-10-17T16:25:06+03:00 [INFO] Exchange okx uses shared pools source (295 base)
+2025/10/17 16:25:06 graph_pricer.go:126: 2025-10-17T16:25:06+03:00 [INFO] pricing: anchors: network=bsc_mainnet stable=1
+2025/10/17 16:25:06 graph_pricer.go:126: 2025-10-17T16:25:06+03:00 [INFO] pricing: anchors: network=ethereum_mainnet stable=5
+2025/10/17 16:25:06 graph_pricer.go:86: 2025-10-17T16:25:06+03:00 [INFO] pricing: assets registry supplied 6 stable anchors
+2025/10/17 16:25:06 graph_pricer.go:190: 2025-10-17T16:25:06+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
+2025/10/17 16:25:06 graph_pricer.go:190: 2025-10-17T16:25:06+03:00 [INFO] pricing: stable anchor TUSD (0x0000000000085d4780b73119b644ae5ecd22b376)
+2025/10/17 16:25:06 graph_pricer.go:190: 2025-10-17T16:25:06+03:00 [INFO] pricing: stable anchor USD1 (0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d)
+2025/10/17 16:25:06 graph_pricer.go:190: 2025-10-17T16:25:06+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/17 16:25:06 graph_pricer.go:190: 2025-10-17T16:25:06+03:00 [INFO] pricing: stable anchor USDT (0x55d398326f99059ff775485246999027b3197955)
+2025/10/17 16:25:06 graph_pricer.go:190: 2025-10-17T16:25:06+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/17 16:25:06 main.go:218: 2025-10-17T16:25:06+03:00 [INFO] Graph pricer enabled for DEX connectors: uniswap_v2, uniswap_v3, uniswap_v4
+2025/10/17 16:25:06 gateio.go:30: 2025-10-17T16:25:06+03:00 [INFO] connecting to Gate WS wss://api.gateio.ws/ws/v4/
+2025/10/17 16:25:06 bybit.go:31: 2025-10-17T16:25:06+03:00 [INFO] connecting to Bybit WS wss://stream.bybit.com/v5/public/spot
+2025/10/17 16:25:06 bitget.go:31: 2025-10-17T16:25:06+03:00 [INFO] connecting to Bitget WS wss://ws.bitget.com/v2/ws/public
+2025/10/17 16:25:06 okx.go:30: 2025-10-17T16:25:06+03:00 [INFO] connecting to OKX WS wss://ws.okx.com:8443/ws/v5/public
+2025/10/17 16:25:06 v2_connector.go:1045: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v2: added 3 hard reference pools
+2025/10/17 16:25:06 v4_connector.go:287: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: init exchange=uniswap_v4 pools_inline=0 wanted_only=false swap_only=true
+2025/10/17 16:25:06 register_dex.go:182: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: launch inline_pools=0 pools_path=ticker_source/base_pools.json once=false
+2025/10/17 16:25:06 v4_connector.go:377: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: starting connector run
+2025/10/17 16:25:06 v4_connector.go:353: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: loading pool manager ABI from ABI/Uniswap/V4/UniswapV4PoolManager.json
+2025/10/17 16:25:06 v4_connector.go:370: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: ABI loaded events=10
+2025/10/17 16:25:06 v4_connector.go:440: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: bootstrap pools begin path=ticker_source/base_pools.json inline=0
+2025/10/17 16:25:06 v4_connector.go:555: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: loading pools from file=ticker_source/base_pools.json
+2025/10/17 16:25:06 connect_uniswap_v3_all.go:549: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v3 loaded pools=0 source=ticker_source/base_pools.json
+2025/10/17 16:25:06 main.go:37: 2025-10-17T16:25:06+03:00 [ERROR] uniswap_v3 exited with error: uniswap_v3: no pools loaded
+2025/10/17 16:25:06 main.go:51: 2025-10-17T16:25:06+03:00 [INFO] restarting uniswap_v3 after 1s
+2025/10/17 16:25:06 v4_connector.go:564: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: pools file entries=875
+2025/10/17 16:25:06 v4_connector.go:591: 2025-10-17T16:25:06+03:00 [INFO] uniswap_v4: pools loaded from file=0
+2025/10/17 16:25:06 main.go:37: 2025-10-17T16:25:06+03:00 [ERROR] uniswap_v4 exited with error: uniswap_v4: no pools resolved (inline=0 path=ticker_source/base_pools.json)
+2025/10/17 16:25:06 main.go:51: 2025-10-17T16:25:06+03:00 [INFO] restarting uniswap_v4 after 1s
+2025/10/17 16:25:07 bybit.go:37: 2025-10-17T16:25:07+03:00 [INFO] Bybit connected
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 1/295: $ALTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 2/295: $DEGENUSDT
+2025/10/17 16:25:07 v4_connector.go:377: 2025-10-17T16:25:07+03:00 [INFO] uniswap_v4: starting connector run
+2025/10/17 16:25:07 v4_connector.go:440: 2025-10-17T16:25:07+03:00 [INFO] uniswap_v4: bootstrap pools begin path=ticker_source/base_pools.json inline=0
+2025/10/17 16:25:07 v4_connector.go:555: 2025-10-17T16:25:07+03:00 [INFO] uniswap_v4: loading pools from file=ticker_source/base_pools.json
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 3/295: 0GUSDT
+2025/10/17 16:25:07 connect_uniswap_v3_all.go:549: 2025-10-17T16:25:07+03:00 [INFO] uniswap_v3 loaded pools=0 source=ticker_source/base_pools.json
+2025/10/17 16:25:07 main.go:37: 2025-10-17T16:25:07+03:00 [ERROR] uniswap_v3 exited with error: uniswap_v3: no pools loaded
+2025/10/17 16:25:07 main.go:51: 2025-10-17T16:25:07+03:00 [INFO] restarting uniswap_v3 after 2s
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 4/295: 1000000BABYDOGEUSDT
+2025/10/17 16:25:07 v4_connector.go:564: 2025-10-17T16:25:07+03:00 [INFO] uniswap_v4: pools file entries=875
+2025/10/17 16:25:07 v4_connector.go:591: 2025-10-17T16:25:07+03:00 [INFO] uniswap_v4: pools loaded from file=0
+2025/10/17 16:25:07 main.go:37: 2025-10-17T16:25:07+03:00 [ERROR] uniswap_v4 exited with error: uniswap_v4: no pools resolved (inline=0 path=ticker_source/base_pools.json)
+2025/10/17 16:25:07 main.go:51: 2025-10-17T16:25:07+03:00 [INFO] restarting uniswap_v4 after 2s
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 5/295: 1000000CHEEMSUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 6/295: 1000000MOGUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 7/295: 1000000PEIPEIUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 8/295: 10000ELONUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 9/295: 1000FLOKIUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 10/295: 1000PEPEUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 11/295: 1000TAGUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 12/295: 1000TOSHIUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 13/295: 1000TURBOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 14/295: 1000XUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 15/295: 1INCHUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 16/295: 4USDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 17/295: AAVEUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 18/295: ACTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 19/295: ACXUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 20/295: AEROUSDT
+2025/10/17 16:25:07 okx.go:36: 2025-10-17T16:25:07+03:00 [INFO] OKX connected
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 21/295: AEVOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 22/295: AGIUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 23/295: AIAUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 24/295: AINUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 25/295: AIOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 26/295: AIOTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 27/295: AIOZUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 28/295: AIXBTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 29/295: AKEUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 30/295: ALEOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 31/295: ALUUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 32/295: ANIMEUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 33/295: ANKRUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 34/295: API3USDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 35/295: ARIAUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 36/295: ARKUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 37/295: ASPUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 38/295: ASTERUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 39/295: ATHUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 40/295: AUCTIONUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 41/295: AUDIOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 42/295: AVAUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 43/295: AVAILUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 44/295: AVLUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 45/295: AVNTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 46/295: AWEUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 47/295: AXLUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 48/295: BUSDT
+2025/10/17 16:25:07 bitget.go:37: 2025-10-17T16:25:07+03:00 [INFO] Bitget connected
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 49/295: B2USDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 50/295: B3USDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 51/295: BADGERUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 52/295: BANANAUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 53/295: BANANAS31USDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 54/295: BANKUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 55/295: BARDUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 56/295: BASUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 57/295: BATUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 58/295: BDXNUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 59/295: BEAMUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 60/295: BGBUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 61/295: BGSCUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 62/295: BICOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 63/295: BIOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 64/295: BLESSUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 65/295: BMTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 66/295: BNBUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 67/295: BRUSDT
+2025/10/17 16:25:07 graph_pricer.go:190: 2025-10-17T16:25:07+03:00 [INFO] pricing: stable anchor USDC (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48)
+2025/10/17 16:25:07 graph_pricer.go:190: 2025-10-17T16:25:07+03:00 [INFO] pricing: stable anchor USDT (0xdac17f958d2ee523a2206206994597c13d831ec7)
+2025/10/17 16:25:07 graph_pricer.go:190: 2025-10-17T16:25:07+03:00 [INFO] pricing: stable anchor DAI (0x6b175474e89094c44da98b954eedeac495271d0f)
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 68/295: BRETTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 69/295: BROCCOLIUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 70/295: BSUUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 71/295: BTRUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 72/295: CUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 73/295: C98USDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 74/295: CAKEUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 75/295: CARVUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 76/295: CELOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 77/295: CGPTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 78/295: CLANKERUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 79/295: COMPUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 80/295: COOKIEUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 81/295: COTIUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 82/295: COWUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 83/295: CPOOLUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 84/295: CROUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 85/295: CROSSUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 86/295: CRVUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 87/295: CUDISUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 88/295: CVXUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 89/295: CYBERUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 90/295: DAMUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 91/295: DEXEUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 92/295: DOLOUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 93/295: DOODUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 94/295: DOTUSDT
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 95/295: EIGENUSDT
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:$ALT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:$DEGEN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:0G-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 96/295: ELXUSDT
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000000BABYDOGE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000000CHEEMS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000000MOG-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000000PEIPEI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:10000ELON-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000FLOKI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000PEPE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000TAG-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000TOSHI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000TURBO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:1000X-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:4-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 97/295: ENAUSDT
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ACX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AERO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AGI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AIA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AIN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AIO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AIOT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AIOZ-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AKE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ALEO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ALU-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ANKR-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ARIA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AUDIO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AVA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AVAIL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AVL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 98/295: ENSUSDT
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AWE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:AXL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:B-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:B2-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:B3-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BANANAS31-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BANK-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BAS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BDXN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BEAM-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BGB-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BGSC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BLESS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BMT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BR-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BRETT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BROCCOLI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 register_cex.go:39: 2025-10-17T16:25:07+03:00 [INFO] Bybit subscribe 99/295: EPICUSDT
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BSU-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:BTR-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:C-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:C98-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:07 okx.go:102: 2025-10-17T16:25:07+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CAKE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CARV-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CGPT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CLANKER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 100/295: ERAUSDT
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:COOKIE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:COTI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:COW-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CPOOL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CROSS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CUDIS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:CYBER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:DAM-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:DEXE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:DOLO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ELX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:EPIC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ERA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ESPORTS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:EVAA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:F-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:FF-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:FHE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:FLOCK-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:FORM-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:FORTH-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:GATA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:GIGGLE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:GNO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:GTC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:GUN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:HAEDAL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:HEMI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:HOLO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:HOME-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:HPOS10I-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:HYPER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ICNT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:IDOL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:IN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:IOTX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:K-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:LA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:M-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MAV-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MAVIA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MBOX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MILK-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MITO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MNT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MOCA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MUBARAK-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MVL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:MYX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:NAORIS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:NEWT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:NXPC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:OBOL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:OBT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:OGN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:OPEN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ORDER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PLUME-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PORT3-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:POWR-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PTB-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PUFFER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:PUMPBTC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:Q-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:QNT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RAD-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RED-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 101/295: ESPORTSUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 102/295: ETHFIUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 103/295: EVAAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 104/295: FUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 105/295: FETUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 106/295: FFUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 107/295: FHEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 108/295: FLOCKUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 109/295: FLUIDUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 110/295: FORMUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 111/295: FORTHUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 112/295: FXSUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 113/295: GUSDT
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:REQ-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:REZ-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RHEA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RLC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:RLUSD-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ROAM-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 114/295: GALAUSDT
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SANTOS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SAPIEN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SERAPH-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SFP-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SHELL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SHIB1000-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SIGN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SIREN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SKATE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SKYAI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SOLV-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SOON-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SOSO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SPELL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SPX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SQD-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 115/295: GATAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 116/295: GHSTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 117/295: GIGGLEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 118/295: GLMUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 119/295: GMXUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 120/295: GNOUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 121/295: GRTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 122/295: GTCUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 123/295: GUNUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 124/295: HUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 125/295: HAEDALUSDT
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:STBL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:STG-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:STO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SUPER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SXT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:SYN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TAC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TAIKO-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TAKE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TANSSI-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:THE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 126/295: HEMIUSDT
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TOKEN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TOWNS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TRADOOR-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TREE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TUT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:TWT-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:UB-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:USDE-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:USELESS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:VANA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:VANRY-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:VELVET-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:VFY-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 127/295: HOLOUSDT
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:VIRTUAL-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:VVV-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:XAN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:XCN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:XCX-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:XNY-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:XPIN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:XTER-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:XVS-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 128/295: HOMEUSDT
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:YALA-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ZEN-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ZKC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 okx.go:102: 2025-10-17T16:25:08+03:00 [ERROR] OKX error event code=60018 msg=Wrong URL or channel:tickers,instId:ZRC-USDT doesn't exist. Please use the correct URL, channel and parameters referring to API document.
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 129/295: HPOS10IUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 130/295: HUMAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 131/295: HYPERUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 132/295: ICNTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 133/295: ICPUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 134/295: IDUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 135/295: IDOLUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 136/295: ILVUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 137/295: IMXUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 138/295: INUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 139/295: INJUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 140/295: IOTXUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 141/295: JOEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 142/295: KUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 143/295: KNCUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 144/295: LAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 145/295: LDOUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 146/295: LINEAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 147/295: LINKUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 148/295: LQTYUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 149/295: LSKUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 150/295: MUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 151/295: MANAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 152/295: MASKUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 153/295: MAVUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 154/295: MAVIAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 155/295: MBOXUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 156/295: MEMEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 157/295: MERLUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 158/295: METISUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 159/295: MILKUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 160/295: MITOUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 161/295: MLNUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 162/295: MNTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 163/295: MOCAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 164/295: MORPHOUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 165/295: MUBARAKUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 166/295: MVLUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 167/295: MYXUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 168/295: NAORISUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 169/295: NEARUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 170/295: NEWTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 171/295: NXPCUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 172/295: OBOLUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 173/295: OBTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 174/295: OGNUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 175/295: OKBUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 176/295: OLUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 177/295: ONDOUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 178/295: OPENUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 179/295: ORBSUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 180/295: ORDERUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 181/295: PARTIUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 182/295: PAXGUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 183/295: PENDLEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 184/295: PEOPLEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 185/295: PERPUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 186/295: PHAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 187/295: PLUMEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 188/295: PORT3USDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 189/295: POWRUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 190/295: PROMPTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 191/295: PROVEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 192/295: PTBUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 193/295: PUFFERUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 194/295: PUMPBTCUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 195/295: QUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 196/295: QNTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 197/295: RADUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 198/295: RDNTUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 199/295: REDUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 200/295: RENDERUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 201/295: REQUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 202/295: RESOLVUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 203/295: REZUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 204/295: RHEAUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 205/295: RLCUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 206/295: RLUSDUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 207/295: ROAMUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 208/295: RPLUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 209/295: RSRUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 210/295: SAFEUSDT
+2025/10/17 16:25:08 register_cex.go:39: 2025-10-17T16:25:08+03:00 [INFO] Bybit subscribe 211/295: SANDUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 212/295: SANTOSUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 213/295: SAPIENUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 214/295: SERAPHUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 215/295: SFPUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 216/295: SHELLUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 217/295: SHIB1000USDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 218/295: SIGNUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 219/295: SIRENUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 220/295: SKATEUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 221/295: SKLUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 222/295: SKYUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 223/295: SKYAIUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 224/295: SNTUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 225/295: SNXUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 226/295: SOLVUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 227/295: SOONUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 228/295: SOPHUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 229/295: SOSOUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 230/295: SPELLUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 231/295: SPKUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 232/295: SPXUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 233/295: SQDUSDT
+2025/10/17 16:25:09 gateio.go:36: 2025-10-17T16:25:09+03:00 [INFO] Gate connected
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 234/295: SSVUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 235/295: STBLUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 236/295: STGUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 237/295: STOUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 238/295: STORJUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 239/295: SUPERUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 240/295: SUSHIUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 241/295: SWEATUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 242/295: SXTUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 243/295: SYNUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 244/295: SYRUPUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 245/295: TUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 246/295: TAUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 247/295: TACUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 248/295: TAIKOUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 249/295: TAKEUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 250/295: TANSSIUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 251/295: THEUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 252/295: TOKENUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 253/295: TONUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 254/295: TOWNSUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 255/295: TRADOORUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 256/295: TREEUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 257/295: TUTUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 258/295: TWTUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 259/295: UBUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 260/295: UMAUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 261/295: UNIUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 262/295: USDEUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 263/295: USELESSUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 264/295: VANAUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 265/295: VANRYUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 266/295: VELOUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 267/295: VELVETUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 268/295: VFYUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 269/295: VIRTUALUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 270/295: VVVUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 271/295: WUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 272/295: WCTUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 273/295: WLDUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 274/295: WLFIUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 275/295: WOOUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 276/295: XANUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 277/295: XAUTUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 278/295: XCNUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 279/295: XCXUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 280/295: XNYUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 281/295: XPINUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 282/295: XTERUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 283/295: XVSUSDT
+2025/10/17 16:25:09 v4_connector.go:377: 2025-10-17T16:25:09+03:00 [INFO] uniswap_v4: starting connector run
+2025/10/17 16:25:09 v4_connector.go:440: 2025-10-17T16:25:09+03:00 [INFO] uniswap_v4: bootstrap pools begin path=ticker_source/base_pools.json inline=0
+2025/10/17 16:25:09 v4_connector.go:555: 2025-10-17T16:25:09+03:00 [INFO] uniswap_v4: loading pools from file=ticker_source/base_pools.json
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 284/295: YALAUSDT
+2025/10/17 16:25:09 connect_uniswap_v3_all.go:549: 2025-10-17T16:25:09+03:00 [INFO] uniswap_v3 loaded pools=0 source=ticker_source/base_pools.json
+2025/10/17 16:25:09 main.go:37: 2025-10-17T16:25:09+03:00 [ERROR] uniswap_v3 exited with error: uniswap_v3: no pools loaded
+2025/10/17 16:25:09 main.go:51: 2025-10-17T16:25:09+03:00 [INFO] restarting uniswap_v3 after 4s
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 285/295: YFIUSDT
+2025/10/17 16:25:09 v4_connector.go:564: 2025-10-17T16:25:09+03:00 [INFO] uniswap_v4: pools file entries=875
+2025/10/17 16:25:09 v4_connector.go:591: 2025-10-17T16:25:09+03:00 [INFO] uniswap_v4: pools loaded from file=0
+2025/10/17 16:25:09 main.go:37: 2025-10-17T16:25:09+03:00 [ERROR] uniswap_v4 exited with error: uniswap_v4: no pools resolved (inline=0 path=ticker_source/base_pools.json)
+2025/10/17 16:25:09 main.go:51: 2025-10-17T16:25:09+03:00 [INFO] restarting uniswap_v4 after 4s
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 286/295: YGGUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 287/295: ZENUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 288/295: ZENTUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 289/295: ZEUSUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 290/295: ZKCUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 291/295: ZKJUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 292/295: ZORAUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 293/295: ZRCUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 294/295: ZROUSDT
+2025/10/17 16:25:09 register_cex.go:39: 2025-10-17T16:25:09+03:00 [INFO] Bybit subscribe 295/295: ZRXUSDT
+2025/10/17 16:25:11 main.go:376: 2025-10-17T16:25:11+03:00 [INFO] metrics: msgs/s~181, redisOps/s~362, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bybit:330 okx:574]
+2025/10/17 16:25:13 v4_connector.go:377: 2025-10-17T16:25:13+03:00 [INFO] uniswap_v4: starting connector run
+2025/10/17 16:25:13 v4_connector.go:440: 2025-10-17T16:25:13+03:00 [INFO] uniswap_v4: bootstrap pools begin path=ticker_source/base_pools.json inline=0
+2025/10/17 16:25:13 v4_connector.go:555: 2025-10-17T16:25:13+03:00 [INFO] uniswap_v4: loading pools from file=ticker_source/base_pools.json
+2025/10/17 16:25:13 connect_uniswap_v3_all.go:549: 2025-10-17T16:25:13+03:00 [INFO] uniswap_v3 loaded pools=0 source=ticker_source/base_pools.json
+2025/10/17 16:25:13 main.go:37: 2025-10-17T16:25:13+03:00 [ERROR] uniswap_v3 exited with error: uniswap_v3: no pools loaded
+2025/10/17 16:25:13 main.go:51: 2025-10-17T16:25:13+03:00 [INFO] restarting uniswap_v3 after 8s
+2025/10/17 16:25:13 v4_connector.go:564: 2025-10-17T16:25:13+03:00 [INFO] uniswap_v4: pools file entries=875
+2025/10/17 16:25:13 v4_connector.go:591: 2025-10-17T16:25:13+03:00 [INFO] uniswap_v4: pools loaded from file=0
+2025/10/17 16:25:13 main.go:37: 2025-10-17T16:25:13+03:00 [ERROR] uniswap_v4 exited with error: uniswap_v4: no pools resolved (inline=0 path=ticker_source/base_pools.json)
+2025/10/17 16:25:13 main.go:51: 2025-10-17T16:25:13+03:00 [INFO] restarting uniswap_v4 after 8s
+2025/10/17 16:25:13 v2_connector.go:629: 2025-10-17T16:25:13+03:00 [INFO] uniswap_v2: USD WETHUSD price=3777.78585378 weight=27104226.5668 route=WETH->USDT
+2025/10/17 16:25:13 v2_connector.go:629: 2025-10-17T16:25:13+03:00 [INFO] uniswap_v2: USD USDTUSD price=1.00000000 weight=179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.0000 route=USDT
+2025/10/17 16:25:16 main.go:376: 2025-10-17T16:25:16+03:00 [INFO] metrics: msgs/s~621, redisOps/s~1242, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:1588 bybit:843 gate:234 okx:1342 uniswap_v2:3]
+2025/10/17 16:25:19 bitget.go:126: 2025-10-17T16:25:19+03:00 [INFO] [WARN] Bitget errors aggregated last 5s: 30006=0, 30001=62
+2025/10/17 16:25:21 main.go:376: 2025-10-17T16:25:21+03:00 [INFO] metrics: msgs/s~931, redisOps/s~1843, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:4395 bybit:1436 gate:517 okx:2313 uniswap_v2:3]
+2025/10/17 16:25:21 v4_connector.go:377: 2025-10-17T16:25:21+03:00 [INFO] uniswap_v4: starting connector run
+2025/10/17 16:25:21 v4_connector.go:440: 2025-10-17T16:25:21+03:00 [INFO] uniswap_v4: bootstrap pools begin path=ticker_source/base_pools.json inline=0
+2025/10/17 16:25:21 v4_connector.go:555: 2025-10-17T16:25:21+03:00 [INFO] uniswap_v4: loading pools from file=ticker_source/base_pools.json
+2025/10/17 16:25:21 connect_uniswap_v3_all.go:549: 2025-10-17T16:25:21+03:00 [INFO] uniswap_v3 loaded pools=0 source=ticker_source/base_pools.json
+2025/10/17 16:25:21 main.go:37: 2025-10-17T16:25:21+03:00 [ERROR] uniswap_v3 exited with error: uniswap_v3: no pools loaded
+2025/10/17 16:25:21 main.go:51: 2025-10-17T16:25:21+03:00 [INFO] restarting uniswap_v3 after 16s
+2025/10/17 16:25:21 v4_connector.go:564: 2025-10-17T16:25:21+03:00 [INFO] uniswap_v4: pools file entries=875
+2025/10/17 16:25:21 v4_connector.go:591: 2025-10-17T16:25:21+03:00 [INFO] uniswap_v4: pools loaded from file=0
+2025/10/17 16:25:21 main.go:37: 2025-10-17T16:25:21+03:00 [ERROR] uniswap_v4 exited with error: uniswap_v4: no pools resolved (inline=0 path=ticker_source/base_pools.json)
+2025/10/17 16:25:21 main.go:51: 2025-10-17T16:25:21+03:00 [INFO] restarting uniswap_v4 after 16s
+2025/10/17 16:25:26 main.go:376: 2025-10-17T16:25:26+03:00 [INFO] metrics: msgs/s~710, redisOps/s~1439, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:6433 bybit:2047 gate:678 okx:3055 uniswap_v2:3]
+2025/10/17 16:25:31 main.go:376: 2025-10-17T16:25:31+03:00 [INFO] metrics: msgs/s~771, redisOps/s~1519, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:8673 bybit:2561 gate:1105 okx:3730 uniswap_v2:3]
+2025/10/17 16:25:36 main.go:376: 2025-10-17T16:25:36+03:00 [INFO] metrics: msgs/s~646, redisOps/s~1310, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:10741 bybit:3015 gate:1297 okx:4247 uniswap_v2:3]
+2025/10/17 16:25:37 v4_connector.go:377: 2025-10-17T16:25:37+03:00 [INFO] uniswap_v4: starting connector run
+2025/10/17 16:25:37 v4_connector.go:440: 2025-10-17T16:25:37+03:00 [INFO] uniswap_v4: bootstrap pools begin path=ticker_source/base_pools.json inline=0
+2025/10/17 16:25:37 v4_connector.go:555: 2025-10-17T16:25:37+03:00 [INFO] uniswap_v4: loading pools from file=ticker_source/base_pools.json
+2025/10/17 16:25:37 connect_uniswap_v3_all.go:549: 2025-10-17T16:25:37+03:00 [INFO] uniswap_v3 loaded pools=0 source=ticker_source/base_pools.json
+2025/10/17 16:25:37 main.go:37: 2025-10-17T16:25:37+03:00 [ERROR] uniswap_v3 exited with error: uniswap_v3: no pools loaded
+2025/10/17 16:25:37 main.go:51: 2025-10-17T16:25:37+03:00 [INFO] restarting uniswap_v3 after 32s
+2025/10/17 16:25:37 v4_connector.go:564: 2025-10-17T16:25:37+03:00 [INFO] uniswap_v4: pools file entries=875
+2025/10/17 16:25:37 v4_connector.go:591: 2025-10-17T16:25:37+03:00 [INFO] uniswap_v4: pools loaded from file=0
+2025/10/17 16:25:37 main.go:37: 2025-10-17T16:25:37+03:00 [ERROR] uniswap_v4 exited with error: uniswap_v4: no pools resolved (inline=0 path=ticker_source/base_pools.json)
+2025/10/17 16:25:37 main.go:51: 2025-10-17T16:25:37+03:00 [INFO] restarting uniswap_v4 after 32s
+2025/10/17 16:25:41 main.go:376: 2025-10-17T16:25:41+03:00 [INFO] metrics: msgs/s~678, redisOps/s~1354, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:12886 bybit:3485 gate:1488 okx:4829 uniswap_v2:3]
+2025/10/17 16:25:46 main.go:376: 2025-10-17T16:25:46+03:00 [INFO] metrics: msgs/s~685, redisOps/s~1342, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:14890 bybit:4059 gate:1735 okx:5430 uniswap_v2:3]
+2025/10/17 16:25:51 v2_connector.go:629: 2025-10-17T16:25:51+03:00 [INFO] uniswap_v2: USD WETHUSD price=3778.17988910 weight=27105642.1828 route=WETH->USDT
+2025/10/17 16:25:51 v2_connector.go:629: 2025-10-17T16:25:51+03:00 [INFO] uniswap_v2: USD USDTUSD price=1.00000000 weight=179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.0000 route=USDT
+2025/10/17 16:25:51 main.go:376: 2025-10-17T16:25:51+03:00 [INFO] metrics: msgs/s~753, redisOps/s~1541, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:17024 bybit:4661 gate:1847 okx:6344 uniswap_v2:6]
+2025/10/17 16:25:56 main.go:376: 2025-10-17T16:25:56+03:00 [INFO] metrics: msgs/s~702, redisOps/s~1399, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:19134 bybit:5174 gate:2115 okx:6961 uniswap_v2:6]
+2025/10/17 16:26:01 main.go:376: 2025-10-17T16:26:01+03:00 [INFO] metrics: msgs/s~847, redisOps/s~1688, redisErr/s~0, redisUp=true, drops/s~0, chanLen=0, perExchange=map[bitget:21206 bybit:5759 gate:2922 okx:7731 uniswap_v2:6]
