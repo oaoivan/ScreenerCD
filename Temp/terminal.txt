@@ -1,7 +1,107 @@
-Наблюдения
-В 19:44:08 коннектор v4 полностью инициализируется: загружает 59 пулов, открывает WS и получает ack (uniswap_v4: subscribe acknowledged…).
-Тут же видно uniswap_v4: pools missing addresses pool_addr=59 hook_addr=57: для всех пулов не найден явный PoolAddress, поэтому подписка идёт только на менеджер и два hook-адреса. Это допустимо, но подчёркивает, что метаданные не докачались.
-После ack в логе нет ни одного события уровня uniswap_v4: metrics success=… или swap…: handleSwapEvent ни разу не отработал, следовательно коннектор не отдаёт MarketData наружу.
-Метрики core каждые 5 s показывают perExchange=map[bitget:… bybit:… gate:… okx:… uniswap_v2:… uniswap_v3:…] — префикса uniswap_v4 нет, значит канал данных и Redis-пуленг работают, но от v4 туда ничего не поступает.
-Где теряются данные
-Разрыв на самом входе: после подписки Alchemy WS не присылает swap-логи, либо они отфильтровываются из-за неподходящих pool_id. До очереди dataChannel и Redis сообщения не доходят вовсе.
+Ок. Принято. Это критически важные уточнения, которые напрямую влияют на схему данных. Мы переходим от общей схемы к схеме, специально спроектированной для генерации финального JSON-файла, который нужен скринеру.
+
+Задача — сделать так, чтобы индексатор выполнял всю работу по определению base/quote, формированию пар и обогащению данных, а скринер получал готовый, предсказуемый результат.
+AGENTS.MD (v0.6, финальная версия)
+
+6. Схема Данных и Модели
+
+Принцип: Схема спроектирована для прямой генерации финального JSON. Она включает в себя денормализованные и вычисляемые поля (displayPair, baseToken), чтобы снять эту логику с клиентского приложения (скринера). Источником правды для схемы остается schema.graphql.
+
+Финальная Схема (schema.graphql):
+code Graphql
+
+    
+# --- Перечисления ---
+enum Network { Ethereum, Polygon, BSC, Arbitrum, Optimism, Base, Solana }
+enum Protocol { UniswapV2, UniswapV3, UniswapV4, PancakeSwap, TraderJoe, Raydium }
+enum AmmVersion { V2, V3, V4, Solidly, Balancer, Curve }
+enum PoolStatus { Active, Inactive, Deprecated }
+
+# --- Сущности (Таблицы) ---
+
+# Таблица-справочник для всех токенов.
+type Token @entity {
+  "ID: network:address"
+  id: ID!
+  network: Network! @index
+  address: String! @index
+  symbol: String!
+  decimals: Int!
+}
+
+# Встраиваемый объект для хранения специфики Uniswap V3/V4. Не является отдельной таблицей.
+type PoolKey {
+  fee: Int!
+  tickSpacing: Int
+  hooks: String
+  # Для V2 сюда будут дублироваться адреса token0/token1 для унификации формата
+  currency0: String!
+  currency1: String!
+}
+
+# Основная таблица пулов, оптимизированная для выгрузки.
+type Pool @entity {
+  "ID: network:poolAddress"
+  id: ID!
+  poolAddress: String!
+  network: Network! @index
+  protocol: Protocol! @index
+  version: AmmVersion! @index
+
+  # --- Обязательные связи с токенами (строгий ончейн-порядок) ---
+  token0: Token! @manyToOne
+  token1: Token! @manyToOne
+  
+  # --- Вычисляемые и денормализованные поля для скринера ---
+  baseToken: Token! @manyToOne @index
+  quoteToken: Token! @manyToOne @index
+  canonicalPair: String! @index          # "SPXWETH"
+  displayPair: String!                   # "SPX/WETH"
+  
+  # --- Ключевые метрики ---
+  liquidityUSD: BigDecimal!
+  
+  # --- Специфика AMM ---
+  key: PoolKey                         # Для V3/V4/V2. Null для других AMM.
+  
+  # --- JSON поле для резервов и прочей мета-информации ---
+  # Содержит текущие резервы, доп. параметры AMM (Balancer), заметки, источники.
+  # Пример: { "reserves": [{"token": "id", "balance": "123.45"}], "notes": "..." }
+  meta: JSON!
+
+  # --- Метаданные создания и статуса ---
+  status: PoolStatus!
+  createdAtTimestamp: BigInt!
+  createdAtBlock: BigInt!
+  creationTxHash: String!
+}
+
+  
+
+Правила и Соглашения (Важная часть документации)
+
+    Золотое правило порядка токенов: Поля token0 и token1 в базе данных обязаны соответствовать порядку, возвращаемому функциями token0() и token1() в смарт-контракте пула. Индексатор никогда не переупорядочивает их.
+
+    Логика base/quote токенов:
+
+        Поля baseToken и quoteToken определяются и записываются на стороне индексатора в момент обработки.
+
+        Логика определения основана на заранее утвержденном списке "quote"-токенов (например, WETH, USDC, USDT). Если в паре есть один из них, он становится quote, второй — base. Если оба или ни одного, применяется дополнительное правило (например, по алфавиту адреса).
+
+        Эта логика фиксируется в коде индексатора и не меняется.
+
+    Формирование Pair-полей:
+
+        displayPair формируется как "baseToken.symbol/quoteToken.symbol".
+
+        canonicalPair формируется как baseToken.symbol + quoteToken.symbol в верхнем регистре.
+
+    Резервы и Ликвидность:
+
+        Хранение актуальных liquidityUSD и резервов в meta.reserves требует отслеживания событий Swap или Sync, что является расширением первоначальной задачи (только PoolCreated). Это изменение принимается как необходимое.
+
+        Поле meta.reserves будет хранить JSON-массив с последним известным состоянием резервов.
+
+    Унификация PoolKey:
+
+        Для пулов Uniswap V2, объект key также будет создаваться. Поля fee, tickSpacing, hooks будут null или 0, а currency0/currency1 будут дублировать адреса token0/token1 для поддержания единой структуры ответа.
